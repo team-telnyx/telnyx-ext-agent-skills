@@ -67,23 +67,38 @@ Each product is available for:
 
 ### Claude Code
 
-```bash
-# Add the Telnyx skills marketplace
-/plugin marketplace add team-telnyx/telnyx-ext-agent-skills
+First, add the Telnyx skills marketplace:
 
-# Install the plugin for your language
+```bash
+/plugin marketplace add team-telnyx/telnyx-ext-agent-skills
+```
+
+Then install the plugin for your language. Each plugin includes all 35 Telnyx products (messaging, voice, numbers, IoT, AI, and more):
+
+#### Python
+```bash
 /plugin install telnyx-python@team-telnyx/telnyx-ext-agent-skills
 ```
 
-Each language plugin includes all 35 Telnyx products:
+#### JavaScript / Node.js
+```bash
+/plugin install telnyx-javascript@team-telnyx/telnyx-ext-agent-skills
+```
 
-| Plugin | Description |
-|--------|-------------|
-| `telnyx-python` | All Telnyx API skills for Python |
-| `telnyx-javascript` | All Telnyx API skills for Node.js/JavaScript |
-| `telnyx-go` | All Telnyx API skills for Go |
-| `telnyx-java` | All Telnyx API skills for Java |
-| `telnyx-ruby` | All Telnyx API skills for Ruby |
+#### Go
+```bash
+/plugin install telnyx-go@team-telnyx/telnyx-ext-agent-skills
+```
+
+#### Java
+```bash
+/plugin install telnyx-java@team-telnyx/telnyx-ext-agent-skills
+```
+
+#### Ruby
+```bash
+/plugin install telnyx-ruby@team-telnyx/telnyx-ext-agent-skills
+```
 
 ### Other Agents
 
