@@ -63,6 +63,26 @@ Each product is available for:
 - **Java** (`-java`)
 - **Ruby** (`-ruby`)
 
+### WebRTC Client-Side SDKs
+
+In addition to the REST API skills above, we provide skills for the **client-side WebRTC SDKs** — native libraries for building VoIP calling apps on web and mobile platforms.
+
+| Skill | Platform | Description |
+|-------|----------|-------------|
+| `telnyx-webrtc-js` | Browser | JavaScript SDK for web-based voice/video calls |
+| `telnyx-webrtc-android` | Android | Kotlin SDK with FCM push notifications |
+| `telnyx-webrtc-ios` | iOS | Swift SDK with CallKit and PushKit integration |
+| `telnyx-webrtc-flutter` | Flutter | Cross-platform SDK for Android, iOS, and Web |
+| `telnyx-webrtc-react-native` | React Native | Cross-platform SDK with native call UI |
+
+These skills cover:
+- Authentication (credentials and JWT tokens)
+- Making and receiving calls
+- Call controls (mute, hold, DTMF, speaker)
+- Push notifications (FCM, APNs, PushKit)
+- Call quality metrics (MOS, jitter, RTT)
+- AI Agent integration (anonymous login, transcripts)
+
 ## Installation
 
 ### Claude Code
