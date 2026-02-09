@@ -326,31 +326,12 @@ client.newCall({
 | macOS | Audio+Video | Audio | Audio+Video | Audio |
 | Windows | Audio+Video | Audio | - | Audio |
 
-### Extend Browser Support
-
-```js
-import 'webrtc-adapter';
-import { TelnyxRTC } from '@telnyx/webrtc';
-```
-
 ### Check Browser Support
 
 ```js
 const webRTCInfo = TelnyxRTC.webRTCInfo;
 console.log('WebRTC supported:', webRTCInfo.supportWebRTC);
 ```
-
----
-
-## React Integration
-
-For React apps, use the dedicated React wrapper:
-
-```bash
-npm install @telnyx/react-client
-```
-
-See [@telnyx/react-client](https://www.npmjs.com/package/@telnyx/react-client) for React-specific hooks and components.
 
 ---
 
@@ -368,8 +349,7 @@ See [@telnyx/react-client](https://www.npmjs.com/package/@telnyx/react-client) f
 
 ## Resources
 
-- [Official Documentation](https://developers.telnyx.com/docs/v2/webrtc)
+- [Official Documentation](https://developers.telnyx.com/development/webrtc/js-sdk/quickstart)
 - [npm Package](https://www.npmjs.com/package/@telnyx/webrtc)
 - [GitHub Repository](https://github.com/team-telnyx/webrtc)
-- [Examples](https://github.com/team-telnyx/webrtc-examples)
-- [React Client](https://www.npmjs.com/package/@telnyx/react-client)
+- [Demo App](https://github.com/team-telnyx/webrtc-demo-js)
