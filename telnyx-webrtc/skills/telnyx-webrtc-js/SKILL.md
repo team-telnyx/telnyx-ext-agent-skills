@@ -2,7 +2,7 @@
 name: telnyx-webrtc-js
 description: >-
   Build browser-based VoIP calling apps using Telnyx WebRTC JavaScript SDK.
-  Covers authentication, voice and video calls, events, debugging, call quality
+  Covers authentication, voice calls, events, debugging, call quality
   metrics, and AI Agent integration. Use for web-based real-time communication.
 metadata:
   author: telnyx
@@ -13,7 +13,7 @@ metadata:
 
 # Telnyx WebRTC - JavaScript SDK
 
-Build real-time voice and video communication into browser applications.
+Build real-time voice communication into browser applications.
 
 > **Prerequisites**: Create WebRTC credentials and generate a login token using the Telnyx server-side SDK. See the `telnyx-webrtc-*` skill in your server language plugin (e.g., `telnyx-python`, `telnyx-javascript`).
 
@@ -69,7 +69,7 @@ client.off('telnyx.notification');
 
 ## Media Elements
 
-Specify an HTML element to play remote audio/video:
+Specify an HTML element to play remote audio:
 
 ```js
 client.remoteElement = 'remoteMedia';
@@ -78,11 +78,7 @@ client.remoteElement = 'remoteMedia';
 HTML:
 
 ```html
-<!-- For audio calls -->
 <audio id="remoteMedia" autoplay="true" />
-
-<!-- For video calls -->
-<video id="remoteMedia" autoplay="true" playsinline="true" />
 ```
 
 ---
@@ -125,21 +121,10 @@ client
 
 ## Making Calls
 
-### Voice Call
-
 ```js
 const call = client.newCall({
   destinationNumber: '+18004377950',
   callerNumber: '+15551234567',
-});
-```
-
-### Video Call
-
-```js
-const videoCall = client.newCall({
-  destinationNumber: 'sip:user@sip.example.com',
-  video: true,
 });
 ```
 
@@ -176,10 +161,6 @@ call.unmuteAudio();
 // Hold
 call.hold();
 call.unhold();
-
-// Mute video (video calls)
-call.muteVideo();
-call.unmuteVideo();
 ```
 
 ---
@@ -322,11 +303,11 @@ client.newCall({
 
 | Platform | Chrome | Firefox | Safari | Edge |
 |----------|--------|---------|--------|------|
-| Android | Audio | Audio | - | - |
-| iOS | - | - | Audio+Video | - |
-| Linux | Audio+Video | Audio | - | - |
-| macOS | Audio+Video | Audio | Audio+Video | Audio |
-| Windows | Audio+Video | Audio | - | Audio |
+| Android | ✓ | ✓ | - | - |
+| iOS | - | - | ✓ | - |
+| Linux | ✓ | ✓ | - | - |
+| macOS | ✓ | ✓ | ✓ | ✓ |
+| Windows | ✓ | ✓ | - | ✓ |
 
 ### Check Browser Support
 
@@ -344,7 +325,6 @@ console.log('WebRTC supported:', webRTCInfo.supportWebRTC);
 | No audio | Check microphone permissions in browser |
 | Echo/feedback | Use headphones or enable echo cancellation |
 | Connection fails | Check network, firewall, or use TURN relay |
-| Video not working | Verify browser supports video (see table above) |
 | Quality issues | Enable `debug: true` and check `telnyx.stats.frame` events |
 
 ---
