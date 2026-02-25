@@ -15,7 +15,7 @@ These skills follow the [Agent Skills specification](https://agentskills.io/spec
 **Step 2.** Install a plugin — pick your language, or the WebRTC client-side plugin:
 
 ```bash
-/plugin install telnyx-python@telnyx-agent-skills
+/plugin install telnyx-python@telnyx-skills
 ```
 
 Replace `telnyx-python` with the plugin for your stack:
@@ -28,6 +28,7 @@ Replace `telnyx-python` with the plugin for your stack:
 | `telnyx-java` | Java |
 | `telnyx-ruby` | Ruby |
 | `telnyx-webrtc-client` | WebRTC client SDKs (JS, iOS, Android, Flutter, React Native) |
+| `telnyx-twilio-migration` | Migrate from Twilio to Telnyx |
 
 Each language plugin includes all <!-- PRODUCT_COUNT -->35<!-- /PRODUCT_COUNT --> Telnyx products (messaging, voice, numbers, IoT, AI, and more).
 
@@ -145,7 +146,7 @@ These are platform-specific native libraries — separate from the server-side l
 Each skill covers authentication, making/receiving calls, call controls (hold, mute, transfer), push notifications, call quality metrics, and AI Agent integration.
 
 ```bash
-/plugin install telnyx-webrtc-client@telnyx-agent-skills
+/plugin install telnyx-webrtc-client@telnyx-skills
 ```
 
 > **Note:** Building a calling app typically requires both plugins — a server-side plugin (e.g. `telnyx-python`) to create WebRTC credentials and generate login tokens, and `telnyx-webrtc-client` for the client-side calling UI.
