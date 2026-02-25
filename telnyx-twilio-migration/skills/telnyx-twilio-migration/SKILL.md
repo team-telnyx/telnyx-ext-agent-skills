@@ -133,7 +133,7 @@ bash {baseDir}/scripts/validate-texml.sh /path/to/your/twiml.xml
 
 The script reports unsupported verbs, attribute differences, and Telnyx-only features you can adopt.
 
-**Step-by-step migration process:**
+**Step-by-step migration process** (includes Call Control API as an alternative, client state patterns, bridge/link_to, caller ID policy, and subdomains):
 Read `{baseDir}/references/voice-migration.md`
 
 **Complete TeXML verb reference** (all 15 verbs + 8 nouns with attributes, nesting rules, and examples):
@@ -146,6 +146,7 @@ Read `{baseDir}/references/texml-verbs.md`
 - `<Gather>` supports multiple STT engines: Google, Telnyx, Deepgram, Azure
 - `<Say>` supports ElevenLabs voices alongside Polly
 - `<Pay>` has no TeXML equivalent
+- Telnyx also offers the **Call Control API** — an imperative, event-driven alternative to XML. Use it for complex conditional logic, real-time call manipulation, or state-machine workflows
 
 ### Messaging
 
@@ -168,9 +169,11 @@ message = telnyx.Message.create(to="+1555...", from_="+1666...", text="Hello")
 
 ### WebRTC / Voice SDK
 
-Migrate from Twilio Voice SDK to Telnyx WebRTC SDKs. Key architectural difference: Telnyx eliminates the mandatory backend server for token generation.
+Migrate from Twilio Voice SDK to Telnyx WebRTC SDKs. Key architectural difference: Telnyx allows direct browser-to-PSTN dialing without a server webhook.
 
 Read `{baseDir}/references/webrtc-migration.md`
+
+Covers: SDK mapping, TwiML endpoint analysis (DELETE vs CONVERT decision tree), credential lifecycle (per-session, not per-call), token refresh, CDN vs npm pitfalls, contact center patterns (conferences not always needed, SIP headers for passing data, URI dialing, call parking).
 
 > **Enhanced coverage**: Install the `telnyx-webrtc-client` plugin for platform-specific implementation guides (JavaScript, iOS, Android, Flutter, React Native).
 
@@ -225,6 +228,26 @@ After completing migration for any product:
 5. Verify number assignments (each number must be assigned to a connection or messaging profile)
 6. Update monitoring/alerting for Telnyx-specific status codes and error formats
 7. Update any Twilio status callback URLs to Telnyx webhook format
+
+## Related Skills in This Repo
+
+After migration, these skills provide deeper coverage for ongoing development:
+
+| Migration Area | Related Skills | What They Cover |
+|---|---|---|
+| Voice (Call Control) | `telnyx-voice-*` | bridge, transfer, dial, answer, hangup |
+| Voice (Advanced) | `telnyx-voice-advanced-*` | client_state, updateClientState, SIP Refer, supervisor roles |
+| Voice (Conferencing) | `telnyx-voice-conferencing-*` | conference CRUD, participant mgmt, park, supervisor |
+| Voice (Gather/IVR) | `telnyx-voice-gather-*` | DTMF gathering, AI gather, speech recognition |
+| Voice (TeXML REST) | `telnyx-texml-*` | TeXML API CRUD (JS only — other langs use Call Control) |
+| WebRTC (Backend) | `telnyx-webrtc-*` | credential management, SIP connection setup |
+| WebRTC (Client) | `telnyx-webrtc-client-*` | platform SDKs (JS, iOS, Android, Flutter, React Native) |
+| SIP / Trunking | `telnyx-sip-*` | outbound voice profiles, IP/FQDN/credential connections |
+| Messaging | `telnyx-messaging-*` | send/receive SMS/MMS, messaging profiles |
+| Numbers | `telnyx-numbers-*`, `telnyx-porting-in-*` | number management, porting |
+| Verify | `telnyx-verify-*` | verification API (SMS, voice, flash calling) |
+
+Install the relevant language plugin (`telnyx-python`, `telnyx-javascript`, `telnyx-go`, `telnyx-java`, or `telnyx-ruby`) to access these skills.
 
 ## Resources
 

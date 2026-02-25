@@ -16,6 +16,8 @@ Step-by-step guide for migrating Twilio TwiML-based voice applications to Telnyx
 - [Testing Your Migration](#testing-your-migration)
 - [Webhook Differences](#webhook-differences)
 - [REST API Mapping](#rest-api-mapping)
+- [Call Control API (Alternative to TeXML)](#call-control-api-alternative-to-texml)
+- [Advanced Voice Patterns](#advanced-voice-patterns)
 
 ## Overview
 
@@ -243,3 +245,173 @@ Status callback events match Twilio's: `initiated`, `ringing`, `answered`, `comp
 For REST API operations (managing calls, conferences, recordings programmatically), the existing TeXML skills in this repo provide complete SDK examples:
 
 > **Enhanced coverage**: Install the language plugin for your stack (`telnyx-python`, `telnyx-javascript`, `telnyx-go`, `telnyx-java`, `telnyx-ruby`) and reference the `telnyx-texml-*` skill for complete REST API examples.
+
+## Call Control API (Alternative to TeXML)
+
+Telnyx offers a second voice API that has no Twilio equivalent: the **Call Control API**. It provides imperative, event-driven call management via REST instead of declarative XML.
+
+| Aspect | TeXML | Call Control API |
+|--------|-------|------------------|
+| Model | Declarative XML | Imperative REST calls |
+| State management | Stateless (XML per request) | Stateful (commands per call) |
+| Flexibility | Limited to XML verbs | Full programmatic control |
+| Learning curve | Low (TwiML-compatible) | Medium |
+| Best for | Migrating existing TwiML apps | New apps needing complex logic |
+
+**When to consider Call Control instead of TeXML:**
+- Complex conditional routing that's awkward in XML
+- Real-time call manipulation (bridging, parking, supervisor roles)
+- Event-driven architectures (each call event triggers a webhook)
+- Applications that need client state management (see below)
+
+**Basic example — IVR with Call Control:**
+```javascript
+app.post('/call-webhook', async (req, res) => {
+  const event = req.body.data;
+  const callControlId = event.payload.call_control_id;
+
+  switch (event.event_type) {
+    case 'call.initiated':
+      await telnyx.calls.answer(callControlId);
+      break;
+    case 'call.answered':
+      await telnyx.calls.gather(callControlId, {
+        minimum_digits: 1, maximum_digits: 1, timeout_millis: 10000
+      });
+      await telnyx.calls.speak(callControlId, {
+        payload: 'Press 1 for sales, 2 for support'
+      });
+      break;
+    case 'call.gather.ended':
+      const digit = event.payload.digits;
+      const dest = digit === '1' ? '+15551111111' : '+15552222222';
+      await telnyx.calls.transfer(callControlId, { to: dest });
+      break;
+  }
+  res.sendStatus(200);
+});
+```
+
+> **Enhanced coverage**: Install your language plugin and reference the `telnyx-voice-*` and `telnyx-voice-advanced-*` skills for complete Call Control API examples including bridge, gather, speak, transfer, streaming, and recording.
+
+## Advanced Voice Patterns
+
+These patterns are specific to Telnyx and have no direct Twilio equivalent. They are relevant when migrating contact center, PBX, or complex IVR applications.
+
+### Client State (State Machine Pattern)
+
+Telnyx Call Control uses `client_state` as a base64-encoded object to maintain state across webhook events. This replaces Twilio's pattern of encoding state in callback URLs or session storage.
+
+```javascript
+// Encode state when issuing a command
+const state = Buffer.from(JSON.stringify({
+  step: 'greeting_complete',
+  caller_tier: 'premium',
+  retry_count: 0
+})).toString('base64');
+
+await telnyx.calls.answer(callControlId, {
+  client_state: state
+});
+
+// Decode state in the next webhook
+app.post('/webhook', (req, res) => {
+  const event = req.body.data;
+  const clientState = JSON.parse(
+    Buffer.from(event.payload.client_state, 'base64').toString()
+  );
+  // clientState.step === 'greeting_complete'
+});
+```
+
+Every Call Control command (`answer`, `speak`, `gather`, `bridge`, `transfer`, etc.) accepts `client_state`. The state is echoed back in the subsequent webhook event, giving you a stateless server architecture.
+
+> **Enhanced coverage**: The `telnyx-voice-advanced-*` skills cover `updateClientState()` for modifying state on active calls.
+
+### Bridge, link_to, and bridge_on_answer
+
+Telnyx Call Control provides fine-grained control over how calls are connected:
+
+**Bridge** — connect two active Call Control calls:
+```javascript
+// Both calls must already be answered
+await telnyx.calls.bridge(callControlIdA, {
+  call_control_id: callControlIdB,
+  client_state: state
+});
+```
+
+**Dial with bridge_on_answer** — automatically bridge when the B-leg answers, without waiting for a webhook round-trip:
+```bash
+curl -X POST https://api.telnyx.com/v2/calls \
+  -H "Authorization: Bearer $TELNYX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connection_id": "YOUR_CONNECTION_ID",
+    "to": "+15559876543",
+    "from": "+15551234567",
+    "answering_machine_detection": "disabled",
+    "bridge_to": "CALL_CONTROL_ID_OF_WAITING_LEG",
+    "bridge_on_answer": "bridge_on_answer"
+  }'
+```
+
+This eliminates the need to handle the `call.answered` webhook and then issue a separate `bridge` command — reducing latency and code complexity.
+
+**link_to** — permanently associate two calls so they share lifecycle events:
+```javascript
+await telnyx.calls.update(callControlId, {
+  link_to: otherCallControlId
+});
+```
+
+Linked calls receive each other's events, useful for building agent dashboards or call monitoring.
+
+> **Enhanced coverage**: The `telnyx-voice-*` skills cover the `bridge()` API. The `telnyx-voice-advanced-*` skills cover `switchSupervisorRole()` for bridged calls.
+
+### Caller ID Policy
+
+Telnyx enforces caller ID policy on outbound calls. Unlike Twilio (where you pass any owned number as `callerId`), Telnyx validates caller ID against your **Outbound Voice Profile**:
+
+- Each SIP Connection or TeXML Application has an associated Outbound Voice Profile
+- The profile controls which numbers and CNAM settings can be used for outbound caller ID
+- If you attempt to use a caller ID not authorized in your profile, the call will fail
+
+```bash
+# Create an outbound voice profile
+curl -X POST https://api.telnyx.com/v2/outbound_voice_profiles \
+  -H "Authorization: Bearer $TELNYX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "production-caller-ids"}'
+```
+
+Assign it to your connection in the Mission Control Portal under **SIP** → **Connections** → **Outbound**.
+
+> **Enhanced coverage**: The `telnyx-sip-*` skills provide complete CRUD examples for outbound voice profiles.
+
+### Subdomains
+
+Telnyx supports SIP subdomains for credential-based connections. A subdomain provides a unique SIP registration URI per connection:
+
+```
+sip:username@YOUR_SUBDOMAIN.sip.telnyx.com
+```
+
+Configure via API when creating a credential connection:
+```bash
+curl -X POST https://api.telnyx.com/v2/credential_connections \
+  -H "Authorization: Bearer $TELNYX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connection_name": "my-pbx",
+    "active": true,
+    "sip_subdomain": "my-company",
+    "sip_subdomain_receive_settings": "only_my_connections"
+  }'
+```
+
+`sip_subdomain_receive_settings` controls who can send calls to the subdomain:
+- `from_anyone` — accept calls from any source
+- `only_my_connections` — only accept calls from your other Telnyx connections
+
+This is important for multi-tenant PBX deployments and inter-connection routing.
