@@ -428,7 +428,7 @@ await telnyx.calls.update(supervisorCallId, {
 - Two-party calls with supervisor monitoring
 - Warm transfers (bridge, then drop the transferring agent)
 
-> **Enhanced coverage**: The `telnyx-voice-conferencing-*` skills cover conference CRUD, participant management, and supervisor roles. The `telnyx-voice-advanced-*` skills cover `switchSupervisorRole()`.
+> **Enhanced coverage**: The `telnyx-voice-conferencing-*` skills cover conference CRUD, participant management (with `supervisor_role`, `whisper_call_control_ids`, `mute`, `hold`), recording, and all webhook payload schemas. The `telnyx-voice-advanced-*` skills cover `switchSupervisorRole()` and `client_state` on all commands.
 
 ### Passing Data from WebRTC Client to Voice API Backend
 
@@ -527,4 +527,4 @@ const { data: call } = await telnyx.calls.create({
 // Use bridge_on_answer for automatic bridging (see voice-migration.md)
 ```
 
-> **Enhanced coverage**: The `telnyx-voice-conferencing-*` skills document the `leave()` action which moves a call to parked state. The `telnyx-voice-*` skills cover bridge and dial operations.
+> **Enhanced coverage**: The `telnyx-voice-conferencing-*` skills document `leave()` (returns to parked state), `join()` (with `supervisor_role`, `whisper_call_control_ids`), and all conference actions with optional params and webhook payload schemas. The `telnyx-voice-*` skills cover dial (with `bridge_on_answer`, `link_to`, `park_after_unbridge`, `supervisor_role`, `sip_headers`, `custom_headers`) and bridge operations — all with complete optional parameter lists and webhook field tables.

@@ -367,7 +367,7 @@ await telnyx.calls.update(callControlId, {
 
 Linked calls receive each other's events, useful for building agent dashboards or call monitoring.
 
-> **Enhanced coverage**: The `telnyx-voice-*` skills cover the `bridge()` API. The `telnyx-voice-advanced-*` skills cover `switchSupervisorRole()` for bridged calls.
+> **Enhanced coverage**: The `telnyx-voice-*` skills now list all optional parameters for `dial` (including `bridge_on_answer`, `bridge_intent`, `link_to`, `supervisor_role`, `park_after_unbridge`, `sip_headers`, `custom_headers`) and `bridge` (including `park_after_unbridge`, `mute_dtmf`), plus webhook payload field tables for every call event. The `telnyx-voice-advanced-*` skills cover `switchSupervisorRole()` and show `client_state` on all commands.
 
 ### Caller ID Policy
 
@@ -387,7 +387,7 @@ curl -X POST https://api.telnyx.com/v2/outbound_voice_profiles \
 
 Assign it to your connection in the Mission Control Portal under **SIP** → **Connections** → **Outbound**.
 
-> **Enhanced coverage**: The `telnyx-sip-*` skills provide complete CRUD examples for outbound voice profiles.
+> **Enhanced coverage**: The `telnyx-sip-*` skills provide complete CRUD examples for outbound voice profiles with all optional params (`whitelisted_destinations`, `traffic_type`, `calling_window`, `concurrent_call_limit`, `daily_spend_limit`, etc.) and credential connections with all config options (`sip_uri_calling_preference`, `encrypted_media`, `inbound`/`outbound` objects, `noise_suppression`, etc.).
 
 ### Subdomains
 

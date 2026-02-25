@@ -235,15 +235,16 @@ After migration, these skills provide deeper coverage for ongoing development:
 
 | Migration Area | Related Skills | What They Cover |
 |---|---|---|
-| Voice (Call Control) | `telnyx-voice-*` | bridge, transfer, dial, answer, hangup |
-| Voice (Advanced) | `telnyx-voice-advanced-*` | client_state, updateClientState, SIP Refer, supervisor roles |
-| Voice (Conferencing) | `telnyx-voice-conferencing-*` | conference CRUD, participant mgmt, park, supervisor |
-| Voice (Gather/IVR) | `telnyx-voice-gather-*` | DTMF gathering, AI gather, speech recognition |
+| Voice (Call Control) | `telnyx-voice-*` | dial (with `bridge_on_answer`, `bridge_intent`, `link_to`, `supervisor_role`, `sip_headers`, `custom_headers`, `park_after_unbridge`), bridge, transfer, answer, hangup — all with optional params and webhook payload schemas |
+| Voice (Advanced) | `telnyx-voice-advanced-*` | `client_state` on all commands, `updateClientState`, SIP Refer with `custom_headers`/`sip_headers`, DTMF send, SIPREC, noise suppression — with webhook payload field tables |
+| Voice (Conferencing) | `telnyx-voice-conferencing-*` | conference create (with `max_participants`, `hold_audio_url`, `region`), join (with `supervisor_role`, `whisper_call_control_ids`, `mute`, `hold`), leave (returns to parked state), recording, speak, play — with webhook payload schemas |
+| Voice (Gather/IVR) | `telnyx-voice-gather-*` | DTMF gathering, AI gather, gather using speak/audio — with webhook payload schemas for `call.gather.ended` |
+| Voice (Media) | `telnyx-voice-media-*` | play audio, start/stop recording, streaming — with optional params for recording format, channels, track |
 | Voice (TeXML REST) | `telnyx-texml-*` | TeXML API CRUD (JS only — other langs use Call Control) |
-| WebRTC (Backend) | `telnyx-webrtc-*` | credential management, SIP connection setup |
-| WebRTC (Client) | `telnyx-webrtc-client-*` | platform SDKs (JS, iOS, Android, Flutter, React Native) |
-| SIP / Trunking | `telnyx-sip-*` | outbound voice profiles, IP/FQDN/credential connections |
-| Messaging | `telnyx-messaging-*` | send/receive SMS/MMS, messaging profiles |
+| WebRTC (Backend) | `telnyx-webrtc-*` | telephony credential create/token, SIP connection setup |
+| WebRTC (Client) | `telnyx-webrtc-client-*` | platform SDKs (JS, iOS, Android, Flutter, React Native) — custom SIP headers, push notifications |
+| SIP / Trunking | `telnyx-sip-*` | outbound voice profiles (with `whitelisted_destinations`, `traffic_type`, `calling_window`, `concurrent_call_limit`), credential connections (with `sip_uri_calling_preference`, `inbound`/`outbound` objects, `encrypted_media`), IP/FQDN connections |
+| Messaging | `telnyx-messaging-*` | send/receive SMS/MMS with optional params and webhook payload schemas |
 | Numbers | `telnyx-numbers-*`, `telnyx-porting-in-*` | number management, porting |
 | Verify | `telnyx-verify-*` | verification API (SMS, voice, flash calling) |
 
