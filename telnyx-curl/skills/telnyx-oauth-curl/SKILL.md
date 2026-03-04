@@ -38,6 +38,8 @@ OAuth 2.0 Authorization Server Metadata (RFC 8414)
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/.well-known/oauth-authorization-server"
 ```
 
+Returns: `authorization_endpoint` (uri), `code_challenge_methods_supported` (array[string]), `grant_types_supported` (array[string]), `introspection_endpoint` (uri), `issuer` (uri), `jwks_uri` (uri), `registration_endpoint` (uri), `response_types_supported` (array[string]), `scopes_supported` (array[string]), `token_endpoint` (uri), `token_endpoint_auth_methods_supported` (array[string])
+
 ## Protected resource metadata
 
 OAuth 2.0 Protected Resource Metadata for resource discovery
@@ -47,6 +49,8 @@ OAuth 2.0 Protected Resource Metadata for resource discovery
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/.well-known/oauth-protected-resource"
 ```
+
+Returns: `authorization_servers` (array[string]), `resource` (uri)
 
 ## OAuth authorization endpoint
 
@@ -68,6 +72,8 @@ Retrieve details about an OAuth consent token
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/oauth/consent/{consent_token}"
 ```
 
+Returns: `client_id` (string), `logo_uri` (uri), `name` (string), `policy_uri` (uri), `redirect_uri` (uri), `requested_scopes` (array[object]), `tos_uri` (uri), `verified` (boolean)
+
 ## Create OAuth grant
 
 Create an OAuth authorization grant
@@ -86,6 +92,8 @@ curl \
   "https://api.telnyx.com/v2/oauth/grants"
 ```
 
+Returns: `redirect_uri` (uri)
+
 ## Token introspection
 
 Introspect an OAuth access token to check its validity and metadata
@@ -103,6 +111,8 @@ curl \
   "https://api.telnyx.com/v2/oauth/introspect"
 ```
 
+Returns: `active` (boolean), `aud` (string), `client_id` (string), `exp` (integer), `iat` (integer), `iss` (string), `scope` (string)
+
 ## JSON Web Key Set
 
 Retrieve the JSON Web Key Set for token verification
@@ -113,13 +123,15 @@ Retrieve the JSON Web Key Set for token verification
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/oauth/jwks"
 ```
 
+Returns: `keys` (array[object])
+
 ## Dynamic client registration
 
 Register a new OAuth client dynamically (RFC 7591)
 
 `POST /oauth/register`
 
-Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum), `tos_uri` (uri)
+Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum: none, client_secret_basic, client_secret_post), `tos_uri` (uri)
 
 ```bash
 curl \
@@ -135,6 +147,8 @@ curl \
 }' \
   "https://api.telnyx.com/v2/oauth/register"
 ```
+
+Returns: `client_id` (string), `client_id_issued_at` (integer), `client_name` (string), `client_secret` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (string), `tos_uri` (uri)
 
 ## OAuth token endpoint
 
@@ -156,6 +170,8 @@ curl \
   "https://api.telnyx.com/v2/oauth/token"
 ```
 
+Returns: `access_token` (string), `expires_in` (integer), `refresh_token` (string), `scope` (string), `token_type` (enum: Bearer)
+
 ## List OAuth clients
 
 Retrieve a paginated list of OAuth clients for the authenticated user
@@ -165,6 +181,8 @@ Retrieve a paginated list of OAuth clients for the authenticated user
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/oauth_clients"
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Create OAuth client
 
@@ -192,6 +210,8 @@ curl \
   "https://api.telnyx.com/v2/oauth_clients"
 ```
 
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
+
 ## Get OAuth client
 
 Retrieve a single OAuth client by ID
@@ -201,6 +221,8 @@ Retrieve a single OAuth client by ID
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/oauth_clients/{id}"
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Update OAuth client
 
@@ -222,6 +244,8 @@ curl \
 }' \
   "https://api.telnyx.com/v2/oauth_clients/{id}"
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Delete OAuth client
 
@@ -246,6 +270,8 @@ Retrieve a paginated list of OAuth grants for the authenticated user
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/oauth_grants"
 ```
 
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
+
 ## Get OAuth grant
 
 Retrieve a single OAuth grant by ID
@@ -255,6 +281,8 @@ Retrieve a single OAuth grant by ID
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/oauth_grants/{id}"
 ```
+
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
 
 ## Revoke OAuth grant
 
@@ -268,3 +296,5 @@ curl \
   -H "Authorization: Bearer $TELNYX_API_KEY" \
   "https://api.telnyx.com/v2/oauth_grants/{id}"
 ```
+
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])

@@ -43,6 +43,8 @@ page = client.mobile_push_credentials.list
 puts(page)
 ```
 
+Returns: `alias` (string), `certificate` (string), `created_at` (date-time), `id` (string), `private_key` (string), `project_account_json_file` (object), `record_type` (string), `type` (string), `updated_at` (date-time)
+
 ## Creates a new mobile push credential
 
 `POST /mobile_push_credentials`
@@ -60,6 +62,8 @@ push_credential_response = client.mobile_push_credentials.create(
 puts(push_credential_response)
 ```
 
+Returns: `alias` (string), `certificate` (string), `created_at` (date-time), `id` (string), `private_key` (string), `project_account_json_file` (object), `record_type` (string), `type` (string), `updated_at` (date-time)
+
 ## Retrieves a mobile push credential
 
 Retrieves mobile push credential based on the given `push_credential_id`
@@ -71,6 +75,8 @@ push_credential_response = client.mobile_push_credentials.retrieve("0ccc7b76-4df
 
 puts(push_credential_response)
 ```
+
+Returns: `alias` (string), `certificate` (string), `created_at` (date-time), `id` (string), `private_key` (string), `project_account_json_file` (object), `record_type` (string), `type` (string), `updated_at` (date-time)
 
 ## Deletes a mobile push credential
 
@@ -96,6 +102,8 @@ page = client.telephony_credentials.list
 puts(page)
 ```
 
+Returns: `created_at` (string), `expired` (boolean), `expires_at` (string), `id` (string), `name` (string), `record_type` (string), `resource_id` (string), `sip_password` (string), `sip_username` (string), `updated_at` (string), `user_id` (string)
+
 ## Create a credential
 
 Create a credential.
@@ -110,6 +118,8 @@ telephony_credential = client.telephony_credentials.create(connection_id: "12345
 puts(telephony_credential)
 ```
 
+Returns: `created_at` (string), `expired` (boolean), `expires_at` (string), `id` (string), `name` (string), `record_type` (string), `resource_id` (string), `sip_password` (string), `sip_username` (string), `updated_at` (string), `user_id` (string)
+
 ## Get a credential
 
 Get the details of an existing On-demand Credential.
@@ -121,6 +131,8 @@ telephony_credential = client.telephony_credentials.retrieve("id")
 
 puts(telephony_credential)
 ```
+
+Returns: `created_at` (string), `expired` (boolean), `expires_at` (string), `id` (string), `name` (string), `record_type` (string), `resource_id` (string), `sip_password` (string), `sip_username` (string), `updated_at` (string), `user_id` (string)
 
 ## Update a credential
 
@@ -136,6 +148,8 @@ telephony_credential = client.telephony_credentials.update("id")
 puts(telephony_credential)
 ```
 
+Returns: `created_at` (string), `expired` (boolean), `expires_at` (string), `id` (string), `name` (string), `record_type` (string), `resource_id` (string), `sip_password` (string), `sip_username` (string), `updated_at` (string), `user_id` (string)
+
 ## Delete a credential
 
 Delete an existing credential.
@@ -147,3 +161,5 @@ telephony_credential = client.telephony_credentials.delete("id")
 
 puts(telephony_credential)
 ```
+
+Returns: `created_at` (string), `expired` (boolean), `expires_at` (string), `id` (string), `name` (string), `record_type` (string), `resource_id` (string), `sip_password` (string), `sip_username` (string), `updated_at` (string), `user_id` (string)

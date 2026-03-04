@@ -34,7 +34,7 @@ All examples below assume `client` is already initialized as shown above.
 
 ## List call events
 
-Filters call events by given filter parameters.
+Filters call events by given filter parameters. Events are ordered by `occurred_at`. If filter for `leg_id` or `application_session_id` is not present, it only filters events from the last 24 hours.
 
 `GET /call_events`
 
@@ -43,6 +43,8 @@ page = client.call_events.list
 
 puts(page)
 ```
+
+Returns: `call_leg_id` (string), `call_session_id` (string), `event_timestamp` (string), `metadata` (object), `name` (string), `record_type` (enum: call_event), `type` (enum: command, webhook)
 
 ## Create a ledger billing group report
 
@@ -56,6 +58,8 @@ ledger_billing_group_report = client.ledger_billing_group_reports.create
 puts(ledger_billing_group_report)
 ```
 
+Returns: `created_at` (date-time), `id` (uuid), `organization_id` (uuid), `record_type` (enum: ledger_billing_group_report), `report_url` (uri), `status` (enum: pending, complete, failed, deleted), `updated_at` (date-time)
+
 ## Get a ledger billing group report
 
 `GET /ledger_billing_group_reports/{id}`
@@ -65,6 +69,8 @@ ledger_billing_group_report = client.ledger_billing_group_reports.retrieve("f558
 
 puts(ledger_billing_group_report)
 ```
+
+Returns: `created_at` (date-time), `id` (uuid), `organization_id` (uuid), `record_type` (enum: ledger_billing_group_report), `report_url` (uri), `status` (enum: pending, complete, failed, deleted), `updated_at` (date-time)
 
 ## Get all MDR detailed report requests
 
@@ -77,6 +83,8 @@ messagings = client.legacy.reporting.batch_detail_records.messaging.list
 
 puts(messagings)
 ```
+
+Returns: `connections` (array[integer]), `created_at` (date-time), `directions` (array[string]), `end_date` (date-time), `filters` (array[object]), `id` (uuid), `profiles` (array[string]), `record_type` (string), `record_types` (array[string]), `report_name` (string), `report_url` (string), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
 
 ## Create a new MDR detailed report request
 
@@ -95,6 +103,8 @@ messaging = client.legacy.reporting.batch_detail_records.messaging.create(
 puts(messaging)
 ```
 
+Returns: `connections` (array[integer]), `created_at` (date-time), `directions` (array[string]), `end_date` (date-time), `filters` (array[object]), `id` (uuid), `profiles` (array[string]), `record_type` (string), `record_types` (array[string]), `report_name` (string), `report_url` (string), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
+
 ## Get a specific MDR detailed report request
 
 Retrieves a specific MDR detailed report request by ID
@@ -106,6 +116,8 @@ messaging = client.legacy.reporting.batch_detail_records.messaging.retrieve("182
 
 puts(messaging)
 ```
+
+Returns: `connections` (array[integer]), `created_at` (date-time), `directions` (array[string]), `end_date` (date-time), `filters` (array[object]), `id` (uuid), `profiles` (array[string]), `record_type` (string), `record_types` (array[string]), `report_name` (string), `report_url` (string), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
 
 ## Delete a MDR detailed report request
 
@@ -119,6 +131,8 @@ messaging = client.legacy.reporting.batch_detail_records.messaging.delete("182bd
 puts(messaging)
 ```
 
+Returns: `connections` (array[integer]), `created_at` (date-time), `directions` (array[string]), `end_date` (date-time), `filters` (array[object]), `id` (uuid), `profiles` (array[string]), `record_type` (string), `record_types` (array[string]), `report_name` (string), `report_url` (string), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
+
 ## Get all CDR report requests
 
 Retrieves all CDR report requests for the authenticated user
@@ -130,6 +144,8 @@ voices = client.legacy.reporting.batch_detail_records.voice.list
 
 puts(voices)
 ```
+
+Returns: `call_types` (array[integer]), `connections` (array[integer]), `created_at` (string), `end_time` (string), `filters` (array[object]), `id` (string), `managed_accounts` (array[string]), `record_type` (string), `record_types` (array[integer]), `report_name` (string), `report_url` (string), `retry` (int32), `source` (string), `start_time` (string), `status` (int32), `timezone` (string), `updated_at` (string)
 
 ## Create a new CDR report request
 
@@ -148,6 +164,8 @@ voice = client.legacy.reporting.batch_detail_records.voice.create(
 puts(voice)
 ```
 
+Returns: `call_types` (array[integer]), `connections` (array[integer]), `created_at` (string), `end_time` (string), `filters` (array[object]), `id` (string), `managed_accounts` (array[string]), `record_type` (string), `record_types` (array[integer]), `report_name` (string), `report_url` (string), `retry` (int32), `source` (string), `start_time` (string), `status` (int32), `timezone` (string), `updated_at` (string)
+
 ## Get available CDR report fields
 
 Retrieves all available fields that can be used in CDR reports
@@ -159,6 +177,8 @@ response = client.legacy.reporting.batch_detail_records.voice.retrieve_fields
 
 puts(response)
 ```
+
+Returns: `Billing` (array[string]), `Interaction Data` (array[string]), `Number Information` (array[string]), `Telephony Data` (array[string])
 
 ## Get a specific CDR report request
 
@@ -172,6 +192,8 @@ voice = client.legacy.reporting.batch_detail_records.voice.retrieve("182bd5e5-6e
 puts(voice)
 ```
 
+Returns: `call_types` (array[integer]), `connections` (array[integer]), `created_at` (string), `end_time` (string), `filters` (array[object]), `id` (string), `managed_accounts` (array[string]), `record_type` (string), `record_types` (array[integer]), `report_name` (string), `report_url` (string), `retry` (int32), `source` (string), `start_time` (string), `status` (int32), `timezone` (string), `updated_at` (string)
+
 ## Delete a CDR report request
 
 Deletes a specific CDR report request by ID
@@ -183,6 +205,8 @@ voice = client.legacy.reporting.batch_detail_records.voice.delete("182bd5e5-6e1a
 
 puts(voice)
 ```
+
+Returns: `call_types` (array[integer]), `connections` (array[integer]), `created_at` (string), `end_time` (string), `filters` (array[object]), `id` (string), `managed_accounts` (array[string]), `record_type` (string), `record_types` (array[integer]), `report_name` (string), `report_url` (string), `retry` (int32), `source` (string), `start_time` (string), `status` (int32), `timezone` (string), `updated_at` (string)
 
 ## List MDR usage reports
 
@@ -196,6 +220,8 @@ page = client.legacy.reporting.usage_reports.messaging.list
 puts(page)
 ```
 
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `profiles` (array[string]), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
+
 ## Create a new legacy usage V2 MDR report request
 
 Creates a new legacy usage V2 MDR report request with the specified filters
@@ -207,6 +233,8 @@ messaging = client.legacy.reporting.usage_reports.messaging.create(aggregation_t
 
 puts(messaging)
 ```
+
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `profiles` (array[string]), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
 
 ## Get an MDR usage report
 
@@ -220,6 +248,8 @@ messaging = client.legacy.reporting.usage_reports.messaging.retrieve("182bd5e5-6
 puts(messaging)
 ```
 
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `profiles` (array[string]), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
+
 ## Delete a V2 legacy usage MDR report request
 
 Deletes a specific V2 legacy usage MDR report request by ID
@@ -231,6 +261,8 @@ messaging = client.legacy.reporting.usage_reports.messaging.delete("182bd5e5-6e1
 
 puts(messaging)
 ```
+
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `profiles` (array[string]), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
 
 ## List telco data usage reports
 
@@ -244,6 +276,8 @@ number_lookups = client.legacy.reporting.usage_reports.number_lookup.list
 puts(number_lookups)
 ```
 
+Returns: `aggregation_type` (string), `created_at` (date-time), `end_date` (date), `id` (uuid), `managed_accounts` (array[string]), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date), `status` (string), `updated_at` (date-time)
+
 ## Submit telco data usage report
 
 Submit a new telco data usage report
@@ -256,6 +290,8 @@ number_lookup = client.legacy.reporting.usage_reports.number_lookup.create
 puts(number_lookup)
 ```
 
+Returns: `aggregation_type` (string), `created_at` (date-time), `end_date` (date), `id` (uuid), `managed_accounts` (array[string]), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date), `status` (string), `updated_at` (date-time)
+
 ## Get telco data usage report by ID
 
 Retrieve a specific telco data usage report by its ID
@@ -267,6 +303,8 @@ number_lookup = client.legacy.reporting.usage_reports.number_lookup.retrieve("id
 
 puts(number_lookup)
 ```
+
+Returns: `aggregation_type` (string), `created_at` (date-time), `end_date` (date), `id` (uuid), `managed_accounts` (array[string]), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date), `status` (string), `updated_at` (date-time)
 
 ## Delete telco data usage report
 
@@ -292,6 +330,8 @@ page = client.legacy.reporting.usage_reports.voice.list
 puts(page)
 ```
 
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `product_breakdown` (int32), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
+
 ## Create a new legacy usage V2 CDR report request
 
 Creates a new legacy usage V2 CDR report request with the specified filters
@@ -307,6 +347,8 @@ voice = client.legacy.reporting.usage_reports.voice.create(
 puts(voice)
 ```
 
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `product_breakdown` (int32), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
+
 ## Get a CDR usage report
 
 Fetch single cdr usage report by id.
@@ -318,6 +360,8 @@ voice = client.legacy.reporting.usage_reports.voice.retrieve("182bd5e5-6e1a-4fe4
 
 puts(voice)
 ```
+
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `product_breakdown` (int32), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
 
 ## Delete a V2 legacy usage CDR report request
 
@@ -331,6 +375,8 @@ voice = client.legacy.reporting.usage_reports.voice.delete("182bd5e5-6e1a-4fe4-a
 puts(voice)
 ```
 
+Returns: `aggregation_type` (int32), `connections` (array[string]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `product_breakdown` (int32), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (int32), `updated_at` (date-time)
+
 ## List CSV downloads
 
 `GET /phone_numbers/csv_downloads`
@@ -340,6 +386,8 @@ page = client.phone_numbers.csv_downloads.list
 
 puts(page)
 ```
+
+Returns: `id` (string), `record_type` (string), `status` (enum: pending, complete, failed, expired), `url` (string)
 
 ## Create a CSV download
 
@@ -351,6 +399,8 @@ csv_download = client.phone_numbers.csv_downloads.create
 puts(csv_download)
 ```
 
+Returns: `id` (string), `record_type` (string), `status` (enum: pending, complete, failed, expired), `url` (string)
+
 ## Retrieve a CSV download
 
 `GET /phone_numbers/csv_downloads/{id}`
@@ -361,9 +411,11 @@ csv_download = client.phone_numbers.csv_downloads.retrieve("id")
 puts(csv_download)
 ```
 
+Returns: `id` (string), `record_type` (string), `status` (enum: pending, complete, failed, expired), `url` (string)
+
 ## Generates and fetches CDR Usage Reports
 
-Generate and fetch voice usage report synchronously.
+Generate and fetch voice usage report synchronously. This endpoint will both generate and fetch the voice report over a specified time period. No polling is necessary but the response may take up to a couple of minutes.
 
 `GET /reports/cdr_usage_reports/sync`
 
@@ -376,9 +428,11 @@ response = client.reports.cdr_usage_reports.fetch_sync(
 puts(response)
 ```
 
+Returns: `aggregation_type` (enum: NO_AGGREGATION, CONNECTION, TAG, BILLING_GROUP), `connections` (array[integer]), `created_at` (date-time), `end_time` (date-time), `id` (uuid), `product_breakdown` (enum: NO_BREAKDOWN, DID_VS_TOLL_FREE, COUNTRY, DID_VS_TOLL_FREE_PER_COUNTRY), `record_type` (string), `report_url` (string), `result` (object), `start_time` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
+
 ## Fetch all Messaging usage reports
 
-Fetch all messaging usage reports.
+Fetch all messaging usage reports. Usage reports are aggregated messaging data for specified time period and breakdown
 
 `GET /reports/mdr_usage_reports`
 
@@ -388,9 +442,11 @@ page = client.reports.mdr_usage_reports.list
 puts(page)
 ```
 
+Returns: `aggregation_type` (enum: NO_AGGREGATION, PROFILE, TAGS), `connections` (array[integer]), `created_at` (date-time), `end_date` (date-time), `id` (uuid), `profiles` (string), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
+
 ## Create MDR Usage Report
 
-Submit request for new new messaging usage report.
+Submit request for new new messaging usage report. This endpoint will pull and aggregate messaging data in specified time period.
 
 `POST /reports/mdr_usage_reports`
 
@@ -404,9 +460,11 @@ mdr_usage_report = client.reports.mdr_usage_reports.create(
 puts(mdr_usage_report)
 ```
 
+Returns: `aggregation_type` (enum: NO_AGGREGATION, PROFILE, TAGS), `connections` (array[integer]), `created_at` (date-time), `end_date` (date-time), `id` (uuid), `profiles` (string), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
+
 ## Generate and fetch MDR Usage Report
 
-Generate and fetch messaging usage report synchronously.
+Generate and fetch messaging usage report synchronously. This endpoint will both generate and fetch the messaging report over a specified time period. No polling is necessary but the response may take up to a couple of minutes.
 
 `GET /reports/mdr_usage_reports/sync`
 
@@ -415,6 +473,8 @@ response = client.reports.mdr_usage_reports.fetch_sync(aggregation_type: :PROFIL
 
 puts(response)
 ```
+
+Returns: `aggregation_type` (enum: NO_AGGREGATION, PROFILE, TAGS), `connections` (array[integer]), `created_at` (date-time), `end_date` (date-time), `id` (uuid), `profiles` (string), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
 
 ## Retrieve messaging report
 
@@ -428,6 +488,8 @@ mdr_usage_report = client.reports.mdr_usage_reports.retrieve("182bd5e5-6e1a-4fe4
 puts(mdr_usage_report)
 ```
 
+Returns: `aggregation_type` (enum: NO_AGGREGATION, PROFILE, TAGS), `connections` (array[integer]), `created_at` (date-time), `end_date` (date-time), `id` (uuid), `profiles` (string), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
+
 ## Delete MDR Usage Report
 
 Delete messaging usage report by id
@@ -440,6 +502,8 @@ mdr_usage_report = client.reports.mdr_usage_reports.delete("182bd5e5-6e1a-4fe4-a
 puts(mdr_usage_report)
 ```
 
+Returns: `aggregation_type` (enum: NO_AGGREGATION, PROFILE, TAGS), `connections` (array[integer]), `created_at` (date-time), `end_date` (date-time), `id` (uuid), `profiles` (string), `record_type` (string), `report_url` (string), `result` (array[object]), `start_date` (date-time), `status` (enum: PENDING, COMPLETE, FAILED, EXPIRED), `updated_at` (date-time)
+
 ## Fetch all Mdr records
 
 `GET /reports/mdrs`
@@ -449,6 +513,8 @@ response = client.reports.list_mdrs
 
 puts(response)
 ```
+
+Returns: `cld` (string), `cli` (string), `cost` (string), `created_at` (date-time), `currency` (enum: AUD, CAD, EUR, GBP, USD), `direction` (string), `id` (string), `message_type` (enum: SMS, MMS), `parts` (number), `profile_name` (string), `rate` (string), `record_type` (string), `status` (enum: GW_TIMEOUT, DELIVERED, DLR_UNCONFIRMED, DLR_TIMEOUT, RECEIVED, GW_REJECT, FAILED)
 
 ## Fetches all Wdr records
 
@@ -462,6 +528,50 @@ page = client.reports.list_wdrs
 puts(page)
 ```
 
+Returns: `cost` (object), `created_at` (date-time), `downlink_data` (object), `duration_seconds` (number), `id` (string), `imsi` (string), `mcc` (string), `mnc` (string), `phone_number` (string), `rate` (object), `record_type` (string), `sim_card_id` (string), `sim_group_id` (string), `sim_group_name` (string), `uplink_data` (object)
+
+## Get metadata overview
+
+Returns all available record types and supported query parameters for session analysis.
+
+`GET /session_analysis/metadata`
+
+```ruby
+metadata = client.session_analysis.metadata.retrieve
+
+puts(metadata)
+```
+
+Returns: `meta` (object), `query_parameters` (object), `record_types` (array[object])
+
+## Get record type metadata
+
+Returns detailed metadata for a specific record type, including relationships and examples.
+
+`GET /session_analysis/metadata/{record_type}`
+
+```ruby
+response = client.session_analysis.metadata.retrieve_record_type("record_type")
+
+puts(response)
+```
+
+Returns: `aliases` (array[string]), `child_relationships` (array[object]), `event` (string), `examples` (object), `meta` (object), `parent_relationships` (array[object]), `product` (string), `record_type` (string)
+
+## Get session analysis
+
+Retrieves a full session analysis tree for a given event, including costs, child events, and product linkages.
+
+`GET /session_analysis/{record_type}/{event_id}`
+
+```ruby
+session_analysis = client.session_analysis.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", record_type: "record_type")
+
+puts(session_analysis)
+```
+
+Returns: `completed_at` (date-time), `cost` (object), `created_at` (date-time), `meta` (object), `root` (object), `session_id` (string), `status` (string)
+
 ## Get Telnyx product usage data (BETA)
 
 Get Telnyx usage data by product, broken out by the specified dimensions
@@ -474,6 +584,8 @@ page = client.usage_reports.list(dimensions: ["string"], metrics: ["string"], pr
 puts(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Get Usage Reports query options (BETA)
 
 Get the Usage Reports options for querying usage, including the products available and their respective metrics and dimensions
@@ -485,3 +597,5 @@ response = client.usage_reports.get_options
 
 puts(response)
 ```
+
+Returns: `product` (string), `product_dimensions` (array[string]), `product_metrics` (array[string]), `record_types` (array[object])

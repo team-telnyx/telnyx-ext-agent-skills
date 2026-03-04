@@ -44,13 +44,15 @@ import com.telnyx.sdk.models.notificationchannels.NotificationChannelListParams;
 NotificationChannelListPage page = client.notificationChannels().list();
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Create a notification channel
 
 Create a notification channel.
 
 `POST /notification_channels`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```java
 import com.telnyx.sdk.models.notificationchannels.NotificationChannelCreateParams;
@@ -58,6 +60,8 @@ import com.telnyx.sdk.models.notificationchannels.NotificationChannelCreateRespo
 
 NotificationChannelCreateResponse notificationChannel = client.notificationChannels().create();
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## Get a notification channel
 
@@ -72,13 +76,15 @@ import com.telnyx.sdk.models.notificationchannels.NotificationChannelRetrieveRes
 NotificationChannelRetrieveResponse notificationChannel = client.notificationChannels().retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Update a notification channel
 
 Update a notification channel.
 
 `PATCH /notification_channels/{id}`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```java
 import com.telnyx.sdk.models.notificationchannels.NotificationChannel;
@@ -91,6 +97,8 @@ NotificationChannelUpdateParams params = NotificationChannelUpdateParams.builder
     .build();
 NotificationChannelUpdateResponse notificationChannel = client.notificationChannels().update(params);
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## Delete a notification channel
 
@@ -105,6 +113,8 @@ import com.telnyx.sdk.models.notificationchannels.NotificationChannelDeleteRespo
 NotificationChannelDeleteResponse notificationChannel = client.notificationChannels().delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## List all Notifications Events Conditions
 
 Returns a list of your notifications events conditions.
@@ -117,6 +127,8 @@ import com.telnyx.sdk.models.notificationeventconditions.NotificationEventCondit
 
 NotificationEventConditionListPage page = client.notificationEventConditions().list();
 ```
+
+Returns: `allow_multiple_channels` (boolean), `associated_record_type` (enum: account, phone_number), `asynchronous` (boolean), `created_at` (date-time), `description` (string), `enabled` (boolean), `id` (string), `name` (string), `notification_event_id` (string), `parameters` (array[object]), `supported_channels` (array[string]), `updated_at` (date-time)
 
 ## List all Notifications Events
 
@@ -131,6 +143,8 @@ import com.telnyx.sdk.models.notificationevents.NotificationEventListParams;
 NotificationEventListPage page = client.notificationEvents().list();
 ```
 
+Returns: `created_at` (date-time), `enabled` (boolean), `id` (string), `name` (string), `notification_category` (string), `updated_at` (date-time)
+
 ## List all Notifications Profiles
 
 Returns a list of your notifications profiles.
@@ -143,6 +157,8 @@ import com.telnyx.sdk.models.notificationprofiles.NotificationProfileListParams;
 
 NotificationProfileListPage page = client.notificationProfiles().list();
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Create a notification profile
 
@@ -159,6 +175,8 @@ import com.telnyx.sdk.models.notificationprofiles.NotificationProfileCreateRespo
 NotificationProfileCreateResponse notificationProfile = client.notificationProfiles().create();
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Get a notification profile
 
 Get a notification profile.
@@ -171,6 +189,8 @@ import com.telnyx.sdk.models.notificationprofiles.NotificationProfileRetrieveRes
 
 NotificationProfileRetrieveResponse notificationProfile = client.notificationProfiles().retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Update a notification profile
 
@@ -192,6 +212,8 @@ NotificationProfileUpdateParams params = NotificationProfileUpdateParams.builder
 NotificationProfileUpdateResponse notificationProfile = client.notificationProfiles().update(params);
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Delete a notification profile
 
 Delete a notification profile.
@@ -204,6 +226,8 @@ import com.telnyx.sdk.models.notificationprofiles.NotificationProfileDeleteRespo
 
 NotificationProfileDeleteResponse notificationProfile = client.notificationProfiles().delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## List notification settings
 
@@ -218,13 +242,15 @@ import com.telnyx.sdk.models.notificationsettings.NotificationSettingListParams;
 NotificationSettingListPage page = client.notificationSettings().list();
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Add a Notification Setting
 
 Add a notification setting.
 
 `POST /notification_settings`
 
-Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum), `updated_at` (date-time)
+Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ```java
 import com.telnyx.sdk.models.notificationsettings.NotificationSettingCreateParams;
@@ -232,6 +258,8 @@ import com.telnyx.sdk.models.notificationsettings.NotificationSettingCreateRespo
 
 NotificationSettingCreateResponse notificationSetting = client.notificationSettings().create();
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ## Get a notification setting
 
@@ -246,6 +274,8 @@ import com.telnyx.sdk.models.notificationsettings.NotificationSettingRetrieveRes
 NotificationSettingRetrieveResponse notificationSetting = client.notificationSettings().retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Delete a notification setting
 
 Delete a notification setting.
@@ -258,3 +288,5 @@ import com.telnyx.sdk.models.notificationsettings.NotificationSettingDeleteRespo
 
 NotificationSettingDeleteResponse notificationSetting = client.notificationSettings().delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)

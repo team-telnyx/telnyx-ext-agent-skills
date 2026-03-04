@@ -53,6 +53,8 @@ Returns the stored certificate detail of a bucket, if applicable.
 	fmt.Printf("%+v\n", sslCertificate.Data)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `issued_by` (object), `issued_to` (object), `valid_from` (date-time), `valid_to` (date-time)
+
 ## Add SSL Certificate
 
 Uploads an SSL certificate and its matching secret so that you can use Telnyx's storage as your CDN.
@@ -71,6 +73,8 @@ Uploads an SSL certificate and its matching secret so that you can use Telnyx's 
 	fmt.Printf("%+v\n", sslCertificate.Data)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `issued_by` (object), `issued_to` (object), `valid_from` (date-time), `valid_to` (date-time)
+
 ## Remove SSL Certificate
 
 Deletes an SSL certificate and its matching secret.
@@ -84,6 +88,8 @@ Deletes an SSL certificate and its matching secret.
 	}
 	fmt.Printf("%+v\n", sslCertificate.Data)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `issued_by` (object), `issued_to` (object), `valid_from` (date-time), `valid_to` (date-time)
 
 ## Get API Usage
 
@@ -108,6 +114,8 @@ Returns the detail on API usage on a bucket of a particular time period, group b
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `categories` (array[object]), `timestamp` (date-time), `total` (object)
+
 ## Get Bucket Usage
 
 Returns the amount of storage space and number of files a bucket takes up.
@@ -122,9 +130,11 @@ Returns the amount of storage space and number of files a bucket takes up.
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `num_objects` (integer), `size` (integer), `size_kb` (integer), `timestamp` (date-time)
+
 ## Create Presigned Object URL
 
-Returns a timed and authenticated URL to download (GET) or upload (PUT) an object.
+Returns a timed and authenticated URL to download (GET) or upload (PUT) an object. This is the equivalent to AWS S3’s “presigned” URL. Please note that Telnyx performs authentication differently from AWS S3 and you MUST NOT use the presign method of AWS s3api CLI or SDK to generate the presigned URL.
 
 `POST /storage/buckets/{bucketName}/{objectName}/presigned_url`
 
@@ -143,3 +153,5 @@ Optional: `ttl` (integer)
 	}
 	fmt.Printf("%+v\n", response.Content)
 ```
+
+Returns: `content` (object)

@@ -43,6 +43,8 @@ import com.telnyx.sdk.models.accessipaddress.AccessIpAddressListParams;
 AccessIpAddressListPage page = client.accessIpAddress().list();
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Create new Access IP Address
 
 `POST /access_ip_address` — Required: `ip_address`
@@ -59,6 +61,8 @@ AccessIpAddressCreateParams params = AccessIpAddressCreateParams.builder()
 AccessIpAddressResponse accessIpAddressResponse = client.accessIpAddress().create(params);
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Retrieve an access IP address
 
 `GET /access_ip_address/{access_ip_address_id}`
@@ -70,6 +74,8 @@ import com.telnyx.sdk.models.accessipaddress.AccessIpAddressRetrieveParams;
 AccessIpAddressResponse accessIpAddressResponse = client.accessIpAddress().retrieve("access_ip_address_id");
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Delete access IP address
 
 `DELETE /access_ip_address/{access_ip_address_id}`
@@ -80,6 +86,8 @@ import com.telnyx.sdk.models.accessipaddress.AccessIpAddressResponse;
 
 AccessIpAddressResponse accessIpAddressResponse = client.accessIpAddress().delete("access_ip_address_id");
 ```
+
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
 
 ## List all addresses
 
@@ -93,6 +101,8 @@ import com.telnyx.sdk.models.addresses.AddressListParams;
 
 AddressListPage page = client.addresses().list();
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Creates an address
 
@@ -117,6 +127,8 @@ AddressCreateParams params = AddressCreateParams.builder()
 AddressCreateResponse address = client.addresses().create(params);
 ```
 
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
+
 ## Validate an address
 
 Validates an address for emergency services.
@@ -137,6 +149,8 @@ ActionValidateParams params = ActionValidateParams.builder()
 ActionValidateResponse response = client.addresses().actions().validate(params);
 ```
 
+Returns: `errors` (array[object]), `record_type` (string), `result` (enum: valid, invalid), `suggested` (object)
+
 ## Retrieve an address
 
 Retrieves the details of an existing address.
@@ -149,6 +163,8 @@ import com.telnyx.sdk.models.addresses.AddressRetrieveResponse;
 
 AddressRetrieveResponse address = client.addresses().retrieve("id");
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Deletes an address
 
@@ -163,6 +179,8 @@ import com.telnyx.sdk.models.addresses.AddressDeleteResponse;
 AddressDeleteResponse address = client.addresses().delete("id");
 ```
 
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
+
 ## Accepts this address suggestion as a new emergency address for Operator Connect and finishes the uploads of the numbers associated with it to Microsoft.
 
 `POST /addresses/{id}/actions/accept_suggestions`
@@ -176,6 +194,8 @@ import com.telnyx.sdk.models.addresses.actions.ActionAcceptSuggestionsResponse;
 ActionAcceptSuggestionsResponse response = client.addresses().actions().acceptSuggestions("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
 
+Returns: `accepted` (boolean), `id` (uuid), `record_type` (enum: address_suggestion)
+
 ## List all SSO authentication providers
 
 Returns a list of your SSO authentication providers.
@@ -188,6 +208,8 @@ import com.telnyx.sdk.models.authenticationproviders.AuthenticationProviderListP
 
 AuthenticationProviderListPage page = client.authenticationProviders().list();
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Creates an authentication provider
 
@@ -214,6 +236,8 @@ AuthenticationProviderCreateParams params = AuthenticationProviderCreateParams.b
 AuthenticationProviderCreateResponse authenticationProvider = client.authenticationProviders().create(params);
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Retrieve an authentication provider
 
 Retrieves the details of an existing authentication provider.
@@ -226,6 +250,8 @@ import com.telnyx.sdk.models.authenticationproviders.AuthenticationProviderRetri
 
 AuthenticationProviderRetrieveResponse authenticationProvider = client.authenticationProviders().retrieve("id");
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Update an authentication provider
 
@@ -242,6 +268,8 @@ import com.telnyx.sdk.models.authenticationproviders.AuthenticationProviderUpdat
 AuthenticationProviderUpdateResponse authenticationProvider = client.authenticationProviders().update("id");
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Deletes an authentication provider
 
 Deletes an existing authentication provider.
@@ -255,6 +283,8 @@ import com.telnyx.sdk.models.authenticationproviders.AuthenticationProviderDelet
 AuthenticationProviderDeleteResponse authenticationProvider = client.authenticationProviders().delete("id");
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## List all billing groups
 
 `GET /billing_groups`
@@ -265,6 +295,8 @@ import com.telnyx.sdk.models.billinggroups.BillingGroupListParams;
 
 BillingGroupListPage page = client.billingGroups().list();
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Create a billing group
 
@@ -279,6 +311,8 @@ import com.telnyx.sdk.models.billinggroups.BillingGroupCreateResponse;
 BillingGroupCreateResponse billingGroup = client.billingGroups().create();
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Get a billing group
 
 `GET /billing_groups/{id}`
@@ -289,6 +323,8 @@ import com.telnyx.sdk.models.billinggroups.BillingGroupRetrieveResponse;
 
 BillingGroupRetrieveResponse billingGroup = client.billingGroups().retrieve("f5586561-8ff0-4291-a0ac-84fe544797bd");
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Update a billing group
 
@@ -303,6 +339,8 @@ import com.telnyx.sdk.models.billinggroups.BillingGroupUpdateResponse;
 BillingGroupUpdateResponse billingGroup = client.billingGroups().update("f5586561-8ff0-4291-a0ac-84fe544797bd");
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Delete a billing group
 
 `DELETE /billing_groups/{id}`
@@ -313,6 +351,8 @@ import com.telnyx.sdk.models.billinggroups.BillingGroupDeleteResponse;
 
 BillingGroupDeleteResponse billingGroup = client.billingGroups().delete("f5586561-8ff0-4291-a0ac-84fe544797bd");
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## List integration secrets
 
@@ -326,6 +366,8 @@ import com.telnyx.sdk.models.integrationsecrets.IntegrationSecretListParams;
 
 IntegrationSecretListPage page = client.integrationSecrets().list();
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Create a secret
 
@@ -345,6 +387,8 @@ IntegrationSecretCreateParams params = IntegrationSecretCreateParams.builder()
     .build();
 IntegrationSecretCreateResponse integrationSecret = client.integrationSecrets().create(params);
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Delete an integration secret
 

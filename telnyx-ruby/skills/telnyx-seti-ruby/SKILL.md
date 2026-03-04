@@ -53,3 +53,5 @@ response = client.seti.retrieve_black_box_test_results
 
 puts(response)
 ```
+
+Returns: `black_box_tests` (array[object]), `product` (string), `record_type` (string)

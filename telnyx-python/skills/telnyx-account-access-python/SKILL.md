@@ -44,6 +44,8 @@ page = page.data[0]
 print(page.id)
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Create new Access IP Address
 
 `POST /access_ip_address` — Required: `ip_address`
@@ -57,6 +59,8 @@ access_ip_address_response = client.access_ip_address.create(
 print(access_ip_address_response.id)
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Retrieve an access IP address
 
 `GET /access_ip_address/{access_ip_address_id}`
@@ -67,6 +71,8 @@ access_ip_address_response = client.access_ip_address.retrieve(
 )
 print(access_ip_address_response.id)
 ```
+
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
 
 ## Delete access IP address
 
@@ -79,6 +85,8 @@ access_ip_address_response = client.access_ip_address.delete(
 print(access_ip_address_response.id)
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## List all addresses
 
 Returns a list of your addresses.
@@ -90,6 +98,8 @@ page = client.addresses.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Creates an address
 
@@ -111,6 +121,8 @@ address = client.addresses.create(
 print(address.data)
 ```
 
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
+
 ## Validate an address
 
 Validates an address for emergency services.
@@ -128,6 +140,8 @@ response = client.addresses.actions.validate(
 print(response.data)
 ```
 
+Returns: `errors` (array[object]), `record_type` (string), `result` (enum: valid, invalid), `suggested` (object)
+
 ## Retrieve an address
 
 Retrieves the details of an existing address.
@@ -140,6 +154,8 @@ address = client.addresses.retrieve(
 )
 print(address.data)
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Deletes an address
 
@@ -154,6 +170,8 @@ address = client.addresses.delete(
 print(address.data)
 ```
 
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
+
 ## Accepts this address suggestion as a new emergency address for Operator Connect and finishes the uploads of the numbers associated with it to Microsoft.
 
 `POST /addresses/{id}/actions/accept_suggestions`
@@ -167,6 +185,8 @@ response = client.addresses.actions.accept_suggestions(
 print(response.data)
 ```
 
+Returns: `accepted` (boolean), `id` (uuid), `record_type` (enum: address_suggestion)
+
 ## List all SSO authentication providers
 
 Returns a list of your SSO authentication providers.
@@ -178,6 +198,8 @@ page = client.authentication_providers.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Creates an authentication provider
 
@@ -200,6 +222,8 @@ authentication_provider = client.authentication_providers.create(
 print(authentication_provider.data)
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Retrieve an authentication provider
 
 Retrieves the details of an existing authentication provider.
@@ -212,6 +236,8 @@ authentication_provider = client.authentication_providers.retrieve(
 )
 print(authentication_provider.data)
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Update an authentication provider
 
@@ -237,6 +263,8 @@ authentication_provider = client.authentication_providers.update(
 print(authentication_provider.data)
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Deletes an authentication provider
 
 Deletes an existing authentication provider.
@@ -250,6 +278,8 @@ authentication_provider = client.authentication_providers.delete(
 print(authentication_provider.data)
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## List all billing groups
 
 `GET /billing_groups`
@@ -259,6 +289,8 @@ page = client.billing_groups.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Create a billing group
 
@@ -273,6 +305,8 @@ billing_group = client.billing_groups.create(
 print(billing_group.data)
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Get a billing group
 
 `GET /billing_groups/{id}`
@@ -283,6 +317,8 @@ billing_group = client.billing_groups.retrieve(
 )
 print(billing_group.data)
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Update a billing group
 
@@ -298,6 +334,8 @@ billing_group = client.billing_groups.update(
 print(billing_group.data)
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Delete a billing group
 
 `DELETE /billing_groups/{id}`
@@ -308,6 +346,8 @@ billing_group = client.billing_groups.delete(
 )
 print(billing_group.data)
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## List integration secrets
 
@@ -320,6 +360,8 @@ page = client.integration_secrets.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Create a secret
 
@@ -337,6 +379,8 @@ integration_secret = client.integration_secrets.create(
 )
 print(integration_secret.data)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Delete an integration secret
 

@@ -53,3 +53,5 @@ const response = await client.seti.retrieveBlackBoxTestResults();
 
 console.log(response.data);
 ```
+
+Returns: `black_box_tests` (array[object]), `product` (string), `record_type` (string)

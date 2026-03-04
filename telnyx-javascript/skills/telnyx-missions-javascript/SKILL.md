@@ -46,19 +46,23 @@ for await (const missionData of client.ai.missions.list()) {
 }
 ```
 
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
+
 ## Create mission
 
 Create a new mission definition
 
 `POST /ai/missions` — Required: `name`
 
-Optional: `description` (string), `execution_mode` (enum), `instructions` (string), `metadata` (object), `model` (string)
+Optional: `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `model` (string)
 
 ```javascript
 const mission = await client.ai.missions.create({ name: 'name' });
 
 console.log(mission.data);
 ```
+
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
 
 ## List recent events
 
@@ -73,6 +77,8 @@ for await (const eventData of client.ai.missions.listEvents()) {
 }
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## List recent runs
 
 List recent runs across all missions
@@ -86,6 +92,8 @@ for await (const missionRunData of client.ai.missions.runs.listRuns()) {
 }
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Get mission
 
 Get a mission by ID (includes tools, knowledge_bases, mcp_servers)
@@ -98,19 +106,23 @@ const mission = await client.ai.missions.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9
 console.log(mission.data);
 ```
 
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
+
 ## Update mission
 
 Update a mission definition
 
 `PUT /ai/missions/{mission_id}`
 
-Optional: `description` (string), `execution_mode` (enum), `instructions` (string), `metadata` (object), `model` (string), `name` (string)
+Optional: `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `model` (string), `name` (string)
 
 ```javascript
 const response = await client.ai.missions.updateMission('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e');
 
 console.log(response.data);
 ```
+
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
 
 ## Delete mission
 
@@ -275,6 +287,8 @@ for await (const missionRunData of client.ai.missions.runs.list(
 }
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Start a run
 
 Start a new run for a mission
@@ -288,6 +302,8 @@ const run = await client.ai.missions.runs.create('182bd5e5-6e1a-4fe4-a799-aa6d9a
 
 console.log(run.data);
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Get run details
 
@@ -303,13 +319,15 @@ const run = await client.ai.missions.runs.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d
 console.log(run.data);
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Update run
 
 Update run status and/or result
 
 `PATCH /ai/missions/{mission_id}/runs/{run_id}`
 
-Optional: `error` (string), `metadata` (object), `result_payload` (object), `result_summary` (string), `status` (enum)
+Optional: `error` (string), `metadata` (object), `result_payload` (object), `result_summary` (string), `status` (enum: pending, running, paused, succeeded, failed, cancelled)
 
 ```javascript
 const run = await client.ai.missions.runs.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
@@ -318,6 +336,8 @@ const run = await client.ai.missions.runs.update('182bd5e5-6e1a-4fe4-a799-aa6d9a
 
 console.log(run.data);
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Cancel run
 
@@ -332,6 +352,8 @@ const response = await client.ai.missions.runs.cancelRun('182bd5e5-6e1a-4fe4-a79
 
 console.log(response.data);
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## List events
 
@@ -348,6 +370,8 @@ for await (const eventData of client.ai.missions.runs.events.list(
   console.log(eventData.event_id);
 }
 ```
+
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
 
 ## Log event
 
@@ -367,6 +391,8 @@ const response = await client.ai.missions.runs.events.log('182bd5e5-6e1a-4fe4-a7
 console.log(response.data);
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## Get event details
 
 Get details of a specific event
@@ -382,6 +408,8 @@ const response = await client.ai.missions.runs.events.getEventDetails('event_id'
 console.log(response.data);
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## Pause run
 
 Pause a running run
@@ -396,6 +424,8 @@ const response = await client.ai.missions.runs.pauseRun('182bd5e5-6e1a-4fe4-a799
 console.log(response.data);
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Get plan
 
 Get the plan (all steps) for a run
@@ -409,6 +439,8 @@ const plan = await client.ai.missions.runs.plan.retrieve('182bd5e5-6e1a-4fe4-a79
 
 console.log(plan.data);
 ```
+
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
 
 ## Create initial plan
 
@@ -430,6 +462,8 @@ const plan = await client.ai.missions.runs.plan.create('182bd5e5-6e1a-4fe4-a799-
 
 console.log(plan.data);
 ```
+
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
 
 ## Add step(s) to plan
 
@@ -455,6 +489,8 @@ const response = await client.ai.missions.runs.plan.addStepsToPlan(
 console.log(response.data);
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Get step details
 
 Get details of a specific plan step
@@ -470,13 +506,15 @@ const response = await client.ai.missions.runs.plan.getStepDetails('step_id', {
 console.log(response.data);
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Update step status
 
 Update the status of a plan step
 
 `PATCH /ai/missions/{mission_id}/runs/{run_id}/plan/steps/{step_id}`
 
-Optional: `metadata` (object), `status` (enum)
+Optional: `metadata` (object), `status` (enum: pending, in_progress, completed, skipped, failed)
 
 ```javascript
 const response = await client.ai.missions.runs.plan.updateStep('step_id', {
@@ -486,6 +524,8 @@ const response = await client.ai.missions.runs.plan.updateStep('step_id', {
 
 console.log(response.data);
 ```
+
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
 
 ## Resume run
 
@@ -500,6 +540,8 @@ const response = await client.ai.missions.runs.resumeRun('182bd5e5-6e1a-4fe4-a79
 
 console.log(response.data);
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## List linked Telnyx agents
 
@@ -516,6 +558,8 @@ const telnyxAgents = await client.ai.missions.runs.telnyxAgents.list(
 console.log(telnyxAgents.data);
 ```
 
+Returns: `created_at` (date-time), `run_id` (string), `telnyx_agent_id` (string)
+
 ## Link Telnyx agent to run
 
 Link a Telnyx AI agent (voice/messaging) to a run
@@ -530,6 +574,8 @@ const response = await client.ai.missions.runs.telnyxAgents.link(
 
 console.log(response.data);
 ```
+
+Returns: `created_at` (date-time), `run_id` (string), `telnyx_agent_id` (string)
 
 ## Unlink Telnyx agent
 

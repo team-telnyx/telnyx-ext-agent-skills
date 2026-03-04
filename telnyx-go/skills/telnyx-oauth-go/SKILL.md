@@ -53,6 +53,8 @@ OAuth 2.0 Authorization Server Metadata (RFC 8414)
 	fmt.Printf("%+v\n", response.AuthorizationEndpoint)
 ```
 
+Returns: `authorization_endpoint` (uri), `code_challenge_methods_supported` (array[string]), `grant_types_supported` (array[string]), `introspection_endpoint` (uri), `issuer` (uri), `jwks_uri` (uri), `registration_endpoint` (uri), `response_types_supported` (array[string]), `scopes_supported` (array[string]), `token_endpoint` (uri), `token_endpoint_auth_methods_supported` (array[string])
+
 ## Protected resource metadata
 
 OAuth 2.0 Protected Resource Metadata for resource discovery
@@ -66,6 +68,8 @@ OAuth 2.0 Protected Resource Metadata for resource discovery
 	}
 	fmt.Printf("%+v\n", response.AuthorizationServers)
 ```
+
+Returns: `authorization_servers` (array[string]), `resource` (uri)
 
 ## OAuth authorization endpoint
 
@@ -98,6 +102,8 @@ Retrieve details about an OAuth consent token
 	fmt.Printf("%+v\n", oauth.Data)
 ```
 
+Returns: `client_id` (string), `logo_uri` (uri), `name` (string), `policy_uri` (uri), `redirect_uri` (uri), `requested_scopes` (array[object]), `tos_uri` (uri), `verified` (boolean)
+
 ## Create OAuth grant
 
 Create an OAuth authorization grant
@@ -115,6 +121,8 @@ Create an OAuth authorization grant
 	fmt.Printf("%+v\n", response.RedirectUri)
 ```
 
+Returns: `redirect_uri` (uri)
+
 ## Token introspection
 
 Introspect an OAuth access token to check its validity and metadata
@@ -131,6 +139,8 @@ Introspect an OAuth access token to check its validity and metadata
 	fmt.Printf("%+v\n", response.ClientID)
 ```
 
+Returns: `active` (boolean), `aud` (string), `client_id` (string), `exp` (integer), `iat` (integer), `iss` (string), `scope` (string)
+
 ## JSON Web Key Set
 
 Retrieve the JSON Web Key Set for token verification
@@ -145,13 +155,15 @@ Retrieve the JSON Web Key Set for token verification
 	fmt.Printf("%+v\n", response.Keys)
 ```
 
+Returns: `keys` (array[object])
+
 ## Dynamic client registration
 
 Register a new OAuth client dynamically (RFC 7591)
 
 `POST /oauth/register`
 
-Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum), `tos_uri` (uri)
+Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum: none, client_secret_basic, client_secret_post), `tos_uri` (uri)
 
 ```go
 	response, err := client.OAuth.Register(context.TODO(), telnyx.OAuthRegisterParams{})
@@ -160,6 +172,8 @@ Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri
 	}
 	fmt.Printf("%+v\n", response.ClientID)
 ```
+
+Returns: `client_id` (string), `client_id_issued_at` (integer), `client_name` (string), `client_secret` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (string), `tos_uri` (uri)
 
 ## OAuth token endpoint
 
@@ -179,6 +193,8 @@ Optional: `client_id` (string), `client_secret` (string), `code` (string), `code
 	fmt.Printf("%+v\n", response.AccessToken)
 ```
 
+Returns: `access_token` (string), `expires_in` (integer), `refresh_token` (string), `scope` (string), `token_type` (enum: Bearer)
+
 ## List OAuth clients
 
 Retrieve a paginated list of OAuth clients for the authenticated user
@@ -192,6 +208,8 @@ Retrieve a paginated list of OAuth clients for the authenticated user
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Create OAuth client
 
@@ -214,6 +232,8 @@ Optional: `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]),
 	fmt.Printf("%+v\n", oauthClient.Data)
 ```
 
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
+
 ## Get OAuth client
 
 Retrieve a single OAuth client by ID
@@ -227,6 +247,8 @@ Retrieve a single OAuth client by ID
 	}
 	fmt.Printf("%+v\n", oauthClient.Data)
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Update OAuth client
 
@@ -247,6 +269,8 @@ Optional: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]
 	}
 	fmt.Printf("%+v\n", oauthClient.Data)
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Delete OAuth client
 
@@ -275,6 +299,8 @@ Retrieve a paginated list of OAuth grants for the authenticated user
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
+
 ## Get OAuth grant
 
 Retrieve a single OAuth grant by ID
@@ -289,6 +315,8 @@ Retrieve a single OAuth grant by ID
 	fmt.Printf("%+v\n", oauthGrant.Data)
 ```
 
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
+
 ## Revoke OAuth grant
 
 Revoke an OAuth grant
@@ -302,3 +330,5 @@ Revoke an OAuth grant
 	}
 	fmt.Printf("%+v\n", oauthGrant.Data)
 ```
+
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])

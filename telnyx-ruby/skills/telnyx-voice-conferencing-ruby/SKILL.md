@@ -47,6 +47,8 @@ response = client.calls.actions.enqueue("call_control_id", queue_name: "support"
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Remove call from a queue
 
 Removes the call from a queue.
@@ -61,9 +63,11 @@ response = client.calls.actions.leave_queue("call_control_id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## List conferences
 
-Lists conferences.
+Lists conferences. Conferences are created on demand, and will expire after all participants have left the conference or after 4 hours regardless of the number of active participants. Conferences are listed in descending order by `expires_at`.
 
 `GET /conferences`
 
@@ -73,13 +77,15 @@ page = client.conferences.list
 puts(page)
 ```
 
+Returns: `connection_id` (string), `created_at` (string), `end_reason` (enum: all_left, ended_via_api, host_left, time_exceeded), `ended_by` (object), `expires_at` (string), `id` (string), `name` (string), `record_type` (enum: conference), `region` (string), `status` (enum: init, in_progress, completed), `updated_at` (string)
+
 ## Create conference
 
-Create a conference from an existing call leg using a `call_control_id` and a conference name.
+Create a conference from an existing call leg using a `call_control_id` and a conference name. Upon creating the conference, the call will be automatically bridged to the conference. Conferences will expire after all participants have left the conference or after 4 hours regardless of the number of active participants.
 
 `POST /conferences` — Required: `call_control_id`, `name`
 
-Optional: `beep_enabled` (enum), `client_state` (string), `comfort_noise` (boolean), `command_id` (string), `duration_minutes` (integer), `hold_audio_url` (string), `hold_media_name` (string), `max_participants` (integer), `region` (enum), `start_conference_on_create` (boolean)
+Optional: `beep_enabled` (enum: always, never, on_enter, on_exit), `client_state` (string), `comfort_noise` (boolean), `command_id` (string), `duration_minutes` (integer), `hold_audio_url` (string), `hold_media_name` (string), `max_participants` (integer), `region` (enum: Australia, Europe, Middle East, US), `start_conference_on_create` (boolean)
 
 ```ruby
 conference = client.conferences.create(
@@ -89,6 +95,8 @@ conference = client.conferences.create(
 
 puts(conference)
 ```
+
+Returns: `connection_id` (string), `created_at` (string), `end_reason` (enum: all_left, ended_via_api, host_left, time_exceeded), `ended_by` (object), `expires_at` (string), `id` (string), `name` (string), `record_type` (enum: conference), `region` (string), `status` (enum: init, in_progress, completed), `updated_at` (string)
 
 ## List conference participants
 
@@ -102,6 +110,8 @@ page = client.conferences.list_participants("conference_id")
 puts(page)
 ```
 
+Returns: `call_control_id` (string), `call_leg_id` (string), `conference` (object), `created_at` (string), `end_conference_on_exit` (boolean), `id` (string), `muted` (boolean), `on_hold` (boolean), `record_type` (enum: participant), `soft_end_conference_on_exit` (boolean), `status` (enum: joining, joined, left), `updated_at` (string), `whisper_call_control_ids` (array[string])
+
 ## Retrieve a conference
 
 Retrieve an existing conference
@@ -113,6 +123,8 @@ conference = client.conferences.retrieve("id")
 
 puts(conference)
 ```
+
+Returns: `connection_id` (string), `created_at` (string), `end_reason` (enum: all_left, ended_via_api, host_left, time_exceeded), `ended_by` (object), `expires_at` (string), `id` (string), `name` (string), `record_type` (enum: conference), `region` (string), `status` (enum: init, in_progress, completed), `updated_at` (string)
 
 ## End a conference
 
@@ -127,6 +139,8 @@ response = client.conferences.actions.end_conference("182bd5e5-6e1a-4fe4-a799-aa
 
 puts(response)
 ```
+
+Returns: `result` (string)
 
 ## Gather DTMF using audio prompt in a conference
 
@@ -145,13 +159,15 @@ response = client.conferences.actions.gather_dtmf_audio(
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Hold conference participants
 
 Hold a list of participants in a conference call
 
 `POST /conferences/{id}/actions/hold`
 
-Optional: `audio_url` (string), `call_control_ids` (array[string]), `media_name` (string), `region` (enum)
+Optional: `audio_url` (string), `call_control_ids` (array[string]), `media_name` (string), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.hold("id")
@@ -159,13 +175,15 @@ response = client.conferences.actions.hold("id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Join a conference
 
-Join an existing call leg to a conference.
+Join an existing call leg to a conference. Issue the Join Conference command with the conference ID in the path and the `call_control_id` of the leg you wish to join to the conference as an attribute. The conference can have up to a certain amount of active participants, as set by the `max_participants` parameter in conference creation request.
 
 `POST /conferences/{id}/actions/join` — Required: `call_control_id`
 
-Optional: `beep_enabled` (enum), `client_state` (string), `command_id` (string), `end_conference_on_exit` (boolean), `hold` (boolean), `hold_audio_url` (string), `hold_media_name` (string), `mute` (boolean), `region` (enum), `soft_end_conference_on_exit` (boolean), `start_conference_on_enter` (boolean), `supervisor_role` (enum), `whisper_call_control_ids` (array[string])
+Optional: `beep_enabled` (enum: always, never, on_enter, on_exit), `client_state` (string), `command_id` (string), `end_conference_on_exit` (boolean), `hold` (boolean), `hold_audio_url` (string), `hold_media_name` (string), `mute` (boolean), `region` (enum: Australia, Europe, Middle East, US), `soft_end_conference_on_exit` (boolean), `start_conference_on_enter` (boolean), `supervisor_role` (enum: barge, monitor, none, whisper), `whisper_call_control_ids` (array[string])
 
 ```ruby
 response = client.conferences.actions.join(
@@ -176,13 +194,17 @@ response = client.conferences.actions.join(
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Leave a conference
 
-Removes a call leg from a conference and moves it back to parked state.
+Removes a call leg from a conference and moves it back to parked state. **Expected Webhooks:**
+
+- `conference.participant.left`
 
 `POST /conferences/{id}/actions/leave` — Required: `call_control_id`
 
-Optional: `beep_enabled` (enum), `command_id` (string), `region` (enum)
+Optional: `beep_enabled` (enum: always, never, on_enter, on_exit), `command_id` (string), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.leave("id", call_control_id: "c46e06d7-b78f-4b13-96b6-c576af9640ff")
@@ -190,13 +212,15 @@ response = client.conferences.actions.leave("id", call_control_id: "c46e06d7-b78
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Mute conference participants
 
 Mute a list of participants in a conference call
 
 `POST /conferences/{id}/actions/mute`
 
-Optional: `call_control_ids` (array[string]), `region` (enum)
+Optional: `call_control_ids` (array[string]), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.mute("id")
@@ -204,13 +228,15 @@ response = client.conferences.actions.mute("id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Play audio to conference participants
 
 Play audio to all or some participants on a conference call.
 
 `POST /conferences/{id}/actions/play`
 
-Optional: `audio_url` (string), `call_control_ids` (array[string]), `loop` (object), `media_name` (string), `region` (enum)
+Optional: `audio_url` (string), `call_control_ids` (array[string]), `loop` (object), `media_name` (string), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.play("id")
@@ -218,13 +244,15 @@ response = client.conferences.actions.play("id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Conference recording pause
 
 Pause conference recording.
 
 `POST /conferences/{id}/actions/record_pause`
 
-Optional: `command_id` (string), `recording_id` (string), `region` (enum)
+Optional: `command_id` (string), `recording_id` (string), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.record_pause("id")
@@ -232,13 +260,15 @@ response = client.conferences.actions.record_pause("id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Conference recording resume
 
 Resume conference recording.
 
 `POST /conferences/{id}/actions/record_resume`
 
-Optional: `command_id` (string), `recording_id` (string), `region` (enum)
+Optional: `command_id` (string), `recording_id` (string), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.record_resume("id")
@@ -246,13 +276,17 @@ response = client.conferences.actions.record_resume("id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Conference recording start
 
-Start recording the conference.
+Start recording the conference. Recording will stop on conference end, or via the Stop Recording command. **Expected Webhooks:**
+
+- `conference.recording.saved`
 
 `POST /conferences/{id}/actions/record_start` — Required: `format`
 
-Optional: `channels` (enum), `command_id` (string), `custom_file_name` (string), `play_beep` (boolean), `region` (enum), `trim` (enum)
+Optional: `channels` (enum: single, dual), `command_id` (string), `custom_file_name` (string), `play_beep` (boolean), `region` (enum: Australia, Europe, Middle East, US), `trim` (enum: trim-silence)
 
 ```ruby
 response = client.conferences.actions.record_start("id", format_: :wav)
@@ -260,19 +294,25 @@ response = client.conferences.actions.record_start("id", format_: :wav)
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Conference recording stop
 
-Stop recording the conference.
+Stop recording the conference. **Expected Webhooks:**
+
+- `conference.recording.saved`
 
 `POST /conferences/{id}/actions/record_stop`
 
-Optional: `client_state` (string), `command_id` (string), `recording_id` (uuid), `region` (enum)
+Optional: `client_state` (string), `command_id` (string), `recording_id` (uuid), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.record_stop("id")
 
 puts(response)
 ```
+
+Returns: `result` (string)
 
 ## Send DTMF to conference participants
 
@@ -288,13 +328,15 @@ response = client.conferences.actions.send_dtmf("182bd5e5-6e1a-4fe4-a799-aa6d9a6
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Speak text to conference participants
 
 Convert text to speech and play it to all or some participants.
 
 `POST /conferences/{id}/actions/speak` — Required: `payload`, `voice`
 
-Optional: `call_control_ids` (array[string]), `command_id` (string), `language` (enum), `payload_type` (enum), `region` (enum), `voice_settings` (object)
+Optional: `call_control_ids` (array[string]), `command_id` (string), `language` (enum: arb, cmn-CN, cy-GB, da-DK, de-DE, en-AU, en-GB, en-GB-WLS, en-IN, en-US, es-ES, es-MX, es-US, fr-CA, fr-FR, hi-IN, is-IS, it-IT, ja-JP, ko-KR, nb-NO, nl-NL, pl-PL, pt-BR, pt-PT, ro-RO, ru-RU, sv-SE, tr-TR), `payload_type` (enum: text, ssml), `region` (enum: Australia, Europe, Middle East, US), `voice_settings` (object)
 
 ```ruby
 response = client.conferences.actions.speak("id", payload: "Say this to participants", voice: "female")
@@ -302,13 +344,15 @@ response = client.conferences.actions.speak("id", payload: "Say this to particip
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Stop audio being played on the conference
 
 Stop audio being played to all or some participants on a conference call.
 
 `POST /conferences/{id}/actions/stop`
 
-Optional: `call_control_ids` (array[string]), `region` (enum)
+Optional: `call_control_ids` (array[string]), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.stop("id")
@@ -316,13 +360,15 @@ response = client.conferences.actions.stop("id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Unhold conference participants
 
 Unhold a list of participants in a conference call
 
 `POST /conferences/{id}/actions/unhold` — Required: `call_control_ids`
 
-Optional: `region` (enum)
+Optional: `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.unhold(
@@ -333,13 +379,15 @@ response = client.conferences.actions.unhold(
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Unmute conference participants
 
 Unmute a list of participants in a conference call
 
 `POST /conferences/{id}/actions/unmute`
 
-Optional: `call_control_ids` (array[string]), `region` (enum)
+Optional: `call_control_ids` (array[string]), `region` (enum: Australia, Europe, Middle East, US)
 
 ```ruby
 response = client.conferences.actions.unmute("id")
@@ -347,13 +395,15 @@ response = client.conferences.actions.unmute("id")
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Update conference participant
 
 Update conference participant supervisor_role
 
 `POST /conferences/{id}/actions/update` — Required: `call_control_id`, `supervisor_role`
 
-Optional: `command_id` (string), `region` (enum), `whisper_call_control_ids` (array[string])
+Optional: `command_id` (string), `region` (enum: Australia, Europe, Middle East, US), `whisper_call_control_ids` (array[string])
 
 ```ruby
 action = client.conferences.actions.update(
@@ -364,6 +414,8 @@ action = client.conferences.actions.update(
 
 puts(action)
 ```
+
+Returns: `result` (string)
 
 ## Retrieve a conference participant
 
@@ -377,19 +429,23 @@ response = client.conferences.retrieve_participant("participant_id", id: "182bd5
 puts(response)
 ```
 
+Returns: `call_control_id` (string), `call_leg_id` (string), `conference_id` (string), `created_at` (date-time), `end_conference_on_exit` (boolean), `id` (string), `label` (string), `muted` (boolean), `on_hold` (boolean), `soft_end_conference_on_exit` (boolean), `status` (enum: joining, joined, left), `updated_at` (date-time), `whisper_call_control_ids` (array[string])
+
 ## Update a conference participant
 
 Update properties of a conference participant.
 
 `PATCH /conferences/{id}/participants/{participant_id}`
 
-Optional: `beep_enabled` (enum), `end_conference_on_exit` (boolean), `soft_end_conference_on_exit` (boolean)
+Optional: `beep_enabled` (enum: always, never, on_enter, on_exit), `end_conference_on_exit` (boolean), `soft_end_conference_on_exit` (boolean)
 
 ```ruby
 response = client.conferences.update_participant("participant_id", id: "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
 puts(response)
 ```
+
+Returns: `call_control_id` (string), `call_leg_id` (string), `conference_id` (string), `created_at` (date-time), `end_conference_on_exit` (boolean), `id` (string), `label` (string), `muted` (boolean), `on_hold` (boolean), `soft_end_conference_on_exit` (boolean), `status` (enum: joining, joined, left), `updated_at` (date-time), `whisper_call_control_ids` (array[string])
 
 ## List queues
 
@@ -402,6 +458,8 @@ page = client.queues.list
 
 puts(page)
 ```
+
+Returns: `average_wait_time_secs` (integer), `created_at` (string), `current_size` (integer), `id` (string), `max_size` (integer), `name` (string), `record_type` (enum: queue), `updated_at` (string)
 
 ## Create a queue
 
@@ -417,6 +475,8 @@ queue = client.queues.create(queue_name: "tier_1_support")
 puts(queue)
 ```
 
+Returns: `average_wait_time_secs` (integer), `created_at` (string), `current_size` (integer), `id` (string), `max_size` (integer), `name` (string), `record_type` (enum: queue), `updated_at` (string)
+
 ## Retrieve a call queue
 
 Retrieve an existing call queue
@@ -429,6 +489,8 @@ queue = client.queues.retrieve("queue_name")
 puts(queue)
 ```
 
+Returns: `average_wait_time_secs` (integer), `created_at` (string), `current_size` (integer), `id` (string), `max_size` (integer), `name` (string), `record_type` (enum: queue), `updated_at` (string)
+
 ## Update a queue
 
 Update properties of an existing call queue.
@@ -440,6 +502,8 @@ queue = client.queues.update("queue_name", max_size: 200)
 
 puts(queue)
 ```
+
+Returns: `average_wait_time_secs` (integer), `created_at` (string), `current_size` (integer), `id` (string), `max_size` (integer), `name` (string), `record_type` (enum: queue), `updated_at` (string)
 
 ## Delete a queue
 
@@ -465,6 +529,8 @@ page = client.queues.calls.list("queue_name")
 puts(page)
 ```
 
+Returns: `call_control_id` (string), `call_leg_id` (string), `call_session_id` (string), `connection_id` (string), `enqueued_at` (string), `from` (string), `is_alive` (boolean), `queue_id` (string), `queue_position` (integer), `record_type` (enum: queue_call), `to` (string), `wait_time_secs` (integer)
+
 ## Retrieve a call from a queue
 
 Retrieve an existing call from an existing queue
@@ -476,6 +542,8 @@ call = client.queues.calls.retrieve("call_control_id", queue_name: "queue_name")
 
 puts(call)
 ```
+
+Returns: `call_control_id` (string), `call_leg_id` (string), `call_session_id` (string), `connection_id` (string), `enqueued_at` (string), `from` (string), `is_alive` (boolean), `queue_id` (string), `queue_position` (integer), `record_type` (enum: queue_call), `to` (string), `wait_time_secs` (integer)
 
 ## Update queued call
 
@@ -493,7 +561,7 @@ puts(result)
 
 ## Force remove a call from a queue
 
-Removes an inactive call from a queue.
+Removes an inactive call from a queue. If the call is no longer active, use this command to remove it from the queue.
 
 `DELETE /queues/{queue_name}/calls/{call_control_id}`
 
@@ -535,8 +603,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: call.enqueued | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
@@ -552,8 +620,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: call.dequeued | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
@@ -563,15 +631,15 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 | `data.payload.client_state` | string | State received from a command. |
 | `data.payload.queue` | string | The name of the queue |
 | `data.payload.queue_position` | integer | Last position of the call in the queue. |
-| `data.payload.reason` | enum | The reason for leaving the queue |
+| `data.payload.reason` | enum: bridged, bridging-in-process, hangup, leave, timeout | The reason for leaving the queue |
 | `data.payload.wait_time_secs` | integer | Time call spent in the queue in seconds. |
 
 **`conferenceCreated`**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.created | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
@@ -585,8 +653,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.ended | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
@@ -595,14 +663,14 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 | `data.payload.client_state` | string | State received from a command. |
 | `data.payload.conference_id` | string | Conference ID that the participant joined. |
 | `data.payload.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
-| `data.payload.reason` | enum | Reason the conference ended. |
+| `data.payload.reason` | enum: all_left, host_left, time_exceeded | Reason the conference ended. |
 
 **`conferenceFloorChanged`**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `record_type` | enum | Identifies the type of the resource. |
-| `event_type` | enum | The type of event being delivered. |
+| `record_type` | enum: event | Identifies the type of the resource. |
+| `event_type` | enum: conference.floor.changed | The type of event being delivered. |
 | `id` | uuid | Identifies the type of resource. |
 | `payload.call_control_id` | string | Call Control ID of the new speaker. |
 | `payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
@@ -616,8 +684,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.participant.joined | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
@@ -631,8 +699,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.participant.left | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
@@ -646,8 +714,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.participant.playback.ended | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.call_control_id` | string | Participant's call ID used to issue commands via Call Control API. |
 | `data.payload.call_leg_id` | string | ID that is unique to the call and can be used to correlate webhook events. |
@@ -664,8 +732,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.participant.playback.started | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.call_control_id` | string | Participant's call ID used to issue commands via Call Control API. |
 | `data.payload.call_leg_id` | string | ID that is unique to the call and can be used to correlate webhook events. |
@@ -682,8 +750,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.participant.speak.ended | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.call_control_id` | string | Participant's call ID used to issue commands via Call Control API. |
 | `data.payload.call_leg_id` | string | ID that is unique to the call and can be used to correlate webhook events. |
@@ -698,8 +766,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.participant.speak.started | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.call_control_id` | string | Participant's call ID used to issue commands via Call Control API. |
 | `data.payload.call_leg_id` | string | ID that is unique to the call and can be used to correlate webhook events. |
@@ -714,8 +782,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.playback.ended | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
 | `data.payload.creator_call_session_id` | string | ID that is unique to the call session that started the conference. |
@@ -728,8 +796,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.playback.started | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
 | `data.payload.creator_call_session_id` | string | ID that is unique to the call session that started the conference. |
@@ -742,16 +810,16 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.recording.saved | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.call_control_id` | string | Participant's call ID used to issue commands via Call Control API. |
 | `data.payload.call_session_id` | string | ID that is unique to the call session and can be used to correlate webhook events. |
 | `data.payload.client_state` | string | State received from a command. |
-| `data.payload.channels` | enum | Whether recording was recorded in `single` or `dual` channel. |
+| `data.payload.channels` | enum: single, dual | Whether recording was recorded in `single` or `dual` channel. |
 | `data.payload.conference_id` | uuid | ID of the conference that is being recorded. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
-| `data.payload.format` | enum | The audio file format used when storing the call recording. |
+| `data.payload.format` | enum: wav, mp3 | The audio file format used when storing the call recording. |
 | `data.payload.recording_ended_at` | date-time | ISO 8601 datetime of when recording ended. |
 | `data.payload.recording_id` | uuid | ID of the conference recording. |
 | `data.payload.recording_started_at` | date-time | ISO 8601 datetime of when recording started. |
@@ -760,8 +828,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.speak.ended | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
 | `data.payload.creator_call_session_id` | string | ID that is unique to the call session that started the conference. |
@@ -772,8 +840,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: conference.speak.started | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
 | `data.payload.creator_call_session_id` | string | ID that is unique to the call session that started the conference. |

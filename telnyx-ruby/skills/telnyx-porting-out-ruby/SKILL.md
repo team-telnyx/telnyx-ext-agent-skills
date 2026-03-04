@@ -44,6 +44,8 @@ page = client.portouts.list
 puts(page)
 ```
 
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)
+
 ## List all port-out events
 
 Returns a list of all port-out events.
@@ -56,6 +58,8 @@ page = client.portouts.events.list
 puts(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Show a port-out event
 
 Show a specific port-out event.
@@ -67,6 +71,8 @@ event = client.portouts.events.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
 puts(event)
 ```
+
+Returns: `data` (object)
 
 ## Republish a port-out event
 
@@ -92,6 +98,8 @@ response = client.portouts.list_rejection_codes("329d6658-8f93-405d-862f-648776e
 puts(response)
 ```
 
+Returns: `code` (integer), `description` (string), `reason_required` (boolean)
+
 ## List port-out related reports
 
 List the reports generated about port-out operations.
@@ -103,6 +111,8 @@ page = client.portouts.reports.list
 
 puts(page)
 ```
+
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
 
 ## Create a port-out related report
 
@@ -116,6 +126,8 @@ report = client.portouts.reports.create(params: {filters: {}}, report_type: :exp
 puts(report)
 ```
 
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
+
 ## Retrieve a report
 
 Retrieve a specific report generated.
@@ -127,6 +139,8 @@ report = client.portouts.reports.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
 
 puts(report)
 ```
+
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
 
 ## Get a portout request
 
@@ -140,6 +154,8 @@ portout = client.portouts.retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 puts(portout)
 ```
 
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)
+
 ## List all comments for a portout request
 
 Returns a list of comments for a portout request.
@@ -151,6 +167,8 @@ comments = client.portouts.comments.list("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 
 puts(comments)
 ```
+
+Returns: `body` (string), `created_at` (string), `id` (string), `portout_id` (string), `record_type` (string), `user_id` (string)
 
 ## Create a comment on a portout request
 
@@ -166,6 +184,8 @@ comment = client.portouts.comments.create("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"
 puts(comment)
 ```
 
+Returns: `body` (string), `created_at` (string), `id` (string), `portout_id` (string), `record_type` (string), `user_id` (string)
+
 ## List supporting documents on a portout request
 
 List every supporting documents for a portout request.
@@ -177,6 +197,8 @@ supporting_documents = client.portouts.supporting_documents.list("182bd5e5-6e1a-
 
 puts(supporting_documents)
 ```
+
+Returns: `created_at` (string), `document_id` (uuid), `id` (uuid), `portout_id` (uuid), `record_type` (string), `type` (enum: loa, invoice), `updated_at` (string)
 
 ## Create a list of supporting documents on a portout request
 
@@ -191,6 +213,8 @@ supporting_document = client.portouts.supporting_documents.create("182bd5e5-6e1a
 
 puts(supporting_document)
 ```
+
+Returns: `created_at` (string), `document_id` (uuid), `id` (uuid), `portout_id` (uuid), `record_type` (string), `type` (enum: loa, invoice), `updated_at` (string)
 
 ## Update Status
 
@@ -209,3 +233,5 @@ response = client.portouts.update_status(
 
 puts(response)
 ```
+
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)

@@ -53,6 +53,8 @@ Returns the portout requests according to filters
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)
+
 ## List all port-out events
 
 Returns a list of all port-out events.
@@ -67,6 +69,8 @@ Returns a list of all port-out events.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Show a port-out event
 
 Show a specific port-out event.
@@ -80,6 +84,8 @@ Show a specific port-out event.
 	}
 	fmt.Printf("%+v\n", event.Data)
 ```
+
+Returns: `data` (object)
 
 ## Republish a port-out event
 
@@ -112,6 +118,8 @@ Given a port-out ID, list rejection codes that are eligible for that port-out
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `code` (integer), `description` (string), `reason_required` (boolean)
+
 ## List port-out related reports
 
 List the reports generated about port-out operations.
@@ -125,6 +133,8 @@ List the reports generated about port-out operations.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
 
 ## Create a port-out related report
 
@@ -145,6 +155,8 @@ Generate reports about port-out operations.
 	fmt.Printf("%+v\n", report.Data)
 ```
 
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
+
 ## Retrieve a report
 
 Retrieve a specific report generated.
@@ -158,6 +170,8 @@ Retrieve a specific report generated.
 	}
 	fmt.Printf("%+v\n", report.Data)
 ```
+
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
 
 ## Get a portout request
 
@@ -173,6 +187,8 @@ Returns the portout request based on the ID provided
 	fmt.Printf("%+v\n", portout.Data)
 ```
 
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)
+
 ## List all comments for a portout request
 
 Returns a list of comments for a portout request.
@@ -186,6 +202,8 @@ Returns a list of comments for a portout request.
 	}
 	fmt.Printf("%+v\n", comments.Data)
 ```
+
+Returns: `body` (string), `created_at` (string), `id` (string), `portout_id` (string), `record_type` (string), `user_id` (string)
 
 ## Create a comment on a portout request
 
@@ -207,6 +225,8 @@ Optional: `body` (string)
 	fmt.Printf("%+v\n", comment.Data)
 ```
 
+Returns: `body` (string), `created_at` (string), `id` (string), `portout_id` (string), `record_type` (string), `user_id` (string)
+
 ## List supporting documents on a portout request
 
 List every supporting documents for a portout request.
@@ -220,6 +240,8 @@ List every supporting documents for a portout request.
 	}
 	fmt.Printf("%+v\n", supportingDocuments.Data)
 ```
+
+Returns: `created_at` (string), `document_id` (uuid), `id` (uuid), `portout_id` (uuid), `record_type` (string), `type` (enum: loa, invoice), `updated_at` (string)
 
 ## Create a list of supporting documents on a portout request
 
@@ -240,6 +262,8 @@ Optional: `documents` (array[object])
 	}
 	fmt.Printf("%+v\n", supportingDocument.Data)
 ```
+
+Returns: `created_at` (string), `document_id` (uuid), `id` (uuid), `portout_id` (uuid), `record_type` (string), `type` (enum: loa, invoice), `updated_at` (string)
 
 ## Update Status
 
@@ -263,3 +287,5 @@ Optional: `host_messaging` (boolean)
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)

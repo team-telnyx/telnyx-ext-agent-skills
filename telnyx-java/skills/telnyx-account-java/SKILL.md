@@ -33,7 +33,7 @@ All examples below assume `client` is already initialized as shown above.
 
 ## List Audit Logs
 
-Retrieve a list of audit log entries.
+Retrieve a list of audit log entries. Audit logs are a best-effort, eventually consistent record of significant account-related changes.
 
 `GET /audit_events`
 
@@ -43,6 +43,8 @@ import com.telnyx.sdk.models.auditevents.AuditEventListParams;
 
 AuditEventListPage page = client.auditEvents().list();
 ```
+
+Returns: `alternate_resource_id` (['string', 'null']), `change_made_by` (enum: telnyx, account_manager, account_owner, organization_member), `change_type` (string), `changes` (['array', 'null']), `created_at` (date-time), `id` (uuid), `organization_id` (uuid), `record_type` (string), `resource_id` (string), `user_id` (uuid)
 
 ## Get user balance details
 
@@ -55,9 +57,11 @@ import com.telnyx.sdk.models.balance.BalanceRetrieveResponse;
 BalanceRetrieveResponse balance = client.balance().retrieve();
 ```
 
+Returns: `available_credit` (string), `balance` (string), `credit_limit` (string), `currency` (string), `pending` (string), `record_type` (enum: balance)
+
 ## Get monthly charges breakdown
 
-Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range.
+Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_breakdown`
 
@@ -72,9 +76,11 @@ ChargesBreakdownRetrieveParams params = ChargesBreakdownRetrieveParams.builder()
 ChargesBreakdownRetrieveResponse chargesBreakdown = client.chargesBreakdown().retrieve(params);
 ```
 
+Returns: `currency` (string), `end_date` (date), `results` (array[object]), `start_date` (date), `user_email` (email), `user_id` (string)
+
 ## Get monthly charges summary
 
-Retrieve a summary of monthly charges for a specified date range.
+Retrieve a summary of monthly charges for a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_summary`
 
@@ -90,6 +96,8 @@ ChargesSummaryRetrieveParams params = ChargesSummaryRetrieveParams.builder()
 ChargesSummaryRetrieveResponse chargesSummary = client.chargesSummary().retrieve(params);
 ```
 
+Returns: `currency` (string), `end_date` (date), `start_date` (date), `summary` (object), `total` (object), `user_email` (email), `user_id` (string)
+
 ## Search detail records
 
 Search for any detail record across the Telnyx Platform
@@ -102,6 +110,8 @@ import com.telnyx.sdk.models.detailrecords.DetailRecordListParams;
 
 DetailRecordListPage page = client.detailRecords().list();
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## List invoices
 
@@ -116,6 +126,8 @@ import com.telnyx.sdk.models.invoices.InvoiceListParams;
 InvoiceListPage page = client.invoices().list();
 ```
 
+Returns: `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
+
 ## Get invoice by ID
 
 Retrieve a single invoice by its unique identifier.
@@ -128,6 +140,8 @@ import com.telnyx.sdk.models.invoices.InvoiceRetrieveResponse;
 
 InvoiceRetrieveResponse invoice = client.invoices().retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `download_url` (uri), `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
 
 ## List auto recharge preferences
 
@@ -142,13 +156,15 @@ import com.telnyx.sdk.models.payment.autorechargeprefs.AutoRechargePrefListRespo
 AutoRechargePrefListResponse autoRechargePrefs = client.payment().autoRechargePrefs().list();
 ```
 
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
+
 ## Update auto recharge preferences
 
 Update payment auto recharge preferences.
 
 `PATCH /payment/auto_recharge_prefs`
 
-Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum), `recharge_amount` (string), `threshold_amount` (string)
+Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `threshold_amount` (string)
 
 ```java
 import com.telnyx.sdk.models.payment.autorechargeprefs.AutoRechargePrefUpdateParams;
@@ -156,6 +172,8 @@ import com.telnyx.sdk.models.payment.autorechargeprefs.AutoRechargePrefUpdateRes
 
 AutoRechargePrefUpdateResponse autoRechargePref = client.payment().autoRechargePrefs().update();
 ```
+
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
 
 ## List User Tags
 
@@ -169,6 +187,8 @@ import com.telnyx.sdk.models.usertags.UserTagListResponse;
 
 UserTagListResponse userTags = client.userTags().list();
 ```
+
+Returns: `number_tags` (array[string]), `outbound_profile_tags` (array[string])
 
 ## Create a stored payment transaction
 
@@ -184,6 +204,8 @@ PaymentCreateStoredPaymentTransactionParams params = PaymentCreateStoredPaymentT
 PaymentCreateStoredPaymentTransactionResponse response = client.payment().createStoredPaymentTransaction(params);
 ```
 
+Returns: `amount_cents` (integer), `amount_currency` (string), `auto_recharge` (boolean), `created_at` (date-time), `id` (string), `processor_status` (string), `record_type` (enum: transaction), `transaction_processing_type` (enum: stored_payment)
+
 ## List webhook deliveries
 
 Lists webhook_deliveries for the authenticated user
@@ -197,6 +219,8 @@ import com.telnyx.sdk.models.webhookdeliveries.WebhookDeliveryListParams;
 WebhookDeliveryListPage page = client.webhookDeliveries().list();
 ```
 
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)
+
 ## Find webhook_delivery details by ID
 
 Provides webhook_delivery debug data, such as timestamps, delivery status and attempts.
@@ -209,3 +233,5 @@ import com.telnyx.sdk.models.webhookdeliveries.WebhookDeliveryRetrieveResponse;
 
 WebhookDeliveryRetrieveResponse webhookDelivery = client.webhookDeliveries().retrieve("C9C0797E-901D-4349-A33C-C2C8F31A92C2");
 ```
+
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)

@@ -37,6 +37,8 @@ All examples below use `$TELNYX_API_KEY` for authentication.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/access_ip_address"
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Create new Access IP Address
 
 `POST /access_ip_address` — Required: `ip_address`
@@ -54,6 +56,8 @@ curl \
   "https://api.telnyx.com/v2/access_ip_address"
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Retrieve an access IP address
 
 `GET /access_ip_address/{access_ip_address_id}`
@@ -61,6 +65,8 @@ curl \
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/access_ip_address/{access_ip_address_id}"
 ```
+
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
 
 ## Delete access IP address
 
@@ -73,6 +79,8 @@ curl \
   "https://api.telnyx.com/v2/access_ip_address/{access_ip_address_id}"
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## List all addresses
 
 Returns a list of your addresses.
@@ -82,6 +90,8 @@ Returns a list of your addresses.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/addresses?sort=street_address"
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Creates an address
 
@@ -116,6 +126,8 @@ curl \
   "https://api.telnyx.com/v2/addresses"
 ```
 
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
+
 ## Validate an address
 
 Validates an address for emergency services.
@@ -140,6 +152,8 @@ curl \
   "https://api.telnyx.com/v2/addresses/actions/validate"
 ```
 
+Returns: `errors` (array[object]), `record_type` (string), `result` (enum: valid, invalid), `suggested` (object)
+
 ## Retrieve an address
 
 Retrieves the details of an existing address.
@@ -149,6 +163,8 @@ Retrieves the details of an existing address.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/addresses/{id}"
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Deletes an address
 
@@ -162,6 +178,8 @@ curl \
   -H "Authorization: Bearer $TELNYX_API_KEY" \
   "https://api.telnyx.com/v2/addresses/{id}"
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Accepts this address suggestion as a new emergency address for Operator Connect and finishes the uploads of the numbers associated with it to Microsoft.
 
@@ -177,6 +195,8 @@ curl \
   "https://api.telnyx.com/v2/addresses/{id}/actions/accept_suggestions"
 ```
 
+Returns: `accepted` (boolean), `id` (uuid), `record_type` (enum: address_suggestion)
+
 ## List all SSO authentication providers
 
 Returns a list of your SSO authentication providers.
@@ -186,6 +206,8 @@ Returns a list of your SSO authentication providers.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/authentication_providers?sort=name"
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Creates an authentication provider
 
@@ -210,6 +232,8 @@ curl \
   "https://api.telnyx.com/v2/authentication_providers"
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Retrieve an authentication provider
 
 Retrieves the details of an existing authentication provider.
@@ -219,6 +243,8 @@ Retrieves the details of an existing authentication provider.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/authentication_providers/{id}"
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Update an authentication provider
 
@@ -247,6 +273,8 @@ curl \
   "https://api.telnyx.com/v2/authentication_providers/{id}"
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Deletes an authentication provider
 
 Deletes an existing authentication provider.
@@ -260,6 +288,8 @@ curl \
   "https://api.telnyx.com/v2/authentication_providers/{id}"
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## List all billing groups
 
 `GET /billing_groups`
@@ -267,6 +297,8 @@ curl \
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/billing_groups"
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Create a billing group
 
@@ -285,6 +317,8 @@ curl \
   "https://api.telnyx.com/v2/billing_groups"
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Get a billing group
 
 `GET /billing_groups/{id}`
@@ -292,6 +326,8 @@ curl \
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/billing_groups/f5586561-8ff0-4291-a0ac-84fe544797bd"
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Update a billing group
 
@@ -310,6 +346,8 @@ curl \
   "https://api.telnyx.com/v2/billing_groups/f5586561-8ff0-4291-a0ac-84fe544797bd"
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Delete a billing group
 
 `DELETE /billing_groups/{id}`
@@ -321,6 +359,8 @@ curl \
   "https://api.telnyx.com/v2/billing_groups/f5586561-8ff0-4291-a0ac-84fe544797bd"
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## List integration secrets
 
 Retrieve a list of all integration secrets configured by the user.
@@ -330,6 +370,8 @@ Retrieve a list of all integration secrets configured by the user.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/integration_secrets"
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Create a secret
 
@@ -350,6 +392,8 @@ curl \
 }' \
   "https://api.telnyx.com/v2/integration_secrets"
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Delete an integration secret
 

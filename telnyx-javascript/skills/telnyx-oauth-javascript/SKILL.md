@@ -44,6 +44,8 @@ const response = await client.wellKnown.retrieveAuthorizationServerMetadata();
 console.log(response.authorization_endpoint);
 ```
 
+Returns: `authorization_endpoint` (uri), `code_challenge_methods_supported` (array[string]), `grant_types_supported` (array[string]), `introspection_endpoint` (uri), `issuer` (uri), `jwks_uri` (uri), `registration_endpoint` (uri), `response_types_supported` (array[string]), `scopes_supported` (array[string]), `token_endpoint` (uri), `token_endpoint_auth_methods_supported` (array[string])
+
 ## Protected resource metadata
 
 OAuth 2.0 Protected Resource Metadata for resource discovery
@@ -55,6 +57,8 @@ const response = await client.wellKnown.retrieveProtectedResourceMetadata();
 
 console.log(response.authorization_servers);
 ```
+
+Returns: `authorization_servers` (array[string]), `resource` (uri)
 
 ## OAuth authorization endpoint
 
@@ -82,6 +86,8 @@ const oauth = await client.oauth.retrieve('consent_token');
 console.log(oauth.data);
 ```
 
+Returns: `client_id` (string), `logo_uri` (uri), `name` (string), `policy_uri` (uri), `redirect_uri` (uri), `requested_scopes` (array[object]), `tos_uri` (uri), `verified` (boolean)
+
 ## Create OAuth grant
 
 Create an OAuth authorization grant
@@ -93,6 +99,8 @@ const response = await client.oauth.grants({ allowed: true, consent_token: 'cons
 
 console.log(response.redirect_uri);
 ```
+
+Returns: `redirect_uri` (uri)
 
 ## Token introspection
 
@@ -106,6 +114,8 @@ const response = await client.oauth.introspect({ token: 'token' });
 console.log(response.client_id);
 ```
 
+Returns: `active` (boolean), `aud` (string), `client_id` (string), `exp` (integer), `iat` (integer), `iss` (string), `scope` (string)
+
 ## JSON Web Key Set
 
 Retrieve the JSON Web Key Set for token verification
@@ -118,19 +128,23 @@ const response = await client.oauth.retrieveJwks();
 console.log(response.keys);
 ```
 
+Returns: `keys` (array[object])
+
 ## Dynamic client registration
 
 Register a new OAuth client dynamically (RFC 7591)
 
 `POST /oauth/register`
 
-Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum), `tos_uri` (uri)
+Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum: none, client_secret_basic, client_secret_post), `tos_uri` (uri)
 
 ```javascript
 const response = await client.oauth.register();
 
 console.log(response.client_id);
 ```
+
+Returns: `client_id` (string), `client_id_issued_at` (integer), `client_name` (string), `client_secret` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (string), `tos_uri` (uri)
 
 ## OAuth token endpoint
 
@@ -146,6 +160,8 @@ const response = await client.oauth.token({ grant_type: 'client_credentials' });
 console.log(response.access_token);
 ```
 
+Returns: `access_token` (string), `expires_in` (integer), `refresh_token` (string), `scope` (string), `token_type` (enum: Bearer)
+
 ## List OAuth clients
 
 Retrieve a paginated list of OAuth clients for the authenticated user
@@ -158,6 +174,8 @@ for await (const oauthClient of client.oauthClients.list()) {
   console.log(oauthClient.client_id);
 }
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Create OAuth client
 
@@ -178,6 +196,8 @@ const oauthClient = await client.oauthClients.create({
 console.log(oauthClient.data);
 ```
 
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
+
 ## Get OAuth client
 
 Retrieve a single OAuth client by ID
@@ -189,6 +209,8 @@ const oauthClient = await client.oauthClients.retrieve('182bd5e5-6e1a-4fe4-a799-
 
 console.log(oauthClient.data);
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Update OAuth client
 
@@ -203,6 +225,8 @@ const oauthClient = await client.oauthClients.update('182bd5e5-6e1a-4fe4-a799-aa
 
 console.log(oauthClient.data);
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Delete OAuth client
 
@@ -227,6 +251,8 @@ for await (const oauthGrant of client.oauthGrants.list()) {
 }
 ```
 
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
+
 ## Get OAuth grant
 
 Retrieve a single OAuth grant by ID
@@ -239,6 +265,8 @@ const oauthGrant = await client.oauthGrants.retrieve('182bd5e5-6e1a-4fe4-a799-aa
 console.log(oauthGrant.data);
 ```
 
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
+
 ## Revoke OAuth grant
 
 Revoke an OAuth grant
@@ -250,3 +278,5 @@ const oauthGrant = await client.oauthGrants.delete('182bd5e5-6e1a-4fe4-a799-aa6d
 
 console.log(oauthGrant.data);
 ```
+
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])

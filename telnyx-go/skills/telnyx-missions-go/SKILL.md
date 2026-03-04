@@ -54,13 +54,15 @@ List all missions for the organization
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
+
 ## Create mission
 
 Create a new mission definition
 
 `POST /ai/missions` — Required: `name`
 
-Optional: `description` (string), `execution_mode` (enum), `instructions` (string), `metadata` (object), `model` (string)
+Optional: `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `model` (string)
 
 ```go
 	mission, err := client.AI.Missions.New(context.TODO(), telnyx.AIMissionNewParams{
@@ -71,6 +73,8 @@ Optional: `description` (string), `execution_mode` (enum), `instructions` (strin
 	}
 	fmt.Printf("%+v\n", mission.Data)
 ```
+
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
 
 ## List recent events
 
@@ -86,6 +90,8 @@ List recent events across all missions
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## List recent runs
 
 List recent runs across all missions
@@ -99,6 +105,8 @@ List recent runs across all missions
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Get mission
 
@@ -114,13 +122,15 @@ Get a mission by ID (includes tools, knowledge_bases, mcp_servers)
 	fmt.Printf("%+v\n", mission.Data)
 ```
 
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
+
 ## Update mission
 
 Update a mission definition
 
 `PUT /ai/missions/{mission_id}`
 
-Optional: `description` (string), `execution_mode` (enum), `instructions` (string), `metadata` (object), `model` (string), `name` (string)
+Optional: `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `model` (string), `name` (string)
 
 ```go
 	response, err := client.AI.Missions.UpdateMission(
@@ -133,6 +143,8 @@ Optional: `description` (string), `execution_mode` (enum), `instructions` (strin
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
 
 ## Delete mission
 
@@ -353,6 +365,8 @@ List all runs for a specific mission
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Start a run
 
 Start a new run for a mission
@@ -372,6 +386,8 @@ Optional: `input` (object), `metadata` (object)
 	}
 	fmt.Printf("%+v\n", run.Data)
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Get run details
 
@@ -393,13 +409,15 @@ Get details of a specific run
 	fmt.Printf("%+v\n", run.Data)
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Update run
 
 Update run status and/or result
 
 `PATCH /ai/missions/{mission_id}/runs/{run_id}`
 
-Optional: `error` (string), `metadata` (object), `result_payload` (object), `result_summary` (string), `status` (enum)
+Optional: `error` (string), `metadata` (object), `result_payload` (object), `result_summary` (string), `status` (enum: pending, running, paused, succeeded, failed, cancelled)
 
 ```go
 	run, err := client.AI.Missions.Runs.Update(
@@ -414,6 +432,8 @@ Optional: `error` (string), `metadata` (object), `result_payload` (object), `res
 	}
 	fmt.Printf("%+v\n", run.Data)
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Cancel run
 
@@ -435,6 +455,8 @@ Cancel a running or paused run
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## List events
 
 List events for a run (paginated)
@@ -454,6 +476,8 @@ List events for a run (paginated)
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
 
 ## Log event
 
@@ -479,6 +503,8 @@ Optional: `agent_id` (string), `idempotency_key` (string), `payload` (object), `
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## Get event details
 
 Get details of a specific event
@@ -500,6 +526,8 @@ Get details of a specific event
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## Pause run
 
 Pause a running run
@@ -520,6 +548,8 @@ Pause a running run
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Get plan
 
 Get the plan (all steps) for a run
@@ -539,6 +569,8 @@ Get the plan (all steps) for a run
 	}
 	fmt.Printf("%+v\n", plan.Data)
 ```
+
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
 
 ## Create initial plan
 
@@ -565,6 +597,8 @@ Create the initial plan for a run
 	fmt.Printf("%+v\n", plan.Data)
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Add step(s) to plan
 
 Add one or more steps to an existing plan
@@ -590,6 +624,8 @@ Add one or more steps to an existing plan
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Get step details
 
 Get details of a specific plan step
@@ -611,13 +647,15 @@ Get details of a specific plan step
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Update step status
 
 Update the status of a plan step
 
 `PATCH /ai/missions/{mission_id}/runs/{run_id}/plan/steps/{step_id}`
 
-Optional: `metadata` (object), `status` (enum)
+Optional: `metadata` (object), `status` (enum: pending, in_progress, completed, skipped, failed)
 
 ```go
 	response, err := client.AI.Missions.Runs.Plan.UpdateStep(
@@ -633,6 +671,8 @@ Optional: `metadata` (object), `status` (enum)
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
 
 ## Resume run
 
@@ -654,6 +694,8 @@ Resume a paused run
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## List linked Telnyx agents
 
 List all Telnyx agents linked to a run
@@ -673,6 +715,8 @@ List all Telnyx agents linked to a run
 	}
 	fmt.Printf("%+v\n", telnyxAgents.Data)
 ```
+
+Returns: `created_at` (date-time), `run_id` (string), `telnyx_agent_id` (string)
 
 ## Link Telnyx agent to run
 
@@ -694,6 +738,8 @@ Link a Telnyx AI agent (voice/messaging) to a run
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `created_at` (date-time), `run_id` (string), `telnyx_agent_id` (string)
 
 ## Unlink Telnyx agent
 

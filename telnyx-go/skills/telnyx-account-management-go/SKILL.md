@@ -41,7 +41,7 @@ All examples below assume `client` is already initialized as shown above.
 
 ## Lists accounts managed by the current user.
 
-Lists the accounts managed by the current user.
+Lists the accounts managed by the current user. Users need to be explictly approved by Telnyx in order to become manager accounts.
 
 `GET /managed_accounts`
 
@@ -53,9 +53,11 @@ Lists the accounts managed by the current user.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `api_user` (string), `created_at` (string), `email` (email), `id` (uuid), `managed_account_allow_custom_pricing` (boolean), `manager_account_id` (string), `organization_name` (string), `record_type` (enum: managed_account), `rollup_billing` (boolean), `updated_at` (string)
+
 ## Create a new managed account.
 
-Create a new managed account owned by the authenticated user.
+Create a new managed account owned by the authenticated user. You need to be explictly approved by Telnyx in order to become a manager account.
 
 `POST /managed_accounts` — Required: `business_name`
 
@@ -71,7 +73,11 @@ Optional: `email` (string), `managed_account_allow_custom_pricing` (boolean), `p
 	fmt.Printf("%+v\n", managedAccount.Data)
 ```
 
+Returns: `api_key` (string), `api_token` (string), `api_user` (string), `balance` (object), `created_at` (string), `email` (email), `id` (uuid), `managed_account_allow_custom_pricing` (boolean), `manager_account_id` (string), `organization_name` (string), `record_type` (enum: managed_account), `rollup_billing` (boolean), `updated_at` (string)
+
 ## Display information about allocatable global outbound channels for the current user.
+
+Display information about allocatable global outbound channels for the current user. Only usable by account managers.
 
 `GET /managed_accounts/allocatable_global_outbound_channels`
 
@@ -82,6 +88,8 @@ Optional: `email` (string), `managed_account_allow_custom_pricing` (boolean), `p
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `allocatable_global_outbound_channels` (integer), `managed_account_allow_custom_pricing` (boolean), `record_type` (string), `total_global_channels_allocated` (integer)
 
 ## Retrieve a managed account
 
@@ -96,6 +104,8 @@ Retrieves the details of a single managed account.
 	}
 	fmt.Printf("%+v\n", managedAccount.Data)
 ```
+
+Returns: `api_key` (string), `api_token` (string), `api_user` (string), `balance` (object), `created_at` (string), `email` (email), `id` (uuid), `managed_account_allow_custom_pricing` (boolean), `manager_account_id` (string), `organization_name` (string), `record_type` (enum: managed_account), `rollup_billing` (boolean), `updated_at` (string)
 
 ## Update a managed account
 
@@ -117,9 +127,11 @@ Optional: `managed_account_allow_custom_pricing` (boolean)
 	fmt.Printf("%+v\n", managedAccount.Data)
 ```
 
+Returns: `api_key` (string), `api_token` (string), `api_user` (string), `balance` (object), `created_at` (string), `email` (email), `id` (uuid), `managed_account_allow_custom_pricing` (boolean), `manager_account_id` (string), `organization_name` (string), `record_type` (enum: managed_account), `rollup_billing` (boolean), `updated_at` (string)
+
 ## Disables a managed account
 
-Disables a managed account, forbidding it to use Telnyx services, including sending or receiving phone calls and SMS messages.
+Disables a managed account, forbidding it to use Telnyx services, including sending or receiving phone calls and SMS messages. Ongoing phone calls will not be affected. The managed account and its sub-users will no longer be able to log in via the mission control portal.
 
 `POST /managed_accounts/{id}/actions/disable`
 
@@ -130,6 +142,8 @@ Disables a managed account, forbidding it to use Telnyx services, including send
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `api_key` (string), `api_token` (string), `api_user` (string), `balance` (object), `created_at` (string), `email` (email), `id` (uuid), `managed_account_allow_custom_pricing` (boolean), `manager_account_id` (string), `organization_name` (string), `record_type` (enum: managed_account), `rollup_billing` (boolean), `updated_at` (string)
 
 ## Enables a managed account
 
@@ -151,6 +165,8 @@ Optional: `reenable_all_connections` (boolean)
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `api_key` (string), `api_token` (string), `api_user` (string), `balance` (object), `created_at` (string), `email` (email), `id` (uuid), `managed_account_allow_custom_pricing` (boolean), `manager_account_id` (string), `organization_name` (string), `record_type` (enum: managed_account), `rollup_billing` (boolean), `updated_at` (string)
+
 ## Update the amount of allocatable global outbound channels allocated to a specific managed account.
 
 `PATCH /managed_accounts/{id}/update_global_channel_limit`
@@ -169,6 +185,8 @@ Optional: `channel_limit` (integer)
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `channel_limit` (integer), `email` (string), `id` (string), `manager_account_id` (string), `record_type` (string)
+
 ## List organization users
 
 Returns a list of the users in your organization.
@@ -183,9 +201,11 @@ Returns a list of the users in your organization.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `created_at` (string), `email` (email), `groups` (array[object]), `id` (string), `last_sign_in_at` (['string', 'null']), `organization_user_bypasses_sso` (boolean), `record_type` (string), `user_status` (enum: enabled, disabled, blocked)
+
 ## Get organization users groups report
 
-Returns a report of all users in your organization with their group memberships.
+Returns a report of all users in your organization with their group memberships. This endpoint returns all users without pagination and always includes group information. The report can be retrieved in JSON or CSV format by sending specific content-type headers.
 
 `GET /organizations/users/users_groups_report`
 
@@ -196,6 +216,8 @@ Returns a report of all users in your organization with their group memberships.
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `created_at` (string), `email` (email), `groups` (array[object]), `id` (string), `last_sign_in_at` (['string', 'null']), `organization_user_bypasses_sso` (boolean), `record_type` (string), `user_status` (enum: enabled, disabled, blocked)
 
 ## Get organization user
 
@@ -215,6 +237,8 @@ Returns a user in your organization.
 	fmt.Printf("%+v\n", user.Data)
 ```
 
+Returns: `created_at` (string), `email` (email), `groups` (array[object]), `id` (string), `last_sign_in_at` (['string', 'null']), `organization_user_bypasses_sso` (boolean), `record_type` (string), `user_status` (enum: enabled, disabled, blocked)
+
 ## Delete organization user
 
 Deletes a user in your organization.
@@ -228,3 +252,5 @@ Deletes a user in your organization.
 	}
 	fmt.Printf("%+v\n", action.Data)
 ```
+
+Returns: `created_at` (string), `email` (email), `groups` (array[object]), `id` (string), `last_sign_in_at` (['string', 'null']), `organization_user_bypasses_sso` (boolean), `record_type` (string), `user_status` (enum: enabled, disabled, blocked)

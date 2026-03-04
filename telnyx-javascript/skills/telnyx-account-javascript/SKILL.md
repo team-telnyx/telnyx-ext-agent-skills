@@ -34,7 +34,7 @@ All examples below assume `client` is already initialized as shown above.
 
 ## List Audit Logs
 
-Retrieve a list of audit log entries.
+Retrieve a list of audit log entries. Audit logs are a best-effort, eventually consistent record of significant account-related changes.
 
 `GET /audit_events`
 
@@ -44,6 +44,8 @@ for await (const auditEventListResponse of client.auditEvents.list()) {
   console.log(auditEventListResponse.id);
 }
 ```
+
+Returns: `alternate_resource_id` (['string', 'null']), `change_made_by` (enum: telnyx, account_manager, account_owner, organization_member), `change_type` (string), `changes` (['array', 'null']), `created_at` (date-time), `id` (uuid), `organization_id` (uuid), `record_type` (string), `resource_id` (string), `user_id` (uuid)
 
 ## Get user balance details
 
@@ -55,9 +57,11 @@ const balance = await client.balance.retrieve();
 console.log(balance.data);
 ```
 
+Returns: `available_credit` (string), `balance` (string), `credit_limit` (string), `currency` (string), `pending` (string), `record_type` (enum: balance)
+
 ## Get monthly charges breakdown
 
-Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range.
+Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_breakdown`
 
@@ -67,9 +71,11 @@ const chargesBreakdown = await client.chargesBreakdown.retrieve({ start_date: '2
 console.log(chargesBreakdown.data);
 ```
 
+Returns: `currency` (string), `end_date` (date), `results` (array[object]), `start_date` (date), `user_email` (email), `user_id` (string)
+
 ## Get monthly charges summary
 
-Retrieve a summary of monthly charges for a specified date range.
+Retrieve a summary of monthly charges for a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_summary`
 
@@ -81,6 +87,8 @@ const chargesSummary = await client.chargesSummary.retrieve({
 
 console.log(chargesSummary.data);
 ```
+
+Returns: `currency` (string), `end_date` (date), `start_date` (date), `summary` (object), `total` (object), `user_email` (email), `user_id` (string)
 
 ## Search detail records
 
@@ -95,6 +103,8 @@ for await (const detailRecordListResponse of client.detailRecords.list()) {
 }
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## List invoices
 
 Retrieve a paginated list of invoices.
@@ -108,6 +118,8 @@ for await (const invoiceListResponse of client.invoices.list()) {
 }
 ```
 
+Returns: `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
+
 ## Get invoice by ID
 
 Retrieve a single invoice by its unique identifier.
@@ -119,6 +131,8 @@ const invoice = await client.invoices.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6a
 
 console.log(invoice.data);
 ```
+
+Returns: `download_url` (uri), `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
 
 ## List auto recharge preferences
 
@@ -132,19 +146,23 @@ const autoRechargePrefs = await client.payment.autoRechargePrefs.list();
 console.log(autoRechargePrefs.data);
 ```
 
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
+
 ## Update auto recharge preferences
 
 Update payment auto recharge preferences.
 
 `PATCH /payment/auto_recharge_prefs`
 
-Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum), `recharge_amount` (string), `threshold_amount` (string)
+Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `threshold_amount` (string)
 
 ```javascript
 const autoRechargePref = await client.payment.autoRechargePrefs.update();
 
 console.log(autoRechargePref.data);
 ```
+
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
 
 ## List User Tags
 
@@ -158,6 +176,8 @@ const userTags = await client.userTags.list();
 console.log(userTags.data);
 ```
 
+Returns: `number_tags` (array[string]), `outbound_profile_tags` (array[string])
+
 ## Create a stored payment transaction
 
 `POST /v2/payment/stored_payment_transactions` — Required: `amount`
@@ -167,6 +187,8 @@ const response = await client.payment.createStoredPaymentTransaction({ amount: '
 
 console.log(response.data);
 ```
+
+Returns: `amount_cents` (integer), `amount_currency` (string), `auto_recharge` (boolean), `created_at` (date-time), `id` (string), `processor_status` (string), `record_type` (enum: transaction), `transaction_processing_type` (enum: stored_payment)
 
 ## List webhook deliveries
 
@@ -181,6 +203,8 @@ for await (const webhookDeliveryListResponse of client.webhookDeliveries.list())
 }
 ```
 
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)
+
 ## Find webhook_delivery details by ID
 
 Provides webhook_delivery debug data, such as timestamps, delivery status and attempts.
@@ -194,3 +218,5 @@ const webhookDelivery = await client.webhookDeliveries.retrieve(
 
 console.log(webhookDelivery.data);
 ```
+
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)

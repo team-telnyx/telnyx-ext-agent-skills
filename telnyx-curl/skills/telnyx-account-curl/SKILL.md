@@ -30,13 +30,15 @@ All examples below use `$TELNYX_API_KEY` for authentication.
 
 ## List Audit Logs
 
-Retrieve a list of audit log entries.
+Retrieve a list of audit log entries. Audit logs are a best-effort, eventually consistent record of significant account-related changes.
 
 `GET /audit_events`
 
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/audit_events?sort=desc"
 ```
+
+Returns: `alternate_resource_id` (['string', 'null']), `change_made_by` (enum: telnyx, account_manager, account_owner, organization_member), `change_type` (string), `changes` (['array', 'null']), `created_at` (date-time), `id` (uuid), `organization_id` (uuid), `record_type` (string), `resource_id` (string), `user_id` (uuid)
 
 ## Get user balance details
 
@@ -46,9 +48,11 @@ curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/audit
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/balance"
 ```
 
+Returns: `available_credit` (string), `balance` (string), `credit_limit` (string), `currency` (string), `pending` (string), `record_type` (enum: balance)
+
 ## Get monthly charges breakdown
 
-Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range.
+Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_breakdown`
 
@@ -56,15 +60,19 @@ Retrieve a detailed breakdown of monthly charges for phone numbers in a specifie
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/charges_breakdown?start_date=2025-05-01&end_date=2025-06-01&format=json"
 ```
 
+Returns: `currency` (string), `end_date` (date), `results` (array[object]), `start_date` (date), `user_email` (email), `user_id` (string)
+
 ## Get monthly charges summary
 
-Retrieve a summary of monthly charges for a specified date range.
+Retrieve a summary of monthly charges for a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_summary`
 
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/charges_summary?start_date=2025-05-01&end_date=2025-06-01"
 ```
+
+Returns: `currency` (string), `end_date` (date), `start_date` (date), `summary` (object), `total` (object), `user_email` (email), `user_id` (string)
 
 ## Search detail records
 
@@ -76,6 +84,8 @@ Search for any detail record across the Telnyx Platform
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/detail_records"
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## List invoices
 
 Retrieve a paginated list of invoices.
@@ -85,6 +95,8 @@ Retrieve a paginated list of invoices.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/invoices?sort=period_start"
 ```
+
+Returns: `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
 
 ## Get invoice by ID
 
@@ -96,6 +108,8 @@ Retrieve a single invoice by its unique identifier.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/invoices/{id}?action=json"
 ```
 
+Returns: `download_url` (uri), `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
+
 ## List auto recharge preferences
 
 Returns the payment auto recharge preferences.
@@ -106,13 +120,15 @@ Returns the payment auto recharge preferences.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/payment/auto_recharge_prefs"
 ```
 
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
+
 ## Update auto recharge preferences
 
 Update payment auto recharge preferences.
 
 `PATCH /payment/auto_recharge_prefs`
 
-Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum), `recharge_amount` (string), `threshold_amount` (string)
+Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `threshold_amount` (string)
 
 ```bash
 curl \
@@ -129,6 +145,8 @@ curl \
   "https://api.telnyx.com/v2/payment/auto_recharge_prefs"
 ```
 
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
+
 ## List User Tags
 
 List all user tags.
@@ -138,6 +156,8 @@ List all user tags.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/user_tags"
 ```
+
+Returns: `number_tags` (array[string]), `outbound_profile_tags` (array[string])
 
 ## Create a stored payment transaction
 
@@ -154,6 +174,8 @@ curl \
   "https://api.telnyx.com/v2/v2/payment/stored_payment_transactions"
 ```
 
+Returns: `amount_cents` (integer), `amount_currency` (string), `auto_recharge` (boolean), `created_at` (date-time), `id` (string), `processor_status` (string), `record_type` (enum: transaction), `transaction_processing_type` (enum: stored_payment)
+
 ## List webhook deliveries
 
 Lists webhook_deliveries for the authenticated user
@@ -164,6 +186,8 @@ Lists webhook_deliveries for the authenticated user
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/webhook_deliveries"
 ```
 
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)
+
 ## Find webhook_delivery details by ID
 
 Provides webhook_delivery debug data, such as timestamps, delivery status and attempts.
@@ -173,3 +197,5 @@ Provides webhook_delivery debug data, such as timestamps, delivery status and at
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/webhook_deliveries/C9C0797E-901D-4349-A33C-C2C8F31A92C2"
 ```
+
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)

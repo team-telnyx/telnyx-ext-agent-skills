@@ -45,18 +45,22 @@ page = page.data[0]
 print(page.id)
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Create a notification channel
 
 Create a notification channel.
 
 `POST /notification_channels`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```python
 notification_channel = client.notification_channels.create()
 print(notification_channel.data)
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## Get a notification channel
 
@@ -71,13 +75,15 @@ notification_channel = client.notification_channels.retrieve(
 print(notification_channel.data)
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Update a notification channel
 
 Update a notification channel.
 
 `PATCH /notification_channels/{id}`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```python
 notification_channel = client.notification_channels.update(
@@ -85,6 +91,8 @@ notification_channel = client.notification_channels.update(
 )
 print(notification_channel.data)
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## Delete a notification channel
 
@@ -99,6 +107,8 @@ notification_channel = client.notification_channels.delete(
 print(notification_channel.data)
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## List all Notifications Events Conditions
 
 Returns a list of your notifications events conditions.
@@ -110,6 +120,8 @@ page = client.notification_event_conditions.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `allow_multiple_channels` (boolean), `associated_record_type` (enum: account, phone_number), `asynchronous` (boolean), `created_at` (date-time), `description` (string), `enabled` (boolean), `id` (string), `name` (string), `notification_event_id` (string), `parameters` (array[object]), `supported_channels` (array[string]), `updated_at` (date-time)
 
 ## List all Notifications Events
 
@@ -123,6 +135,8 @@ page = page.data[0]
 print(page.id)
 ```
 
+Returns: `created_at` (date-time), `enabled` (boolean), `id` (string), `name` (string), `notification_category` (string), `updated_at` (date-time)
+
 ## List all Notifications Profiles
 
 Returns a list of your notifications profiles.
@@ -134,6 +148,8 @@ page = client.notification_profiles.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Create a notification profile
 
@@ -148,6 +164,8 @@ notification_profile = client.notification_profiles.create()
 print(notification_profile.data)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Get a notification profile
 
 Get a notification profile.
@@ -160,6 +178,8 @@ notification_profile = client.notification_profiles.retrieve(
 )
 print(notification_profile.data)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Update a notification profile
 
@@ -176,6 +196,8 @@ notification_profile = client.notification_profiles.update(
 print(notification_profile.data)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Delete a notification profile
 
 Delete a notification profile.
@@ -189,6 +211,8 @@ notification_profile = client.notification_profiles.delete(
 print(notification_profile.data)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## List notification settings
 
 List notification settings.
@@ -201,18 +225,22 @@ page = page.data[0]
 print(page.id)
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Add a Notification Setting
 
 Add a notification setting.
 
 `POST /notification_settings`
 
-Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum), `updated_at` (date-time)
+Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ```python
 notification_setting = client.notification_settings.create()
 print(notification_setting.data)
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ## Get a notification setting
 
@@ -227,6 +255,8 @@ notification_setting = client.notification_settings.retrieve(
 print(notification_setting.data)
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Delete a notification setting
 
 Delete a notification setting.
@@ -239,3 +269,5 @@ notification_setting = client.notification_settings.delete(
 )
 print(notification_setting.data)
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)

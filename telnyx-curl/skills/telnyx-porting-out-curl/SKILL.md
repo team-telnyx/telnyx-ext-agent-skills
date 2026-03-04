@@ -39,6 +39,8 @@ Returns the portout requests according to filters
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts"
 ```
 
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)
+
 ## List all port-out events
 
 Returns a list of all port-out events.
@@ -49,6 +51,8 @@ Returns a list of all port-out events.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/events"
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Show a port-out event
 
 Show a specific port-out event.
@@ -58,6 +62,8 @@ Show a specific port-out event.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/events/{id}"
 ```
+
+Returns: `data` (object)
 
 ## Republish a port-out event
 
@@ -83,6 +89,8 @@ Given a port-out ID, list rejection codes that are eligible for that port-out
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/rejections/329d6658-8f93-405d-862f-648776e8afd7"
 ```
 
+Returns: `code` (integer), `description` (string), `reason_required` (boolean)
+
 ## List port-out related reports
 
 List the reports generated about port-out operations.
@@ -92,6 +100,8 @@ List the reports generated about port-out operations.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/reports"
 ```
+
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
 
 ## Create a port-out related report
 
@@ -107,6 +117,8 @@ curl \
   "https://api.telnyx.com/v2/portouts/reports"
 ```
 
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
+
 ## Retrieve a report
 
 Retrieve a specific report generated.
@@ -116,6 +128,8 @@ Retrieve a specific report generated.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/reports/{id}"
 ```
+
+Returns: `created_at` (date-time), `document_id` (uuid), `id` (uuid), `params` (object), `record_type` (string), `report_type` (enum: export_portouts_csv), `status` (enum: pending, completed), `updated_at` (date-time)
 
 ## Get a portout request
 
@@ -127,6 +141,8 @@ Returns the portout request based on the ID provided
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/{id}"
 ```
 
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)
+
 ## List all comments for a portout request
 
 Returns a list of comments for a portout request.
@@ -136,6 +152,8 @@ Returns a list of comments for a portout request.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/{id}/comments"
 ```
+
+Returns: `body` (string), `created_at` (string), `id` (string), `portout_id` (string), `record_type` (string), `user_id` (string)
 
 ## Create a comment on a portout request
 
@@ -153,6 +171,8 @@ curl \
   "https://api.telnyx.com/v2/portouts/{id}/comments"
 ```
 
+Returns: `body` (string), `created_at` (string), `id` (string), `portout_id` (string), `record_type` (string), `user_id` (string)
+
 ## List supporting documents on a portout request
 
 List every supporting documents for a portout request.
@@ -162,6 +182,8 @@ List every supporting documents for a portout request.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/portouts/{id}/supporting_documents"
 ```
+
+Returns: `created_at` (string), `document_id` (uuid), `id` (uuid), `portout_id` (uuid), `record_type` (string), `type` (enum: loa, invoice), `updated_at` (string)
 
 ## Create a list of supporting documents on a portout request
 
@@ -178,6 +200,8 @@ curl \
   -H "Content-Type: application/json" \
   "https://api.telnyx.com/v2/portouts/{id}/supporting_documents"
 ```
+
+Returns: `created_at` (string), `document_id` (uuid), `id` (uuid), `portout_id` (uuid), `record_type` (string), `type` (enum: loa, invoice), `updated_at` (string)
 
 ## Update Status
 
@@ -198,3 +222,5 @@ curl \
 }' \
   "https://api.telnyx.com/v2/portouts/{id}/{status}"
 ```
+
+Returns: `already_ported` (boolean), `authorized_name` (string), `carrier_name` (string), `city` (string), `created_at` (string), `current_carrier` (string), `end_user_name` (string), `foc_date` (string), `host_messaging` (boolean), `id` (string), `inserted_at` (string), `lsr` (array[string]), `phone_numbers` (array[string]), `pon` (string), `reason` (['string', 'null']), `record_type` (string), `rejection_code` (integer), `requested_foc_date` (string), `service_address` (string), `spid` (string), `state` (string), `status` (enum: pending, authorized, ported, rejected, rejected-pending, canceled), `support_key` (string), `updated_at` (string), `user_id` (uuid), `vendor` (uuid), `zip` (string)

@@ -44,6 +44,8 @@ for await (const accessIPAddressResponse of client.accessIPAddress.list()) {
 }
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Create new Access IP Address
 
 `POST /access_ip_address` — Required: `ip_address`
@@ -56,6 +58,8 @@ const accessIPAddressResponse = await client.accessIPAddress.create({ ip_address
 console.log(accessIPAddressResponse.id);
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Retrieve an access IP address
 
 `GET /access_ip_address/{access_ip_address_id}`
@@ -66,6 +70,8 @@ const accessIPAddressResponse = await client.accessIPAddress.retrieve('access_ip
 console.log(accessIPAddressResponse.id);
 ```
 
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
+
 ## Delete access IP address
 
 `DELETE /access_ip_address/{access_ip_address_id}`
@@ -75,6 +81,8 @@ const accessIPAddressResponse = await client.accessIPAddress.delete('access_ip_a
 
 console.log(accessIPAddressResponse.id);
 ```
+
+Returns: `created_at` (date-time), `description` (string), `id` (string), `ip_address` (string), `source` (string), `status` (enum: pending, added), `updated_at` (date-time), `user_id` (string)
 
 ## List all addresses
 
@@ -88,6 +96,8 @@ for await (const address of client.addresses.list()) {
   console.log(address.id);
 }
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Creates an address
 
@@ -110,6 +120,8 @@ const address = await client.addresses.create({
 console.log(address.data);
 ```
 
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
+
 ## Validate an address
 
 Validates an address for emergency services.
@@ -128,6 +140,8 @@ const response = await client.addresses.actions.validate({
 console.log(response.data);
 ```
 
+Returns: `errors` (array[object]), `record_type` (string), `result` (enum: valid, invalid), `suggested` (object)
+
 ## Retrieve an address
 
 Retrieves the details of an existing address.
@@ -140,6 +154,8 @@ const address = await client.addresses.retrieve('id');
 console.log(address.data);
 ```
 
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
+
 ## Deletes an address
 
 Deletes an existing address.
@@ -151,6 +167,8 @@ const address = await client.addresses.delete('id');
 
 console.log(address.data);
 ```
+
+Returns: `address_book` (boolean), `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (string), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string), `validate_address` (boolean)
 
 ## Accepts this address suggestion as a new emergency address for Operator Connect and finishes the uploads of the numbers associated with it to Microsoft.
 
@@ -166,6 +184,8 @@ const response = await client.addresses.actions.acceptSuggestions(
 console.log(response.data);
 ```
 
+Returns: `accepted` (boolean), `id` (uuid), `record_type` (enum: address_suggestion)
+
 ## List all SSO authentication providers
 
 Returns a list of your SSO authentication providers.
@@ -178,6 +198,8 @@ for await (const authenticationProvider of client.authenticationProviders.list()
   console.log(authenticationProvider.id);
 }
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Creates an authentication provider
 
@@ -201,6 +223,8 @@ const authenticationProvider = await client.authenticationProviders.create({
 console.log(authenticationProvider.data);
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Retrieve an authentication provider
 
 Retrieves the details of an existing authentication provider.
@@ -212,6 +236,8 @@ const authenticationProvider = await client.authenticationProviders.retrieve('id
 
 console.log(authenticationProvider.data);
 ```
+
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
 
 ## Update an authentication provider
 
@@ -237,6 +263,8 @@ const authenticationProvider = await client.authenticationProviders.update('id',
 console.log(authenticationProvider.data);
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## Deletes an authentication provider
 
 Deletes an existing authentication provider.
@@ -249,6 +277,8 @@ const authenticationProvider = await client.authenticationProviders.delete('id')
 console.log(authenticationProvider.data);
 ```
 
+Returns: `activated_at` (date-time), `active` (boolean), `created_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (string), `settings` (object), `short_name` (string), `updated_at` (date-time)
+
 ## List all billing groups
 
 `GET /billing_groups`
@@ -259,6 +289,8 @@ for await (const billingGroup of client.billingGroups.list()) {
   console.log(billingGroup.id);
 }
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Create a billing group
 
@@ -272,6 +304,8 @@ const billingGroup = await client.billingGroups.create({ name: 'string' });
 console.log(billingGroup.data);
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Get a billing group
 
 `GET /billing_groups/{id}`
@@ -281,6 +315,8 @@ const billingGroup = await client.billingGroups.retrieve('f5586561-8ff0-4291-a0a
 
 console.log(billingGroup.data);
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## Update a billing group
 
@@ -296,6 +332,8 @@ const billingGroup = await client.billingGroups.update('f5586561-8ff0-4291-a0ac-
 console.log(billingGroup.data);
 ```
 
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
+
 ## Delete a billing group
 
 `DELETE /billing_groups/{id}`
@@ -305,6 +343,8 @@ const billingGroup = await client.billingGroups.delete('f5586561-8ff0-4291-a0ac-
 
 console.log(billingGroup.data);
 ```
+
+Returns: `created_at` (date-time), `deleted_at` (date-time), `id` (uuid), `name` (string), `organization_id` (uuid), `record_type` (enum: billing_group), `updated_at` (date-time)
 
 ## List integration secrets
 
@@ -318,6 +358,8 @@ for await (const integrationSecret of client.integrationSecrets.list()) {
   console.log(integrationSecret.id);
 }
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Create a secret
 
@@ -336,6 +378,8 @@ const integrationSecret = await client.integrationSecrets.create({
 
 console.log(integrationSecret.data);
 ```
+
+Returns: `created_at` (date-time), `id` (string), `identifier` (string), `record_type` (string), `updated_at` (date-time)
 
 ## Delete an integration secret
 

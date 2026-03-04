@@ -38,13 +38,15 @@ List notification channels.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_channels"
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Create a notification channel
 
 Create a notification channel.
 
 `POST /notification_channels`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```bash
 curl \
@@ -61,6 +63,8 @@ curl \
   "https://api.telnyx.com/v2/notification_channels"
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Get a notification channel
 
 Get a notification channel.
@@ -71,13 +75,15 @@ Get a notification channel.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_channels/{id}"
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Update a notification channel
 
 Update a notification channel.
 
 `PATCH /notification_channels/{id}`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```bash
 curl \
@@ -94,6 +100,8 @@ curl \
   "https://api.telnyx.com/v2/notification_channels/{id}"
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Delete a notification channel
 
 Delete a notification channel.
@@ -107,6 +115,8 @@ curl \
   "https://api.telnyx.com/v2/notification_channels/{id}"
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## List all Notifications Events Conditions
 
 Returns a list of your notifications events conditions.
@@ -116,6 +126,8 @@ Returns a list of your notifications events conditions.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_event_conditions"
 ```
+
+Returns: `allow_multiple_channels` (boolean), `associated_record_type` (enum: account, phone_number), `asynchronous` (boolean), `created_at` (date-time), `description` (string), `enabled` (boolean), `id` (string), `name` (string), `notification_event_id` (string), `parameters` (array[object]), `supported_channels` (array[string]), `updated_at` (date-time)
 
 ## List all Notifications Events
 
@@ -127,6 +139,8 @@ Returns a list of your notifications events.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_events"
 ```
 
+Returns: `created_at` (date-time), `enabled` (boolean), `id` (string), `name` (string), `notification_category` (string), `updated_at` (date-time)
+
 ## List all Notifications Profiles
 
 Returns a list of your notifications profiles.
@@ -136,6 +150,8 @@ Returns a list of your notifications profiles.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_profiles"
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Create a notification profile
 
@@ -158,6 +174,8 @@ curl \
   "https://api.telnyx.com/v2/notification_profiles"
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Get a notification profile
 
 Get a notification profile.
@@ -167,6 +185,8 @@ Get a notification profile.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_profiles/{id}"
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Update a notification profile
 
@@ -189,6 +209,8 @@ curl \
   "https://api.telnyx.com/v2/notification_profiles/{id}"
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Delete a notification profile
 
 Delete a notification profile.
@@ -202,6 +224,8 @@ curl \
   "https://api.telnyx.com/v2/notification_profiles/{id}"
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## List notification settings
 
 List notification settings.
@@ -212,13 +236,15 @@ List notification settings.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_settings"
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Add a Notification Setting
 
 Add a notification setting.
 
 `POST /notification_settings`
 
-Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum), `updated_at` (date-time)
+Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ```bash
 curl \
@@ -239,6 +265,8 @@ curl \
   "https://api.telnyx.com/v2/notification_settings"
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Get a notification setting
 
 Get a notification setting.
@@ -248,6 +276,8 @@ Get a notification setting.
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/notification_settings/{id}"
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ## Delete a notification setting
 
@@ -261,3 +291,5 @@ curl \
   -H "Authorization: Bearer $TELNYX_API_KEY" \
   "https://api.telnyx.com/v2/notification_settings/{id}"
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
