@@ -146,23 +146,32 @@ except TwilioRestException as e:
 
 ### After (Telnyx — Python)
 ```python
-import telnyx
-from telnyx.error import APIError, AuthenticationError, RateLimitError
+import os
+from telnyx import Telnyx
+
+client = Telnyx(api_key=os.environ.get("TELNYX_API_KEY"))
 
 try:
-    message = telnyx.Message.create(text="Hello", to="+1555...", from_="+1555...", messaging_profile_id="...")
-except AuthenticationError:
-    print("Auth failed — check TELNYX_API_KEY")
-except RateLimitError:
-    print("Rate limited — implement exponential backoff")
-except APIError as e:
-    error_code = e.json_body["errors"][0]["code"] if e.json_body else None
-    if error_code == "40310":
-        print("Invalid phone number")
-    elif error_code == "40305":
-        print("From number not on messaging profile")
+    message = client.messages.send(text="Hello", to="+1555...", from_="+1555...", messaging_profile_id="...")
+except Exception as e:
+    # Telnyx errors have status_code and a JSON body with errors array
+    if hasattr(e, 'status_code'):
+        if e.status_code == 401:
+            print("Auth failed — check TELNYX_API_KEY")
+        elif e.status_code == 429:
+            print("Rate limited — implement exponential backoff")
+        else:
+            error_code = None
+            if hasattr(e, 'body') and e.body and 'errors' in e.body:
+                error_code = e.body['errors'][0].get('code')
+            if error_code == "40310":
+                print("Invalid phone number")
+            elif error_code == "40305":
+                print("From number not on messaging profile")
+            else:
+                print(f"API error {error_code}: {e}")
     else:
-        print(f"API error {error_code}: {e}")
+        raise
 ```
 
 ### Before (Twilio — JavaScript)
@@ -178,13 +187,15 @@ try {
 
 ### After (Telnyx — JavaScript)
 ```javascript
+const Telnyx = require('telnyx');
+const client = new Telnyx({ apiKey: process.env.TELNYX_API_KEY });
+
 try {
-  const { data: message } = await telnyx.messages.create({
+  const { data: message } = await client.messages.create({
     text: "Hello", to: "+1555...", from: "+1555...", messaging_profile_id: "..."
   });
 } catch (err) {
   const code = err.rawErrors?.[0]?.code;
-  if (code === "40310") console.error("Invalid phone number");
   else if (code === "10009") console.error("Auth failed — check TELNYX_API_KEY");
   else if (err.statusCode === 429) await sleep(1000); // exponential backoff
   else console.error(`API error ${code}: ${err.message}`);

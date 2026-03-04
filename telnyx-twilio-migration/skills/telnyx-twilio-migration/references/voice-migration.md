@@ -383,7 +383,7 @@ Status callback events match Twilio's: `initiated`, `ringing`, `answered`, `comp
 
 5. **AMD (Answering Machine Detection)** — Telnyx supports `Regular` and `Premium` detection modes. Twilio's `machineDetection` param maps to Telnyx's `answering_machine_detection`. The `Premium` mode provides async detection with separate webhook events (`call.machine.detection.ended`).
 
-6. **DTMF collection differences** — In TeXML `<Gather>`, Telnyx supports multiple STT engines (`speechModel` attribute). If you were using Twilio's default speech recognition, you now have a choice of Google, Telnyx, Deepgram, or Azure.
+6. **Speech recognition engines** — In TeXML `<Gather>`, Telnyx supports multiple STT engines via the `transcriptionEngine` attribute (e.g., `transcriptionEngine="Google"`). If you were using Twilio's default speech recognition, you now have a choice of Google, Telnyx, Deepgram, or Azure.
 
 ## REST API Mapping
 

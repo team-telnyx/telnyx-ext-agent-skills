@@ -212,18 +212,24 @@ def messaging_webhook():
 
 ### Express (Node.js)
 
+**Important**: Signature verification requires the raw request body (original bytes), not re-serialized JSON. Use the `verify` callback on `express.json()` to capture raw bytes.
+
 ```javascript
 const express = require('express');
 const Telnyx = require('telnyx');
 const client = new Telnyx({ apiKey: 'YOUR_API_KEY' });
 const app = express();
-app.use(express.json());
+
+// Capture raw body for webhook signature verification
+app.use(express.json({
+  verify: (req, res, buf) => { req.rawBody = buf.toString('utf-8'); }
+}));
 
 app.post('/webhooks/messaging', (req, res) => {
-  // Verify signature
+  // Verify signature using raw body (NOT JSON.stringify(req.body))
   try {
     client.webhooks.signature.verifySignature(
-      JSON.stringify(req.body),
+      req.rawBody,  // Must be the original bytes, not re-serialized
       req.headers['telnyx-signature-ed25519'],
       req.headers['telnyx-timestamp'],
       'YOUR_PUBLIC_KEY'
@@ -373,3 +379,5 @@ func main() {
 6. **Signature header names** — Twilio: `X-Twilio-Signature`. Telnyx: `telnyx-signature-ed25519` + `telnyx-timestamp` (two headers).
 
 7. **Recording URLs expire** — Telnyx voice recording URLs expire after 10 minutes. Download or store them immediately in the webhook handler.
+
+8. **Express raw body for signature verification** — Do NOT use `JSON.stringify(req.body)` — re-serialization changes key order/whitespace and breaks signature verification. Capture the raw body via `express.json({ verify: (req, res, buf) => { req.rawBody = buf.toString('utf-8'); } })` and pass `req.rawBody` to the verification function.

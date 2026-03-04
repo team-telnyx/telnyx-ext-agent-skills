@@ -197,7 +197,7 @@ cd <project-root> && git checkout -b migrate/twilio-to-telnyx
 
 Install Telnyx SDK **alongside** Twilio — do NOT remove Twilio from the package manifest yet (removal is Phase 6). Keep `twilio` in `requirements.txt`/`package.json`/`Gemfile`/`go.mod` until Phase 6 so you can revert if validation fails.
 
-Python: `pip install telnyx` | Node: `npm install telnyx` | Ruby: `gem 'telnyx'` in Gemfile + `bundle install` | Go: `go get github.com/team-telnyx/telnyx-go` | Java: add `com.telnyx:telnyx-java` to pom.xml | PHP: `composer require telnyx/telnyx-php`
+Python: `pip install telnyx` | Node: `npm install telnyx` | Ruby: `gem 'telnyx'` in Gemfile + `bundle install` | Go: `go get github.com/team-telnyx/telnyx-go` | Java/PHP/C#: No official SDK — use REST API with `{baseDir}/sdk-reference/curl/` for API examples
 
 ### Step 3.3: Update Environment Variables
 
