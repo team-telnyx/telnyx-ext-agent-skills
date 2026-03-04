@@ -1,15 +1,4 @@
----
-name: telnyx-webrtc-client-flutter
-description: >-
-  Build cross-platform VoIP calling apps with Flutter using Telnyx WebRTC SDK.
-  Covers authentication, making/receiving calls, push notifications (FCM + APNS),
-  call quality metrics, and AI Agent integration. Works on Android, iOS, and Web.
-metadata:
-  author: telnyx
-  product: webrtc
-  language: dart
-  platform: flutter
----
+<!-- SDK reference: telnyx-webrtc-client-flutter (WebRTC client) -->
 
 # Telnyx WebRTC - Flutter SDK
 
