@@ -303,9 +303,11 @@ If validation fails and you cannot fix the issue, document it and continue to th
 - `to` → `phone_number`
 - Check response: `approved` → `accepted`, `pending` → `rejected`
 
-**Webhook Signature Validation (all products):**
-- Replace HMAC-SHA1 (`RequestValidator`) with Ed25519 (`WebhookSignatureVerifier`)
-- Replace `X-Twilio-Signature` header check with `telnyx-signature-ed25519` + `telnyx-timestamp`
+**Webhook Receivers (all products):**
+- **You MUST migrate webhook handlers** — this is half the migration for most apps. See `{baseDir}/references/webhook-migration.md` for complete receive + parse + verify examples in Python (Flask), JavaScript (Express), Ruby (Sinatra), and Go (net/http).
+- Parse JSON body instead of form data: `request.json['data']['payload']` not `request.form`
+- Access fields via `data.payload.*` — `from` is an object (`from.phone_number`), `to` is an array
+- Replace HMAC-SHA1 (`RequestValidator`) with Ed25519 signature verification using `telnyx-signature-ed25519` + `telnyx-timestamp` headers
 
 ---
 

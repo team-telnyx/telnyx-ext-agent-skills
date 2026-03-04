@@ -249,6 +249,115 @@ app.post('/webhooks/messaging', (req, res) => {
 });
 ```
 
+### Sinatra (Ruby)
+
+```ruby
+require 'sinatra'
+require 'json'
+require 'telnyx'
+
+set :port, 5000
+
+post '/webhooks/messaging' do
+  payload = request.body.read
+
+  # Verify signature
+  begin
+    Telnyx::Webhook.construct_event(
+      payload,
+      request.env['HTTP_TELNYX_SIGNATURE_ED25519'],
+      request.env['HTTP_TELNYX_TIMESTAMP'],
+      public_key: ENV['TELNYX_PUBLIC_KEY']
+    )
+  rescue StandardError
+    halt 403, 'Forbidden'
+  end
+
+  event = JSON.parse(payload)
+  event_type = event.dig('data', 'event_type')
+  data = event.dig('data', 'payload')
+
+  case event_type
+  when 'message.received'
+    from_number = data.dig('from', 'phone_number')
+    text = data['text']
+    # Process inbound message...
+  when 'message.delivered'
+    # Handle delivery confirmation...
+  when 'message.failed'
+    errors = data['errors'] || []
+    # Handle failure...
+  end
+
+  content_type :json
+  { status: 'ok' }.to_json
+end
+```
+
+### Go (net/http)
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+type TelnyxEvent struct {
+	Data struct {
+		EventType string `json:"event_type"`
+		Payload   struct {
+			ID   string `json:"id"`
+			From struct {
+				PhoneNumber string `json:"phone_number"`
+			} `json:"from"`
+			To []struct {
+				PhoneNumber string `json:"phone_number"`
+			} `json:"to"`
+			Text   string `json:"text"`
+			Errors []struct {
+				Code  string `json:"code"`
+				Title string `json:"title"`
+			} `json:"errors"`
+		} `json:"payload"`
+	} `json:"data"`
+}
+
+func messagingWebhook(w http.ResponseWriter, r *http.Request) {
+	body, _ := io.ReadAll(r.Body)
+
+	// Verify Ed25519 signature (see Signature Verification section above)
+
+	var event TelnyxEvent
+	if err := json.Unmarshal(body, &event); err != nil {
+		http.Error(w, "Bad request", 400)
+		return
+	}
+
+	switch event.Data.EventType {
+	case "message.received":
+		from := event.Data.Payload.From.PhoneNumber
+		text := event.Data.Payload.Text
+		fmt.Printf("SMS from %s: %s\n", from, text)
+	case "message.delivered":
+		// Handle delivery confirmation...
+	case "message.failed":
+		// Handle failure...
+	}
+
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+func main() {
+	http.HandleFunc("/webhooks/messaging", messagingWebhook)
+	http.ListenAndServe(":5000", nil)
+}
+```
+
 ## Common Webhook Migration Mistakes
 
 1. **Still parsing form data** — Telnyx sends JSON, not form-encoded. Use `request.json` (Flask) or `req.body` with JSON middleware (Express), not `request.form`.
