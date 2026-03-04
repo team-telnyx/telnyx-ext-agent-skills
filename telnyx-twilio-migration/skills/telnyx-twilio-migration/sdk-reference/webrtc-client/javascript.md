@@ -1,15 +1,4 @@
----
-name: telnyx-webrtc-client-js
-description: >-
-  Build browser-based VoIP calling apps using Telnyx WebRTC JavaScript SDK.
-  Covers authentication, voice calls, events, debugging, call quality
-  metrics, and AI Agent integration. Use for web-based real-time communication.
-metadata:
-  author: telnyx
-  product: webrtc
-  language: javascript
-  platform: browser
----
+<!-- SDK reference: telnyx-webrtc-client-js (WebRTC client) -->
 
 # Telnyx WebRTC - JavaScript SDK
 
