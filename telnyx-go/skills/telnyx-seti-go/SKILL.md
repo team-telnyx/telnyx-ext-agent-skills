@@ -64,3 +64,5 @@ Returns the results of the various black box tests
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `black_box_tests` (array[object]), `product` (string), `record_type` (string)

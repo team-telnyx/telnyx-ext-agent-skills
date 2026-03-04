@@ -47,6 +47,8 @@ number_lookup = client.number_lookup.retrieve(
 print(number_lookup.data)
 ```
 
+Returns: `caller_name` (object), `carrier` (object), `country_code` (string), `fraud` (['string', 'null']), `national_format` (string), `phone_number` (string), `portability` (object), `record_type` (string)
+
 ## List verifications by phone number
 
 `GET /verifications/by_phone_number/{phone_number}`
@@ -57,6 +59,8 @@ by_phone_numbers = client.verifications.by_phone_number.list(
 )
 print(by_phone_numbers.data)
 ```
+
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
 
 ## Verify verification code by phone number
 
@@ -70,6 +74,8 @@ verify_verification_code_response = client.verifications.by_phone_number.actions
 )
 print(verify_verification_code_response.data)
 ```
+
+Returns: `phone_number` (string), `response_code` (enum: accepted, rejected)
 
 ## Trigger Call verification
 
@@ -85,6 +91,8 @@ create_verification_response = client.verifications.trigger_call(
 print(create_verification_response.data)
 ```
 
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
+
 ## Trigger Flash call verification
 
 `POST /verifications/flashcall` — Required: `phone_number`, `verify_profile_id`
@@ -98,6 +106,8 @@ create_verification_response = client.verifications.trigger_flashcall(
 )
 print(create_verification_response.data)
 ```
+
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
 
 ## Trigger SMS verification
 
@@ -113,6 +123,8 @@ create_verification_response = client.verifications.trigger_sms(
 print(create_verification_response.data)
 ```
 
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
+
 ## Retrieve verification
 
 `GET /verifications/{verification_id}`
@@ -124,11 +136,13 @@ verification = client.verifications.retrieve(
 print(verification.data)
 ```
 
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
+
 ## Verify verification code by ID
 
 `POST /verifications/{verification_id}/actions/verify`
 
-Optional: `code` (string), `status` (enum)
+Optional: `code` (string), `status` (enum: accepted, rejected)
 
 ```python
 verify_verification_code_response = client.verifications.actions.verify(
@@ -136,6 +150,8 @@ verify_verification_code_response = client.verifications.actions.verify(
 )
 print(verify_verification_code_response.data)
 ```
+
+Returns: `phone_number` (string), `response_code` (enum: accepted, rejected)
 
 ## List all Verify profiles
 
@@ -148,6 +164,8 @@ page = client.verify_profiles.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
 
 ## Create a Verify profile
 
@@ -164,6 +182,8 @@ verify_profile_data = client.verify_profiles.create(
 print(verify_profile_data.data)
 ```
 
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
+
 ## Retrieve Verify profile message templates
 
 List all Verify profile message templates.
@@ -174,6 +194,8 @@ List all Verify profile message templates.
 response = client.verify_profiles.retrieve_templates()
 print(response.data)
 ```
+
+Returns: `id` (uuid), `text` (string)
 
 ## Create message template
 
@@ -187,6 +209,8 @@ message_template = client.verify_profiles.create_template(
 )
 print(message_template.data)
 ```
+
+Returns: `id` (uuid), `text` (string)
 
 ## Update message template
 
@@ -202,6 +226,8 @@ message_template = client.verify_profiles.update_template(
 print(message_template.data)
 ```
 
+Returns: `id` (uuid), `text` (string)
+
 ## Retrieve Verify profile
 
 Gets a single Verify profile.
@@ -214,6 +240,8 @@ verify_profile_data = client.verify_profiles.retrieve(
 )
 print(verify_profile_data.data)
 ```
+
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
 
 ## Update Verify profile
 
@@ -228,6 +256,8 @@ verify_profile_data = client.verify_profiles.update(
 print(verify_profile_data.data)
 ```
 
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
+
 ## Delete Verify profile
 
 `DELETE /verify_profiles/{verify_profile_id}`
@@ -238,3 +268,5 @@ verify_profile_data = client.verify_profiles.delete(
 )
 print(verify_profile_data.data)
 ```
+
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)

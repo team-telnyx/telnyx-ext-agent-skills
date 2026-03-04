@@ -53,13 +53,15 @@ List notification channels.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Create a notification channel
 
 Create a notification channel.
 
 `POST /notification_channels`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```go
 	notificationChannel, err := client.NotificationChannels.New(context.TODO(), telnyx.NotificationChannelNewParams{})
@@ -68,6 +70,8 @@ Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at`
 	}
 	fmt.Printf("%+v\n", notificationChannel.Data)
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## Get a notification channel
 
@@ -83,13 +87,15 @@ Get a notification channel.
 	fmt.Printf("%+v\n", notificationChannel.Data)
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Update a notification channel
 
 Update a notification channel.
 
 `PATCH /notification_channels/{id}`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```go
 	notificationChannel, err := client.NotificationChannels.Update(
@@ -105,6 +111,8 @@ Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at`
 	fmt.Printf("%+v\n", notificationChannel.Data)
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Delete a notification channel
 
 Delete a notification channel.
@@ -118,6 +126,8 @@ Delete a notification channel.
 	}
 	fmt.Printf("%+v\n", notificationChannel.Data)
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## List all Notifications Events Conditions
 
@@ -133,6 +143,8 @@ Returns a list of your notifications events conditions.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `allow_multiple_channels` (boolean), `associated_record_type` (enum: account, phone_number), `asynchronous` (boolean), `created_at` (date-time), `description` (string), `enabled` (boolean), `id` (string), `name` (string), `notification_event_id` (string), `parameters` (array[object]), `supported_channels` (array[string]), `updated_at` (date-time)
+
 ## List all Notifications Events
 
 Returns a list of your notifications events.
@@ -147,6 +159,8 @@ Returns a list of your notifications events.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `created_at` (date-time), `enabled` (boolean), `id` (string), `name` (string), `notification_category` (string), `updated_at` (date-time)
+
 ## List all Notifications Profiles
 
 Returns a list of your notifications profiles.
@@ -160,6 +174,8 @@ Returns a list of your notifications profiles.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Create a notification profile
 
@@ -177,6 +193,8 @@ Optional: `created_at` (date-time), `id` (string), `name` (string), `updated_at`
 	fmt.Printf("%+v\n", notificationProfile.Data)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Get a notification profile
 
 Get a notification profile.
@@ -190,6 +208,8 @@ Get a notification profile.
 	}
 	fmt.Printf("%+v\n", notificationProfile.Data)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Update a notification profile
 
@@ -213,6 +233,8 @@ Optional: `created_at` (date-time), `id` (string), `name` (string), `updated_at`
 	fmt.Printf("%+v\n", notificationProfile.Data)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Delete a notification profile
 
 Delete a notification profile.
@@ -226,6 +248,8 @@ Delete a notification profile.
 	}
 	fmt.Printf("%+v\n", notificationProfile.Data)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## List notification settings
 
@@ -241,13 +265,15 @@ List notification settings.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Add a Notification Setting
 
 Add a notification setting.
 
 `POST /notification_settings`
 
-Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum), `updated_at` (date-time)
+Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ```go
 	notificationSetting, err := client.NotificationSettings.New(context.TODO(), telnyx.NotificationSettingNewParams{})
@@ -256,6 +282,8 @@ Optional: `associated_record_type` (string), `associated_record_type_value` (str
 	}
 	fmt.Printf("%+v\n", notificationSetting.Data)
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ## Get a notification setting
 
@@ -271,6 +299,8 @@ Get a notification setting.
 	fmt.Printf("%+v\n", notificationSetting.Data)
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Delete a notification setting
 
 Delete a notification setting.
@@ -284,3 +314,5 @@ Delete a notification setting.
 	}
 	fmt.Printf("%+v\n", notificationSetting.Data)
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)

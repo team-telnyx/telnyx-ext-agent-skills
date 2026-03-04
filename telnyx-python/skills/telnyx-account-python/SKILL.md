@@ -35,7 +35,7 @@ All examples below assume `client` is already initialized as shown above.
 
 ## List Audit Logs
 
-Retrieve a list of audit log entries.
+Retrieve a list of audit log entries. Audit logs are a best-effort, eventually consistent record of significant account-related changes.
 
 `GET /audit_events`
 
@@ -44,6 +44,8 @@ page = client.audit_events.list()
 page = page.data[0]
 print(page.id)
 ```
+
+Returns: `alternate_resource_id` (['string', 'null']), `change_made_by` (enum: telnyx, account_manager, account_owner, organization_member), `change_type` (string), `changes` (['array', 'null']), `created_at` (date-time), `id` (uuid), `organization_id` (uuid), `record_type` (string), `resource_id` (string), `user_id` (uuid)
 
 ## Get user balance details
 
@@ -54,9 +56,11 @@ balance = client.balance.retrieve()
 print(balance.data)
 ```
 
+Returns: `available_credit` (string), `balance` (string), `credit_limit` (string), `currency` (string), `pending` (string), `record_type` (enum: balance)
+
 ## Get monthly charges breakdown
 
-Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range.
+Retrieve a detailed breakdown of monthly charges for phone numbers in a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_breakdown`
 
@@ -69,9 +73,11 @@ charges_breakdown = client.charges_breakdown.retrieve(
 print(charges_breakdown.data)
 ```
 
+Returns: `currency` (string), `end_date` (date), `results` (array[object]), `start_date` (date), `user_email` (email), `user_id` (string)
+
 ## Get monthly charges summary
 
-Retrieve a summary of monthly charges for a specified date range.
+Retrieve a summary of monthly charges for a specified date range. The date range cannot exceed 31 days.
 
 `GET /charges_summary`
 
@@ -85,6 +91,8 @@ charges_summary = client.charges_summary.retrieve(
 print(charges_summary.data)
 ```
 
+Returns: `currency` (string), `end_date` (date), `start_date` (date), `summary` (object), `total` (object), `user_email` (email), `user_id` (string)
+
 ## Search detail records
 
 Search for any detail record across the Telnyx Platform
@@ -97,6 +105,8 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## List invoices
 
 Retrieve a paginated list of invoices.
@@ -108,6 +118,8 @@ page = client.invoices.list()
 page = page.data[0]
 print(page.file_id)
 ```
+
+Returns: `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
 
 ## Get invoice by ID
 
@@ -122,6 +134,8 @@ invoice = client.invoices.retrieve(
 print(invoice.data)
 ```
 
+Returns: `download_url` (uri), `file_id` (uuid), `invoice_id` (uuid), `paid` (boolean), `period_end` (date), `period_start` (date), `url` (uri)
+
 ## List auto recharge preferences
 
 Returns the payment auto recharge preferences.
@@ -133,18 +147,22 @@ auto_recharge_prefs = client.payment.auto_recharge_prefs.list()
 print(auto_recharge_prefs.data)
 ```
 
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
+
 ## Update auto recharge preferences
 
 Update payment auto recharge preferences.
 
 `PATCH /payment/auto_recharge_prefs`
 
-Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum), `recharge_amount` (string), `threshold_amount` (string)
+Optional: `enabled` (boolean), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `threshold_amount` (string)
 
 ```python
 auto_recharge_pref = client.payment.auto_recharge_prefs.update()
 print(auto_recharge_pref.data)
 ```
+
+Returns: `enabled` (boolean), `id` (string), `invoice_enabled` (boolean), `preference` (enum: credit_paypal, ach), `recharge_amount` (string), `record_type` (string), `threshold_amount` (string)
 
 ## List User Tags
 
@@ -157,6 +175,8 @@ user_tags = client.user_tags.list()
 print(user_tags.data)
 ```
 
+Returns: `number_tags` (array[string]), `outbound_profile_tags` (array[string])
+
 ## Create a stored payment transaction
 
 `POST /v2/payment/stored_payment_transactions` — Required: `amount`
@@ -167,6 +187,8 @@ response = client.payment.create_stored_payment_transaction(
 )
 print(response.data)
 ```
+
+Returns: `amount_cents` (integer), `amount_currency` (string), `auto_recharge` (boolean), `created_at` (date-time), `id` (string), `processor_status` (string), `record_type` (enum: transaction), `transaction_processing_type` (enum: stored_payment)
 
 ## List webhook deliveries
 
@@ -180,6 +202,8 @@ page = page.data[0]
 print(page.id)
 ```
 
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)
+
 ## Find webhook_delivery details by ID
 
 Provides webhook_delivery debug data, such as timestamps, delivery status and attempts.
@@ -192,3 +216,5 @@ webhook_delivery = client.webhook_deliveries.retrieve(
 )
 print(webhook_delivery.data)
 ```
+
+Returns: `attempts` (array[object]), `finished_at` (date-time), `id` (uuid), `record_type` (string), `started_at` (date-time), `status` (enum: delivered, failed), `user_id` (uuid), `webhook` (object)

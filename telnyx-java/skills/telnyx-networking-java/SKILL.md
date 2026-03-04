@@ -42,9 +42,11 @@ import com.telnyx.sdk.models.ai.clusters.ClusterListParams;
 ClusterListPage page = client.ai().clusters().list();
 ```
 
+Returns: `bucket` (string), `created_at` (date-time), `finished_at` (date-time), `min_cluster_size` (integer), `min_subcluster_size` (integer), `status` (enum: pending, starting, running, completed, failed), `task_id` (string)
+
 ## Compute new clusters
 
-Starts a background task to compute how the data in an [embedded storage bucket](https://developers.telnyx.com/api-reference/embeddings/embed-documents) is clustered.
+Starts a background task to compute how the data in an [embedded storage bucket](https://developers.telnyx.com/api-reference/embeddings/embed-documents) is clustered. This helps identify common themes and patterns in the data.
 
 `POST /ai/clusters` — Required: `bucket`
 
@@ -60,6 +62,8 @@ ClusterComputeParams params = ClusterComputeParams.builder()
 ClusterComputeResponse response = client.ai().clusters().compute(params);
 ```
 
+Returns: `task_id` (string)
+
 ## Fetch a cluster
 
 `GET /ai/clusters/{task_id}`
@@ -70,6 +74,8 @@ import com.telnyx.sdk.models.ai.clusters.ClusterRetrieveResponse;
 
 ClusterRetrieveResponse cluster = client.ai().clusters().retrieve("task_id");
 ```
+
+Returns: `bucket` (string), `clusters` (array[object]), `status` (enum: pending, starting, running, completed, failed)
 
 ## Delete a cluster
 
@@ -105,6 +111,8 @@ import com.telnyx.sdk.models.ai.integrations.IntegrationListResponse;
 IntegrationListResponse integrations = client.ai().integrations().list();
 ```
 
+Returns: `available_tools` (array[string]), `description` (string), `display_name` (string), `id` (string), `logo_url` (string), `name` (string), `status` (enum: disconnected, connected)
+
 ## List User Integrations
 
 List user setup integrations
@@ -118,6 +126,8 @@ import com.telnyx.sdk.models.ai.integrations.connections.ConnectionListResponse;
 ConnectionListResponse connections = client.ai().integrations().connections().list();
 ```
 
+Returns: `allowed_tools` (array[string]), `id` (string), `integration_id` (string)
+
 ## Get User Integration connection By Id
 
 Get user setup integrations
@@ -130,6 +140,8 @@ import com.telnyx.sdk.models.ai.integrations.connections.ConnectionRetrieveRespo
 
 ConnectionRetrieveResponse connection = client.ai().integrations().connections().retrieve("user_connection_id");
 ```
+
+Returns: `allowed_tools` (array[string]), `id` (string), `integration_id` (string)
 
 ## Delete Integration Connection
 
@@ -156,6 +168,8 @@ import com.telnyx.sdk.models.ai.integrations.IntegrationRetrieveResponse;
 IntegrationRetrieveResponse integration = client.ai().integrations().retrieve("integration_id");
 ```
 
+Returns: `available_tools` (array[string]), `description` (string), `display_name` (string), `id` (string), `logo_url` (string), `name` (string), `status` (enum: disconnected, connected)
+
 ## List all Global IP Allowed Ports
 
 `GET /global_ip_allowed_ports`
@@ -167,6 +181,8 @@ import com.telnyx.sdk.models.globalipallowedports.GlobalIpAllowedPortListRespons
 GlobalIpAllowedPortListResponse globalIpAllowedPorts = client.globalIpAllowedPorts().list();
 ```
 
+Returns: `data` (array[object])
+
 ## Global IP Assignment Health Check Metrics
 
 `GET /global_ip_assignment_health`
@@ -177,6 +193,8 @@ import com.telnyx.sdk.models.globalipassignmenthealth.GlobalIpAssignmentHealthRe
 
 GlobalIpAssignmentHealthRetrieveResponse globalIpAssignmentHealth = client.globalIpAssignmentHealth().retrieve();
 ```
+
+Returns: `global_ip` (object), `global_ip_assignment` (object), `health` (object), `timestamp` (date-time)
 
 ## List all Global IP assignments
 
@@ -190,6 +208,8 @@ import com.telnyx.sdk.models.globalipassignments.GlobalIpAssignmentListParams;
 
 GlobalIpAssignmentListPage page = client.globalIpAssignments().list();
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Global IP assignment
 
@@ -206,6 +226,8 @@ GlobalIpAssignment params = GlobalIpAssignment.builder().build();
 GlobalIpAssignmentCreateResponse globalIpAssignment = client.globalIpAssignments().create(params);
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Global IP
 
 Retrieve a Global IP assignment.
@@ -218,6 +240,8 @@ import com.telnyx.sdk.models.globalipassignments.GlobalIpAssignmentRetrieveRespo
 
 GlobalIpAssignmentRetrieveResponse globalIpAssignment = client.globalIpAssignments().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## Update a Global IP assignment
 
@@ -232,6 +256,8 @@ import com.telnyx.sdk.models.globalipassignments.GlobalIpAssignmentUpdateRespons
 GlobalIpAssignmentUpdateResponse globalIpAssignment = client.globalIpAssignments().update("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## Delete a Global IP assignment
 
 Delete a Global IP assignment.
@@ -245,6 +271,8 @@ import com.telnyx.sdk.models.globalipassignments.GlobalIpAssignmentDeleteRespons
 GlobalIpAssignmentDeleteResponse globalIpAssignment = client.globalIpAssignments().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## Global IP Assignment Usage Metrics
 
 `GET /global_ip_assignments_usage`
@@ -255,6 +283,8 @@ import com.telnyx.sdk.models.globalipassignmentsusage.GlobalIpAssignmentsUsageRe
 
 GlobalIpAssignmentsUsageRetrieveResponse globalIpAssignmentsUsage = client.globalIpAssignmentsUsage().retrieve();
 ```
+
+Returns: `global_ip` (object), `global_ip_assignment` (object), `received` (object), `timestamp` (date-time), `transmitted` (object)
 
 ## List all Global IP Health check types
 
@@ -269,6 +299,8 @@ import com.telnyx.sdk.models.globaliphealthchecktypes.GlobalIpHealthCheckTypeLis
 GlobalIpHealthCheckTypeListResponse globalIpHealthCheckTypes = client.globalIpHealthCheckTypes().list();
 ```
 
+Returns: `data` (array[object])
+
 ## List all Global IP health checks
 
 List all Global IP health checks.
@@ -281,6 +313,8 @@ import com.telnyx.sdk.models.globaliphealthchecks.GlobalIpHealthCheckListParams;
 
 GlobalIpHealthCheckListPage page = client.globalIpHealthChecks().list();
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Global IP health check
 
@@ -295,6 +329,8 @@ import com.telnyx.sdk.models.globaliphealthchecks.GlobalIpHealthCheckCreateRespo
 GlobalIpHealthCheckCreateResponse globalIpHealthCheck = client.globalIpHealthChecks().create();
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Global IP health check
 
 Retrieve a Global IP health check.
@@ -307,6 +343,8 @@ import com.telnyx.sdk.models.globaliphealthchecks.GlobalIpHealthCheckRetrieveRes
 
 GlobalIpHealthCheckRetrieveResponse globalIpHealthCheck = client.globalIpHealthChecks().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## Delete a Global IP health check
 
@@ -321,6 +359,8 @@ import com.telnyx.sdk.models.globaliphealthchecks.GlobalIpHealthCheckDeleteRespo
 GlobalIpHealthCheckDeleteResponse globalIpHealthCheck = client.globalIpHealthChecks().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## Global IP Latency Metrics
 
 `GET /global_ip_latency`
@@ -331,6 +371,8 @@ import com.telnyx.sdk.models.globaliplatency.GlobalIpLatencyRetrieveResponse;
 
 GlobalIpLatencyRetrieveResponse globalIpLatency = client.globalIpLatency().retrieve();
 ```
+
+Returns: `global_ip` (object), `mean_latency` (object), `percentile_latency` (object), `prober_location` (object), `timestamp` (date-time)
 
 ## List all Global IP Protocols
 
@@ -343,6 +385,8 @@ import com.telnyx.sdk.models.globalipprotocols.GlobalIpProtocolListResponse;
 GlobalIpProtocolListResponse globalIpProtocols = client.globalIpProtocols().list();
 ```
 
+Returns: `data` (array[object])
+
 ## Global IP Usage Metrics
 
 `GET /global_ip_usage`
@@ -353,6 +397,8 @@ import com.telnyx.sdk.models.globalipusage.GlobalIpUsageRetrieveResponse;
 
 GlobalIpUsageRetrieveResponse globalIpUsage = client.globalIpUsage().retrieve();
 ```
+
+Returns: `global_ip` (object), `received` (object), `timestamp` (date-time), `transmitted` (object)
 
 ## List all Global IPs
 
@@ -367,6 +413,8 @@ import com.telnyx.sdk.models.globalips.GlobalIpListParams;
 GlobalIpListPage page = client.globalIps().list();
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Global IP
 
 Create a Global IP.
@@ -379,6 +427,8 @@ import com.telnyx.sdk.models.globalips.GlobalIpCreateResponse;
 
 GlobalIpCreateResponse globalIp = client.globalIps().create();
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Global IP
 
@@ -393,6 +443,8 @@ import com.telnyx.sdk.models.globalips.GlobalIpRetrieveResponse;
 GlobalIpRetrieveResponse globalIp = client.globalIps().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## Delete a Global IP
 
 Delete a Global IP.
@@ -406,6 +458,8 @@ import com.telnyx.sdk.models.globalips.GlobalIpDeleteResponse;
 GlobalIpDeleteResponse globalIp = client.globalIps().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## List all Networks
 
 List all Networks.
@@ -418,6 +472,8 @@ import com.telnyx.sdk.models.networks.NetworkListParams;
 
 NetworkListPage page = client.networks().list();
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Network
 
@@ -436,6 +492,8 @@ NetworkCreate params = NetworkCreate.builder()
 NetworkCreateResponse network = client.networks().create(params);
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Network
 
 Retrieve a Network.
@@ -448,6 +506,8 @@ import com.telnyx.sdk.models.networks.NetworkRetrieveResponse;
 
 NetworkRetrieveResponse network = client.networks().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## Update a Network
 
@@ -469,6 +529,8 @@ NetworkUpdateParams params = NetworkUpdateParams.builder()
 NetworkUpdateResponse network = client.networks().update(params);
 ```
 
+Returns: `data` (object)
+
 ## Delete a Network
 
 Delete a Network.
@@ -482,6 +544,8 @@ import com.telnyx.sdk.models.networks.NetworkDeleteResponse;
 NetworkDeleteResponse network = client.networks().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## Get Default Gateway status.
 
 `GET /networks/{id}/default_gateway`
@@ -492,6 +556,8 @@ import com.telnyx.sdk.models.networks.defaultgateway.DefaultGatewayRetrieveRespo
 
 DefaultGatewayRetrieveResponse defaultGateway = client.networks().defaultGateway().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create Default Gateway.
 
@@ -504,6 +570,8 @@ import com.telnyx.sdk.models.networks.defaultgateway.DefaultGatewayCreateRespons
 DefaultGatewayCreateResponse defaultGateway = client.networks().defaultGateway().create("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Delete Default Gateway.
 
 `DELETE /networks/{id}/default_gateway`
@@ -515,6 +583,8 @@ import com.telnyx.sdk.models.networks.defaultgateway.DefaultGatewayDeleteRespons
 DefaultGatewayDeleteResponse defaultGateway = client.networks().defaultGateway().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## List all Interfaces for a Network.
 
 `GET /networks/{id}/network_interfaces`
@@ -525,6 +595,8 @@ import com.telnyx.sdk.models.networks.NetworkListInterfacesParams;
 
 NetworkListInterfacesPage page = client.networks().listInterfaces("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Get all Private Wireless Gateways
 
@@ -539,9 +611,11 @@ import com.telnyx.sdk.models.privatewirelessgateways.PrivateWirelessGatewayListP
 PrivateWirelessGatewayListPage page = client.privateWirelessGateways().list();
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## Create a Private Wireless Gateway
 
-Asynchronously create a Private Wireless Gateway for SIM cards for a previously created network.
+Asynchronously create a Private Wireless Gateway for SIM cards for a previously created network. This operation may take several minutes so you can check the Private Wireless Gateway status at the section Get a Private Wireless Gateway.
 
 `POST /private_wireless_gateways` — Required: `network_id`, `name`
 
@@ -558,6 +632,8 @@ PrivateWirelessGatewayCreateParams params = PrivateWirelessGatewayCreateParams.b
 PrivateWirelessGatewayCreateResponse privateWirelessGateway = client.privateWirelessGateways().create(params);
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## Get a Private Wireless Gateway
 
 Retrieve information about a Private Wireless Gateway.
@@ -570,6 +646,8 @@ import com.telnyx.sdk.models.privatewirelessgateways.PrivateWirelessGatewayRetri
 
 PrivateWirelessGatewayRetrieveResponse privateWirelessGateway = client.privateWirelessGateways().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
 
 ## Delete a Private Wireless Gateway
 
@@ -584,6 +662,8 @@ import com.telnyx.sdk.models.privatewirelessgateways.PrivateWirelessGatewayDelet
 PrivateWirelessGatewayDeleteResponse privateWirelessGateway = client.privateWirelessGateways().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## List all Public Internet Gateways
 
 List all Public Internet Gateways.
@@ -596,6 +676,8 @@ import com.telnyx.sdk.models.publicinternetgateways.PublicInternetGatewayListPar
 
 PublicInternetGatewayListPage page = client.publicInternetGateways().list();
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Public Internet Gateway
 
@@ -610,6 +692,8 @@ import com.telnyx.sdk.models.publicinternetgateways.PublicInternetGatewayCreateR
 PublicInternetGatewayCreateResponse publicInternetGateway = client.publicInternetGateways().create();
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Public Internet Gateway
 
 Retrieve a Public Internet Gateway.
@@ -622,6 +706,8 @@ import com.telnyx.sdk.models.publicinternetgateways.PublicInternetGatewayRetriev
 
 PublicInternetGatewayRetrieveResponse publicInternetGateway = client.publicInternetGateways().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## Delete a Public Internet Gateway
 
@@ -636,6 +722,8 @@ import com.telnyx.sdk.models.publicinternetgateways.PublicInternetGatewayDeleteR
 PublicInternetGatewayDeleteResponse publicInternetGateway = client.publicInternetGateways().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## List all Regions
 
 List all regions and the interfaces that region supports
@@ -648,6 +736,8 @@ import com.telnyx.sdk.models.regions.RegionListResponse;
 
 RegionListResponse regions = client.regions().list();
 ```
+
+Returns: `code` (string), `created_at` (string), `name` (string), `record_type` (string), `supported_interfaces` (array[string]), `updated_at` (string)
 
 ## List all Virtual Cross Connects
 
@@ -662,9 +752,11 @@ import com.telnyx.sdk.models.virtualcrossconnects.VirtualCrossConnectListParams;
 VirtualCrossConnectListPage page = client.virtualCrossConnects().list();
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Virtual Cross Connect
 
-Create a new Virtual Cross Connect.<br /><br />For AWS and GCE, you have the option of creating the primary connection first and the secondary connection later.
+Create a new Virtual Cross Connect.<br /><br />For AWS and GCE, you have the option of creating the primary connection first and the secondary connection later. You also have the option of disabling the primary and/or secondary connections at any time and later re-enabling them. With Azure, you do not have this option.
 
 `POST /virtual_cross_connects`
 
@@ -677,6 +769,8 @@ VirtualCrossConnectCreateParams params = VirtualCrossConnectCreateParams.builder
     .build();
 VirtualCrossConnectCreateResponse virtualCrossConnect = client.virtualCrossConnects().create(params);
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Virtual Cross Connect
 
@@ -691,9 +785,11 @@ import com.telnyx.sdk.models.virtualcrossconnects.VirtualCrossConnectRetrieveRes
 VirtualCrossConnectRetrieveResponse virtualCrossConnect = client.virtualCrossConnects().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## Update the Virtual Cross Connect
 
-Update the Virtual Cross Connect.<br /><br />Cloud IPs can only be patched during the `created` state, as GCE will only inform you of your generated IP once the pending connection requested has bee...
+Update the Virtual Cross Connect.<br /><br />Cloud IPs can only be patched during the `created` state, as GCE will only inform you of your generated IP once the pending connection requested has been accepted.
 
 `PATCH /virtual_cross_connects/{id}`
 
@@ -703,6 +799,8 @@ import com.telnyx.sdk.models.virtualcrossconnects.VirtualCrossConnectUpdateRespo
 
 VirtualCrossConnectUpdateResponse virtualCrossConnect = client.virtualCrossConnects().update("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## Delete a Virtual Cross Connect
 
@@ -717,6 +815,8 @@ import com.telnyx.sdk.models.virtualcrossconnects.VirtualCrossConnectDeleteRespo
 VirtualCrossConnectDeleteResponse virtualCrossConnect = client.virtualCrossConnects().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## List Virtual Cross Connect Cloud Coverage
 
 List Virtual Cross Connects Cloud Coverage.<br /><br />This endpoint shows which cloud regions are available for the `location_code` your Virtual Cross Connect will be provisioned in.
@@ -729,6 +829,8 @@ import com.telnyx.sdk.models.virtualcrossconnectscoverage.VirtualCrossConnectsCo
 
 VirtualCrossConnectsCoverageListPage page = client.virtualCrossConnectsCoverage().list();
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## List all WireGuard Interfaces
 
@@ -743,9 +845,11 @@ import com.telnyx.sdk.models.wireguardinterfaces.WireguardInterfaceListParams;
 WireguardInterfaceListPage page = client.wireguardInterfaces().list();
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a WireGuard Interface
 
-Create a new WireGuard Interface.
+Create a new WireGuard Interface. Current limitation of 10 interfaces per user can be created.
 
 `POST /wireguard_interfaces`
 
@@ -755,6 +859,8 @@ import com.telnyx.sdk.models.wireguardinterfaces.WireguardInterfaceCreateRespons
 
 WireguardInterfaceCreateResponse wireguardInterface = client.wireguardInterfaces().create();
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a WireGuard Interfaces
 
@@ -769,6 +875,8 @@ import com.telnyx.sdk.models.wireguardinterfaces.WireguardInterfaceRetrieveRespo
 WireguardInterfaceRetrieveResponse wireguardInterface = client.wireguardInterfaces().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
 
+Returns: `data` (object)
+
 ## Delete a WireGuard Interface
 
 Delete a WireGuard Interface.
@@ -781,6 +889,8 @@ import com.telnyx.sdk.models.wireguardinterfaces.WireguardInterfaceDeleteRespons
 
 WireguardInterfaceDeleteResponse wireguardInterface = client.wireguardInterfaces().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## List all WireGuard Peers
 
@@ -795,9 +905,11 @@ import com.telnyx.sdk.models.wireguardpeers.WireguardPeerListParams;
 WireguardPeerListPage page = client.wireguardPeers().list();
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a WireGuard Peer
 
-Create a new WireGuard Peer.
+Create a new WireGuard Peer. Current limitation of 5 peers per interface can be created.
 
 `POST /wireguard_peers`
 
@@ -811,6 +923,8 @@ WireguardPeerCreateParams params = WireguardPeerCreateParams.builder()
 WireguardPeerCreateResponse wireguardPeer = client.wireguardPeers().create(params);
 ```
 
+Returns: `data` (object)
+
 ## Retrieve the WireGuard Peer
 
 Retrieve the WireGuard peer.
@@ -823,6 +937,8 @@ import com.telnyx.sdk.models.wireguardpeers.WireguardPeerRetrieveResponse;
 
 WireguardPeerRetrieveResponse wireguardPeer = client.wireguardPeers().retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## Update the WireGuard Peer
 
@@ -844,6 +960,8 @@ WireguardPeerUpdateParams params = WireguardPeerUpdateParams.builder()
 WireguardPeerUpdateResponse wireguardPeer = client.wireguardPeers().update(params);
 ```
 
+Returns: `data` (object)
+
 ## Delete the WireGuard Peer
 
 Delete the WireGuard peer.
@@ -856,6 +974,8 @@ import com.telnyx.sdk.models.wireguardpeers.WireguardPeerDeleteResponse;
 
 WireguardPeerDeleteResponse wireguardPeer = client.wireguardPeers().delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58");
 ```
+
+Returns: `data` (object)
 
 ## Retrieve Wireguard config template for Peer
 

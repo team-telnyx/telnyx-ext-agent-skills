@@ -44,6 +44,8 @@ import com.telnyx.sdk.models.wellknown.WellKnownRetrieveAuthorizationServerMetad
 WellKnownRetrieveAuthorizationServerMetadataResponse response = client.wellKnown().retrieveAuthorizationServerMetadata();
 ```
 
+Returns: `authorization_endpoint` (uri), `code_challenge_methods_supported` (array[string]), `grant_types_supported` (array[string]), `introspection_endpoint` (uri), `issuer` (uri), `jwks_uri` (uri), `registration_endpoint` (uri), `response_types_supported` (array[string]), `scopes_supported` (array[string]), `token_endpoint` (uri), `token_endpoint_auth_methods_supported` (array[string])
+
 ## Protected resource metadata
 
 OAuth 2.0 Protected Resource Metadata for resource discovery
@@ -56,6 +58,8 @@ import com.telnyx.sdk.models.wellknown.WellKnownRetrieveProtectedResourceMetadat
 
 WellKnownRetrieveProtectedResourceMetadataResponse response = client.wellKnown().retrieveProtectedResourceMetadata();
 ```
+
+Returns: `authorization_servers` (array[string]), `resource` (uri)
 
 ## OAuth authorization endpoint
 
@@ -87,6 +91,8 @@ import com.telnyx.sdk.models.oauth.OAuthRetrieveResponse;
 OAuthRetrieveResponse oauth = client.oauth().retrieve("consent_token");
 ```
 
+Returns: `client_id` (string), `logo_uri` (uri), `name` (string), `policy_uri` (uri), `redirect_uri` (uri), `requested_scopes` (array[object]), `tos_uri` (uri), `verified` (boolean)
+
 ## Create OAuth grant
 
 Create an OAuth authorization grant
@@ -104,6 +110,8 @@ OAuthGrantsParams params = OAuthGrantsParams.builder()
 OAuthGrantsResponse response = client.oauth().grants(params);
 ```
 
+Returns: `redirect_uri` (uri)
+
 ## Token introspection
 
 Introspect an OAuth access token to check its validity and metadata
@@ -120,6 +128,8 @@ OAuthIntrospectParams params = OAuthIntrospectParams.builder()
 OAuthIntrospectResponse response = client.oauth().introspect(params);
 ```
 
+Returns: `active` (boolean), `aud` (string), `client_id` (string), `exp` (integer), `iat` (integer), `iss` (string), `scope` (string)
+
 ## JSON Web Key Set
 
 Retrieve the JSON Web Key Set for token verification
@@ -133,13 +143,15 @@ import com.telnyx.sdk.models.oauth.OAuthRetrieveJwksResponse;
 OAuthRetrieveJwksResponse response = client.oauth().retrieveJwks();
 ```
 
+Returns: `keys` (array[object])
+
 ## Dynamic client registration
 
 Register a new OAuth client dynamically (RFC 7591)
 
 `POST /oauth/register`
 
-Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum), `tos_uri` (uri)
+Optional: `client_name` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (enum: none, client_secret_basic, client_secret_post), `tos_uri` (uri)
 
 ```java
 import com.telnyx.sdk.models.oauth.OAuthRegisterParams;
@@ -147,6 +159,8 @@ import com.telnyx.sdk.models.oauth.OAuthRegisterResponse;
 
 OAuthRegisterResponse response = client.oauth().register();
 ```
+
+Returns: `client_id` (string), `client_id_issued_at` (integer), `client_name` (string), `client_secret` (string), `grant_types` (array[string]), `logo_uri` (uri), `policy_uri` (uri), `redirect_uris` (array[string]), `response_types` (array[string]), `scope` (string), `token_endpoint_auth_method` (string), `tos_uri` (uri)
 
 ## OAuth token endpoint
 
@@ -166,6 +180,8 @@ OAuthTokenParams params = OAuthTokenParams.builder()
 OAuthTokenResponse response = client.oauth().token(params);
 ```
 
+Returns: `access_token` (string), `expires_in` (integer), `refresh_token` (string), `scope` (string), `token_type` (enum: Bearer)
+
 ## List OAuth clients
 
 Retrieve a paginated list of OAuth clients for the authenticated user
@@ -178,6 +194,8 @@ import com.telnyx.sdk.models.oauthclients.OAuthClientListParams;
 
 OAuthClientListPage page = client.oauthClients().list();
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Create OAuth client
 
@@ -200,6 +218,8 @@ OAuthClientCreateParams params = OAuthClientCreateParams.builder()
 OAuthClientCreateResponse oauthClient = client.oauthClients().create(params);
 ```
 
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
+
 ## Get OAuth client
 
 Retrieve a single OAuth client by ID
@@ -212,6 +232,8 @@ import com.telnyx.sdk.models.oauthclients.OAuthClientRetrieveResponse;
 
 OAuthClientRetrieveResponse oauthClient = client.oauthClients().retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Update OAuth client
 
@@ -227,6 +249,8 @@ import com.telnyx.sdk.models.oauthclients.OAuthClientUpdateResponse;
 
 OAuthClientUpdateResponse oauthClient = client.oauthClients().update("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `allowed_grant_types` (array[string]), `allowed_scopes` (array[string]), `client_id` (string), `client_secret` (['string', 'null']), `client_type` (enum: public, confidential), `created_at` (date-time), `logo_uri` (uri), `name` (string), `org_id` (string), `policy_uri` (uri), `record_type` (enum: oauth_client), `redirect_uris` (array[string]), `require_pkce` (boolean), `tos_uri` (uri), `updated_at` (date-time), `user_id` (string)
 
 ## Delete OAuth client
 
@@ -253,6 +277,8 @@ import com.telnyx.sdk.models.oauthgrants.OAuthGrantListParams;
 OAuthGrantListPage page = client.oauthGrants().list();
 ```
 
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
+
 ## Get OAuth grant
 
 Retrieve a single OAuth grant by ID
@@ -266,6 +292,8 @@ import com.telnyx.sdk.models.oauthgrants.OAuthGrantRetrieveResponse;
 OAuthGrantRetrieveResponse oauthGrant = client.oauthGrants().retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
 
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])
+
 ## Revoke OAuth grant
 
 Revoke an OAuth grant
@@ -278,3 +306,5 @@ import com.telnyx.sdk.models.oauthgrants.OAuthGrantDeleteResponse;
 
 OAuthGrantDeleteResponse oauthGrant = client.oauthGrants().delete("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `client_id` (string), `created_at` (date-time), `id` (uuid), `last_used_at` (date-time), `record_type` (enum: oauth_grant), `scopes` (array[string])

@@ -54,3 +54,5 @@ import com.telnyx.sdk.models.seti.SetiRetrieveBlackBoxTestResultsResponse;
 
 SetiRetrieveBlackBoxTestResultsResponse response = client.seti().retrieveBlackBoxTestResults();
 ```
+
+Returns: `black_box_tests` (array[object]), `product` (string), `record_type` (string)

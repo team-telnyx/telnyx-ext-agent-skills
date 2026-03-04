@@ -54,3 +54,5 @@ Returns the results of the various black box tests
 response = client.seti.retrieve_black_box_test_results()
 print(response.data)
 ```
+
+Returns: `black_box_tests` (array[object]), `product` (string), `record_type` (string)

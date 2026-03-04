@@ -53,6 +53,8 @@ Returns the information about custom storage credentials.
 	fmt.Printf("%+v\n", customStorageCredential.ConnectionID)
 ```
 
+Returns: `backend` (enum: gcs, s3, azure), `configuration` (object)
+
 ## Create a custom storage credential
 
 Creates a custom storage credentials configuration.
@@ -79,6 +81,8 @@ Creates a custom storage credentials configuration.
 	}
 	fmt.Printf("%+v\n", customStorageCredential.ConnectionID)
 ```
+
+Returns: `backend` (enum: gcs, s3, azure), `configuration` (object)
 
 ## Update a stored credential
 
@@ -107,6 +111,8 @@ Updates a stored custom credentials configuration.
 	fmt.Printf("%+v\n", customStorageCredential.ConnectionID)
 ```
 
+Returns: `backend` (enum: gcs, s3, azure), `configuration` (object)
+
 ## Delete a stored credential
 
 Deletes a stored custom credentials configuration.
@@ -133,6 +139,8 @@ Return details of the Dialogflow connection associated with the given CallContro
 	}
 	fmt.Printf("%+v\n", dialogflowConnection.Data)
 ```
+
+Returns: `connection_id` (string), `conversation_profile_id` (string), `environment` (string), `record_type` (string), `service_account` (string)
 
 ## Create a Dialogflow Connection
 
@@ -165,6 +173,8 @@ Save Dialogflow Credentiails to Telnyx, so it can be used with other Telnyx serv
 	fmt.Printf("%+v\n", dialogflowConnection.Data)
 ```
 
+Returns: `connection_id` (string), `conversation_profile_id` (string), `environment` (string), `record_type` (string), `service_account` (string)
+
 ## Update stored Dialogflow Connection
 
 Updates a stored Dialogflow Connection.
@@ -196,6 +206,8 @@ Updates a stored Dialogflow Connection.
 	fmt.Printf("%+v\n", dialogflowConnection.Data)
 ```
 
+Returns: `connection_id` (string), `conversation_profile_id` (string), `environment` (string), `record_type` (string), `service_account` (string)
+
 ## Delete stored Dialogflow Connection
 
 Deletes a stored Dialogflow Connection.
@@ -211,7 +223,7 @@ Deletes a stored Dialogflow Connection.
 
 ## List all External Connections
 
-This endpoint returns a list of your External Connections inside the 'data' attribute of the response.
+This endpoint returns a list of your External Connections inside the 'data' attribute of the response. External Connections are used by Telnyx customers to seamless configure SIP trunking integrations with Telnyx Partners, through External Voice Integrations in Mission Control Portal.
 
 `GET /external_connections`
 
@@ -223,9 +235,11 @@ This endpoint returns a list of your External Connections inside the 'data' attr
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `active` (boolean), `created_at` (string), `credential_active` (boolean), `external_sip_connection` (enum: zoom, operator_connect), `id` (string), `inbound` (object), `outbound` (object), `record_type` (string), `tags` (array[string]), `updated_at` (string), `webhook_api_version` (enum: 1, 2), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (['integer', 'null'])
+
 ## Creates an External Connection
 
-Creates a new External Connection based on the parameters sent in the request.
+Creates a new External Connection based on the parameters sent in the request. The external_sip_connection and outbound voice profile id are required. Once created, you can assign phone numbers to your application using the `/phone_numbers` endpoint.
 
 `POST /external_connections` — Required: `external_sip_connection`, `outbound`
 
@@ -242,6 +256,8 @@ Optional: `active` (boolean), `inbound` (object), `tags` (array[string]), `webho
 	fmt.Printf("%+v\n", externalConnection.Data)
 ```
 
+Returns: `active` (boolean), `created_at` (string), `credential_active` (boolean), `external_sip_connection` (enum: zoom, operator_connect), `id` (string), `inbound` (object), `outbound` (object), `record_type` (string), `tags` (array[string]), `updated_at` (string), `webhook_api_version` (enum: 1, 2), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (['integer', 'null'])
+
 ## List all log messages
 
 Retrieve a list of log messages for all external connections associated with your account.
@@ -255,6 +271,8 @@ Retrieve a list of log messages for all external connections associated with you
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `log_messages` (array[object]), `meta` (object)
 
 ## Retrieve a log message
 
@@ -270,6 +288,8 @@ Retrieve a log message for an external connection associated with your account.
 	fmt.Printf("%+v\n", logMessage.LogMessages)
 ```
 
+Returns: `log_messages` (array[object])
+
 ## Dismiss a log message
 
 Dismiss a log message for an external connection associated with your account.
@@ -284,6 +304,8 @@ Dismiss a log message for an external connection associated with your account.
 	fmt.Printf("%+v\n", response.Success)
 ```
 
+Returns: `success` (boolean)
+
 ## Retrieve an External Connection
 
 Return the details of an existing External Connection inside the 'data' attribute of the response.
@@ -297,6 +319,8 @@ Return the details of an existing External Connection inside the 'data' attribut
 	}
 	fmt.Printf("%+v\n", externalConnection.Data)
 ```
+
+Returns: `active` (boolean), `created_at` (string), `credential_active` (boolean), `external_sip_connection` (enum: zoom, operator_connect), `id` (string), `inbound` (object), `outbound` (object), `record_type` (string), `tags` (array[string]), `updated_at` (string), `webhook_api_version` (enum: 1, 2), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (['integer', 'null'])
 
 ## Update an External Connection
 
@@ -322,9 +346,11 @@ Optional: `active` (boolean), `inbound` (object), `tags` (array[string]), `webho
 	fmt.Printf("%+v\n", externalConnection.Data)
 ```
 
+Returns: `active` (boolean), `created_at` (string), `credential_active` (boolean), `external_sip_connection` (enum: zoom, operator_connect), `id` (string), `inbound` (object), `outbound` (object), `record_type` (string), `tags` (array[string]), `updated_at` (string), `webhook_api_version` (enum: 1, 2), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (['integer', 'null'])
+
 ## Deletes an External Connection
 
-Permanently deletes an External Connection.
+Permanently deletes an External Connection. Deletion may be prevented if the application is in use by phone numbers, is active, or if it is an Operator Connect connection. To remove an Operator Connect integration please contact Telnyx support.
 
 `DELETE /external_connections/{id}`
 
@@ -335,6 +361,8 @@ Permanently deletes an External Connection.
 	}
 	fmt.Printf("%+v\n", externalConnection.Data)
 ```
+
+Returns: `active` (boolean), `created_at` (string), `credential_active` (boolean), `external_sip_connection` (enum: zoom, operator_connect), `id` (string), `inbound` (object), `outbound` (object), `record_type` (string), `tags` (array[string]), `updated_at` (string), `webhook_api_version` (enum: 1, 2), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (['integer', 'null'])
 
 ## List all civic addresses and locations
 
@@ -353,6 +381,8 @@ Returns the civic addresses and locations from Microsoft Teams.
 	}
 	fmt.Printf("%+v\n", civicAddresses.Data)
 ```
+
+Returns: `city_or_town` (string), `city_or_town_alias` (string), `company_name` (string), `country` (string), `country_or_district` (string), `default_location_id` (uuid), `description` (string), `house_number` (string), `house_number_suffix` (string), `id` (uuid), `locations` (array[object]), `postal_or_zip_code` (string), `record_type` (string), `state_or_province` (string), `street_name` (string), `street_suffix` (string)
 
 ## Retrieve a Civic Address
 
@@ -374,6 +404,8 @@ Return the details of an existing Civic Address with its Locations inside the 'd
 	fmt.Printf("%+v\n", civicAddress.Data)
 ```
 
+Returns: `city_or_town` (string), `city_or_town_alias` (string), `company_name` (string), `country` (string), `country_or_district` (string), `default_location_id` (uuid), `description` (string), `house_number` (string), `house_number_suffix` (string), `id` (uuid), `locations` (array[object]), `postal_or_zip_code` (string), `record_type` (string), `state_or_province` (string), `street_name` (string), `street_suffix` (string)
+
 ## Update a location's static emergency address
 
 `PATCH /external_connections/{id}/locations/{location_id}` — Required: `static_emergency_address_id`
@@ -393,6 +425,8 @@ Return the details of an existing Civic Address with its Locations inside the 'd
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `accepted_address_suggestions` (boolean), `location_id` (uuid), `static_emergency_address_id` (uuid)
+
 ## List all phone numbers
 
 Returns a list of all active phone numbers associated with the given external connection.
@@ -410,6 +444,8 @@ Returns a list of all active phone numbers associated with the given external co
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `acquired_capabilities` (array[string]), `civic_address_id` (uuid), `displayed_country_code` (string), `location_id` (uuid), `number_id` (string), `telephone_number` (string), `ticket_id` (uuid)
 
 ## Retrieve a phone number
 
@@ -430,6 +466,8 @@ Return the details of a phone number associated with the given external connecti
 	}
 	fmt.Printf("%+v\n", phoneNumber.Data)
 ```
+
+Returns: `acquired_capabilities` (array[string]), `civic_address_id` (uuid), `displayed_country_code` (string), `location_id` (uuid), `number_id` (string), `telephone_number` (string), `ticket_id` (uuid)
 
 ## Update a phone number
 
@@ -453,9 +491,11 @@ Optional: `location_id` (uuid)
 	fmt.Printf("%+v\n", phoneNumber.Data)
 ```
 
+Returns: `acquired_capabilities` (array[string]), `civic_address_id` (uuid), `displayed_country_code` (string), `location_id` (uuid), `number_id` (string), `telephone_number` (string), `ticket_id` (uuid)
+
 ## List all Releases
 
-Returns a list of your Releases for the given external connection.
+Returns a list of your Releases for the given external connection. These are automatically created when you change the `connection_id` of a phone number that is currently on Microsoft Teams.
 
 `GET /external_connections/{id}/releases`
 
@@ -470,6 +510,8 @@ Returns a list of your Releases for the given external connection.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `created_at` (string), `error_message` (string), `status` (enum: pending_upload, pending, in_progress, complete, failed, expired, unknown), `telephone_numbers` (array[object]), `tenant_id` (uuid), `ticket_id` (uuid)
 
 ## Retrieve a Release request
 
@@ -491,6 +533,8 @@ Return the details of a Release request and its phone numbers.
 	fmt.Printf("%+v\n", release.Data)
 ```
 
+Returns: `created_at` (string), `error_message` (string), `status` (enum: pending_upload, pending, in_progress, complete, failed, expired, unknown), `telephone_numbers` (array[object]), `tenant_id` (uuid), `ticket_id` (uuid)
+
 ## List all Upload requests
 
 Returns a list of your Upload requests for the given external connection.
@@ -509,13 +553,15 @@ Returns a list of your Upload requests for the given external connection.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `available_usages` (array[string]), `error_code` (string), `error_message` (string), `location_id` (uuid), `status` (enum: pending_upload, pending, in_progress, partial_success, success, error), `tenant_id` (uuid), `ticket_id` (uuid), `tn_upload_entries` (array[object])
+
 ## Creates an Upload request
 
-Creates a new Upload request to Microsoft teams with the included phone numbers.
+Creates a new Upload request to Microsoft teams with the included phone numbers. Only one of civic_address_id or location_id must be provided, not both. The maximum allowed phone numbers for the numbers_ids array is 1000.
 
 `POST /external_connections/{id}/uploads` — Required: `number_ids`
 
-Optional: `additional_usages` (array[string]), `civic_address_id` (uuid), `location_id` (uuid), `usage` (enum)
+Optional: `additional_usages` (array[string]), `civic_address_id` (uuid), `location_id` (uuid), `usage` (enum: calling_user_assignment, first_party_app_assignment)
 
 ```go
 	upload, err := client.ExternalConnections.Uploads.New(
@@ -531,6 +577,8 @@ Optional: `additional_usages` (array[string]), `civic_address_id` (uuid), `locat
 	fmt.Printf("%+v\n", upload.TicketID)
 ```
 
+Returns: `success` (boolean), `ticket_id` (uuid)
+
 ## Refresh the status of all Upload requests
 
 Forces a recheck of the status of all pending Upload requests for the given external connection in the background.
@@ -545,6 +593,8 @@ Forces a recheck of the status of all pending Upload requests for the given exte
 	fmt.Printf("%+v\n", response.Success)
 ```
 
+Returns: `success` (boolean)
+
 ## Get the count of pending upload requests
 
 Returns the count of all pending upload requests for the given external connection.
@@ -558,6 +608,8 @@ Returns the count of all pending upload requests for the given external connecti
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `pending_numbers_count` (integer), `pending_orders_count` (integer)
 
 ## Retrieve an Upload request
 
@@ -579,9 +631,11 @@ Return the details of an Upload request and its phone numbers.
 	fmt.Printf("%+v\n", upload.Data)
 ```
 
+Returns: `available_usages` (array[string]), `error_code` (string), `error_message` (string), `location_id` (uuid), `status` (enum: pending_upload, pending, in_progress, partial_success, success, error), `tenant_id` (uuid), `ticket_id` (uuid), `tn_upload_entries` (array[object])
+
 ## Retry an Upload request
 
-If there were any errors during the upload process, this endpoint will retry the upload request.
+If there were any errors during the upload process, this endpoint will retry the upload request. In some cases this will reattempt the existing upload request, in other cases it may create a new upload request. Please check the ticket_id in the response to determine if a new upload request was created.
 
 `POST /external_connections/{id}/uploads/{ticket_id}/retry`
 
@@ -599,6 +653,8 @@ If there were any errors during the upload process, this endpoint will retry the
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `available_usages` (array[string]), `error_code` (string), `error_message` (string), `location_id` (uuid), `status` (enum: pending_upload, pending, in_progress, partial_success, success, error), `tenant_id` (uuid), `ticket_id` (uuid), `tn_upload_entries` (array[object])
+
 ## List uploaded media
 
 Returns a list of stored media files.
@@ -612,6 +668,8 @@ Returns a list of stored media files.
 	}
 	fmt.Printf("%+v\n", media.Data)
 ```
+
+Returns: `content_type` (string), `created_at` (string), `expires_at` (string), `media_name` (string), `updated_at` (string)
 
 ## Upload media
 
@@ -631,6 +689,8 @@ Optional: `media_name` (string), `ttl_secs` (integer)
 	fmt.Printf("%+v\n", response.Data)
 ```
 
+Returns: `content_type` (string), `created_at` (string), `expires_at` (string), `media_name` (string), `updated_at` (string)
+
 ## Retrieve stored media
 
 Returns the information about a stored media file.
@@ -644,6 +704,8 @@ Returns the information about a stored media file.
 	}
 	fmt.Printf("%+v\n", media.Data)
 ```
+
+Returns: `content_type` (string), `created_at` (string), `expires_at` (string), `media_name` (string), `updated_at` (string)
 
 ## Update stored media
 
@@ -664,6 +726,8 @@ Optional: `media_url` (string), `ttl_secs` (integer)
 	}
 	fmt.Printf("%+v\n", media.Data)
 ```
+
+Returns: `content_type` (string), `created_at` (string), `expires_at` (string), `media_name` (string), `updated_at` (string)
 
 ## Deletes stored media
 
@@ -694,7 +758,7 @@ Downloads a stored media file.
 
 ## Refresh Operator Connect integration
 
-This endpoint will make an asynchronous request to refresh the Operator Connect integration with Microsoft Teams for the current user.
+This endpoint will make an asynchronous request to refresh the Operator Connect integration with Microsoft Teams for the current user. This will create new external connections on the user's account if needed, and/or report the integration results as [log messages](https://developers.telnyx.com/api-reference/external-connections/list-all-log-messages#list-all-log-messages).
 
 `POST /operator_connect/actions/refresh`
 
@@ -705,6 +769,8 @@ This endpoint will make an asynchronous request to refresh the Operator Connect 
 	}
 	fmt.Printf("%+v\n", response.Message)
 ```
+
+Returns: `message` (string), `success` (boolean)
 
 ## List all recording transcriptions
 
@@ -720,6 +786,8 @@ Returns a list of your recording transcriptions.
 	fmt.Printf("%+v\n", recordingTranscriptions.Data)
 ```
 
+Returns: `created_at` (string), `duration_millis` (int32), `id` (string), `record_type` (enum: recording_transcription), `recording_id` (string), `status` (enum: in-progress, completed), `transcription_text` (string), `updated_at` (string)
+
 ## Retrieve a recording transcription
 
 Retrieves the details of an existing recording transcription.
@@ -733,6 +801,8 @@ Retrieves the details of an existing recording transcription.
 	}
 	fmt.Printf("%+v\n", recordingTranscription.Data)
 ```
+
+Returns: `created_at` (string), `duration_millis` (int32), `id` (string), `record_type` (enum: recording_transcription), `recording_id` (string), `status` (enum: in-progress, completed), `transcription_text` (string), `updated_at` (string)
 
 ## Delete a recording transcription
 
@@ -748,6 +818,8 @@ Permanently deletes a recording transcription.
 	fmt.Printf("%+v\n", recordingTranscription.Data)
 ```
 
+Returns: `created_at` (string), `duration_millis` (int32), `id` (string), `record_type` (enum: recording_transcription), `recording_id` (string), `status` (enum: in-progress, completed), `transcription_text` (string), `updated_at` (string)
+
 ## List all call recordings
 
 Returns a list of your call recordings.
@@ -761,6 +833,8 @@ Returns a list of your call recordings.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `call_control_id` (string), `call_leg_id` (string), `call_session_id` (string), `channels` (enum: single, dual), `conference_id` (string), `created_at` (string), `download_urls` (object), `duration_millis` (int32), `id` (string), `record_type` (enum: recording), `recording_ended_at` (string), `recording_started_at` (string), `source` (enum: conference, call), `status` (enum: completed), `updated_at` (string)
 
 ## Delete a list of call recordings
 
@@ -791,6 +865,8 @@ Retrieves the details of an existing call recording.
 	fmt.Printf("%+v\n", recording.Data)
 ```
 
+Returns: `call_control_id` (string), `call_leg_id` (string), `call_session_id` (string), `channels` (enum: single, dual), `conference_id` (string), `created_at` (string), `download_urls` (object), `duration_millis` (int32), `id` (string), `record_type` (enum: recording), `recording_ended_at` (string), `recording_started_at` (string), `source` (enum: conference, call), `status` (enum: completed), `updated_at` (string)
+
 ## Delete a call recording
 
 Permanently deletes a call recording.
@@ -804,6 +880,8 @@ Permanently deletes a call recording.
 	}
 	fmt.Printf("%+v\n", recording.Data)
 ```
+
+Returns: `call_control_id` (string), `call_leg_id` (string), `call_session_id` (string), `channels` (enum: single, dual), `conference_id` (string), `created_at` (string), `download_urls` (object), `duration_millis` (int32), `id` (string), `record_type` (enum: recording), `recording_ended_at` (string), `recording_started_at` (string), `source` (enum: conference, call), `status` (enum: completed), `updated_at` (string)
 
 ## Create a SIPREC connector
 
@@ -823,6 +901,8 @@ Creates a new SIPREC connector configuration.
 	fmt.Printf("%+v\n", siprecConnector.Data)
 ```
 
+Returns: `app_subdomain` (string), `created_at` (string), `host` (string), `name` (string), `port` (integer), `record_type` (string), `updated_at` (string)
+
 ## Retrieve a SIPREC connector
 
 Returns details of a stored SIPREC connector.
@@ -836,6 +916,8 @@ Returns details of a stored SIPREC connector.
 	}
 	fmt.Printf("%+v\n", siprecConnector.Data)
 ```
+
+Returns: `app_subdomain` (string), `created_at` (string), `host` (string), `name` (string), `port` (integer), `record_type` (string), `updated_at` (string)
 
 ## Update a SIPREC connector
 
@@ -858,6 +940,8 @@ Updates a stored SIPREC connector configuration.
 	}
 	fmt.Printf("%+v\n", siprecConnector.Data)
 ```
+
+Returns: `app_subdomain` (string), `created_at` (string), `host` (string), `name` (string), `port` (integer), `record_type` (string), `updated_at` (string)
 
 ## Delete a SIPREC connector
 

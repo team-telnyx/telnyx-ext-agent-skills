@@ -45,3 +45,5 @@ Returns the results of the various black box tests
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/seti/black_box_test_results"
 ```
+
+Returns: `black_box_tests` (array[object]), `product` (string), `record_type` (string)

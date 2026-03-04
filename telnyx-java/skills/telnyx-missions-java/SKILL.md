@@ -45,13 +45,15 @@ import com.telnyx.sdk.models.ai.missions.MissionListParams;
 MissionListPage page = client.ai().missions().list();
 ```
 
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
+
 ## Create mission
 
 Create a new mission definition
 
 `POST /ai/missions` — Required: `name`
 
-Optional: `description` (string), `execution_mode` (enum), `instructions` (string), `metadata` (object), `model` (string)
+Optional: `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `model` (string)
 
 ```java
 import com.telnyx.sdk.models.ai.missions.MissionCreateParams;
@@ -62,6 +64,8 @@ MissionCreateParams params = MissionCreateParams.builder()
     .build();
 MissionCreateResponse mission = client.ai().missions().create(params);
 ```
+
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
 
 ## List recent events
 
@@ -76,6 +80,8 @@ import com.telnyx.sdk.models.ai.missions.MissionListEventsParams;
 MissionListEventsPage page = client.ai().missions().listEvents();
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## List recent runs
 
 List recent runs across all missions
@@ -88,6 +94,8 @@ import com.telnyx.sdk.models.ai.missions.runs.RunListRunsParams;
 
 RunListRunsPage page = client.ai().missions().runs().listRuns();
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Get mission
 
@@ -102,13 +110,15 @@ import com.telnyx.sdk.models.ai.missions.MissionRetrieveResponse;
 MissionRetrieveResponse mission = client.ai().missions().retrieve("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
 
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
+
 ## Update mission
 
 Update a mission definition
 
 `PUT /ai/missions/{mission_id}`
 
-Optional: `description` (string), `execution_mode` (enum), `instructions` (string), `metadata` (object), `model` (string), `name` (string)
+Optional: `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `model` (string), `name` (string)
 
 ```java
 import com.telnyx.sdk.models.ai.missions.MissionUpdateMissionParams;
@@ -116,6 +126,8 @@ import com.telnyx.sdk.models.ai.missions.MissionUpdateMissionResponse;
 
 MissionUpdateMissionResponse response = client.ai().missions().updateMission("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `created_at` (date-time), `description` (string), `execution_mode` (enum: external, managed), `instructions` (string), `metadata` (object), `mission_id` (uuid), `model` (string), `name` (string), `updated_at` (date-time)
 
 ## Delete mission
 
@@ -307,6 +319,8 @@ import com.telnyx.sdk.models.ai.missions.runs.RunListParams;
 RunListPage page = client.ai().missions().runs().list("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Start a run
 
 Start a new run for a mission
@@ -321,6 +335,8 @@ import com.telnyx.sdk.models.ai.missions.runs.RunCreateResponse;
 
 RunCreateResponse run = client.ai().missions().runs().create("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e");
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Get run details
 
@@ -339,13 +355,15 @@ RunRetrieveParams params = RunRetrieveParams.builder()
 RunRetrieveResponse run = client.ai().missions().runs().retrieve(params);
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Update run
 
 Update run status and/or result
 
 `PATCH /ai/missions/{mission_id}/runs/{run_id}`
 
-Optional: `error` (string), `metadata` (object), `result_payload` (object), `result_summary` (string), `status` (enum)
+Optional: `error` (string), `metadata` (object), `result_payload` (object), `result_summary` (string), `status` (enum: pending, running, paused, succeeded, failed, cancelled)
 
 ```java
 import com.telnyx.sdk.models.ai.missions.runs.RunUpdateParams;
@@ -357,6 +375,8 @@ RunUpdateParams params = RunUpdateParams.builder()
     .build();
 RunUpdateResponse run = client.ai().missions().runs().update(params);
 ```
+
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
 
 ## Cancel run
 
@@ -375,6 +395,8 @@ RunCancelRunParams params = RunCancelRunParams.builder()
 RunCancelRunResponse response = client.ai().missions().runs().cancelRun(params);
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## List events
 
 List events for a run (paginated)
@@ -391,6 +413,8 @@ EventListParams params = EventListParams.builder()
     .build();
 EventListPage page = client.ai().missions().runs().events().list(params);
 ```
+
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
 
 ## Log event
 
@@ -413,6 +437,8 @@ EventLogParams params = EventLogParams.builder()
 EventLogResponse response = client.ai().missions().runs().events().log(params);
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## Get event details
 
 Get details of a specific event
@@ -431,6 +457,8 @@ EventGetEventDetailsParams params = EventGetEventDetailsParams.builder()
 EventGetEventDetailsResponse response = client.ai().missions().runs().events().getEventDetails(params);
 ```
 
+Returns: `agent_id` (string), `event_id` (string), `idempotency_key` (string), `payload` (object), `run_id` (string), `step_id` (string), `summary` (string), `timestamp` (date-time), `type` (enum: status_change, step_started, step_completed, step_failed, tool_call, tool_result, message, error, custom)
+
 ## Pause run
 
 Pause a running run
@@ -448,6 +476,8 @@ RunPauseRunParams params = RunPauseRunParams.builder()
 RunPauseRunResponse response = client.ai().missions().runs().pauseRun(params);
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## Get plan
 
 Get the plan (all steps) for a run
@@ -464,6 +494,8 @@ PlanRetrieveParams params = PlanRetrieveParams.builder()
     .build();
 PlanRetrieveResponse plan = client.ai().missions().runs().plan().retrieve(params);
 ```
+
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
 
 ## Create initial plan
 
@@ -487,6 +519,8 @@ PlanCreateParams params = PlanCreateParams.builder()
 PlanCreateResponse plan = client.ai().missions().runs().plan().create(params);
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Add step(s) to plan
 
 Add one or more steps to an existing plan
@@ -509,6 +543,8 @@ PlanAddStepsToPlanParams params = PlanAddStepsToPlanParams.builder()
 PlanAddStepsToPlanResponse response = client.ai().missions().runs().plan().addStepsToPlan(params);
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Get step details
 
 Get details of a specific plan step
@@ -527,13 +563,15 @@ PlanGetStepDetailsParams params = PlanGetStepDetailsParams.builder()
 PlanGetStepDetailsResponse response = client.ai().missions().runs().plan().getStepDetails(params);
 ```
 
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
+
 ## Update step status
 
 Update the status of a plan step
 
 `PATCH /ai/missions/{mission_id}/runs/{run_id}/plan/steps/{step_id}`
 
-Optional: `metadata` (object), `status` (enum)
+Optional: `metadata` (object), `status` (enum: pending, in_progress, completed, skipped, failed)
 
 ```java
 import com.telnyx.sdk.models.ai.missions.runs.plan.PlanUpdateStepParams;
@@ -546,6 +584,8 @@ PlanUpdateStepParams params = PlanUpdateStepParams.builder()
     .build();
 PlanUpdateStepResponse response = client.ai().missions().runs().plan().updateStep(params);
 ```
+
+Returns: `completed_at` (date-time), `description` (string), `metadata` (object), `parent_step_id` (string), `run_id` (uuid), `sequence` (integer), `started_at` (date-time), `status` (enum: pending, in_progress, completed, skipped, failed), `step_id` (string)
 
 ## Resume run
 
@@ -564,6 +604,8 @@ RunResumeRunParams params = RunResumeRunParams.builder()
 RunResumeRunResponse response = client.ai().missions().runs().resumeRun(params);
 ```
 
+Returns: `error` (string), `finished_at` (date-time), `input` (object), `metadata` (object), `mission_id` (uuid), `result_payload` (object), `result_summary` (string), `run_id` (uuid), `started_at` (date-time), `status` (enum: pending, running, paused, succeeded, failed, cancelled), `updated_at` (date-time)
+
 ## List linked Telnyx agents
 
 List all Telnyx agents linked to a run
@@ -580,6 +622,8 @@ TelnyxAgentListParams params = TelnyxAgentListParams.builder()
     .build();
 TelnyxAgentListResponse telnyxAgents = client.ai().missions().runs().telnyxAgents().list(params);
 ```
+
+Returns: `created_at` (date-time), `run_id` (string), `telnyx_agent_id` (string)
 
 ## Link Telnyx agent to run
 
@@ -598,6 +642,8 @@ TelnyxAgentLinkParams params = TelnyxAgentLinkParams.builder()
     .build();
 TelnyxAgentLinkResponse response = client.ai().missions().runs().telnyxAgents().link(params);
 ```
+
+Returns: `created_at` (date-time), `run_id` (string), `telnyx_agent_id` (string)
 
 ## Unlink Telnyx agent
 

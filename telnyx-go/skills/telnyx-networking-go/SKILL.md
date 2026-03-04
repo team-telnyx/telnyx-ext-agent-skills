@@ -51,9 +51,11 @@ All examples below assume `client` is already initialized as shown above.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `bucket` (string), `created_at` (date-time), `finished_at` (date-time), `min_cluster_size` (integer), `min_subcluster_size` (integer), `status` (enum: pending, starting, running, completed, failed), `task_id` (string)
+
 ## Compute new clusters
 
-Starts a background task to compute how the data in an [embedded storage bucket](https://developers.telnyx.com/api-reference/embeddings/embed-documents) is clustered.
+Starts a background task to compute how the data in an [embedded storage bucket](https://developers.telnyx.com/api-reference/embeddings/embed-documents) is clustered. This helps identify common themes and patterns in the data.
 
 `POST /ai/clusters` — Required: `bucket`
 
@@ -68,6 +70,8 @@ Optional: `files` (array[string]), `min_cluster_size` (integer), `min_subcluster
 	}
 	fmt.Printf("%+v\n", response.Data)
 ```
+
+Returns: `task_id` (string)
 
 ## Fetch a cluster
 
@@ -84,6 +88,8 @@ Optional: `files` (array[string]), `min_cluster_size` (integer), `min_subcluster
 	}
 	fmt.Printf("%+v\n", cluster.Data)
 ```
+
+Returns: `bucket` (string), `clusters` (array[object]), `status` (enum: pending, starting, running, completed, failed)
 
 ## Delete a cluster
 
@@ -126,6 +132,8 @@ List all available integrations.
 	fmt.Printf("%+v\n", integrations.Data)
 ```
 
+Returns: `available_tools` (array[string]), `description` (string), `display_name` (string), `id` (string), `logo_url` (string), `name` (string), `status` (enum: disconnected, connected)
+
 ## List User Integrations
 
 List user setup integrations
@@ -140,6 +148,8 @@ List user setup integrations
 	fmt.Printf("%+v\n", connections.Data)
 ```
 
+Returns: `allowed_tools` (array[string]), `id` (string), `integration_id` (string)
+
 ## Get User Integration connection By Id
 
 Get user setup integrations
@@ -153,6 +163,8 @@ Get user setup integrations
 	}
 	fmt.Printf("%+v\n", connection.Data)
 ```
+
+Returns: `allowed_tools` (array[string]), `id` (string), `integration_id` (string)
 
 ## Delete Integration Connection
 
@@ -181,6 +193,8 @@ Retrieve integration details
 	fmt.Printf("%+v\n", integration.ID)
 ```
 
+Returns: `available_tools` (array[string]), `description` (string), `display_name` (string), `id` (string), `logo_url` (string), `name` (string), `status` (enum: disconnected, connected)
+
 ## List all Global IP Allowed Ports
 
 `GET /global_ip_allowed_ports`
@@ -193,6 +207,8 @@ Retrieve integration details
 	fmt.Printf("%+v\n", globalIPAllowedPorts.Data)
 ```
 
+Returns: `data` (array[object])
+
 ## Global IP Assignment Health Check Metrics
 
 `GET /global_ip_assignment_health`
@@ -204,6 +220,8 @@ Retrieve integration details
 	}
 	fmt.Printf("%+v\n", globalIPAssignmentHealth.Data)
 ```
+
+Returns: `global_ip` (object), `global_ip_assignment` (object), `health` (object), `timestamp` (date-time)
 
 ## List all Global IP assignments
 
@@ -218,6 +236,8 @@ List all Global IP assignments.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Global IP assignment
 
@@ -235,6 +255,8 @@ Create a Global IP assignment.
 	fmt.Printf("%+v\n", globalIPAssignment.Data)
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Global IP
 
 Retrieve a Global IP assignment.
@@ -248,6 +270,8 @@ Retrieve a Global IP assignment.
 	}
 	fmt.Printf("%+v\n", globalIPAssignment.Data)
 ```
+
+Returns: `data` (object)
 
 ## Update a Global IP assignment
 
@@ -271,6 +295,8 @@ Update a Global IP assignment.
 	fmt.Printf("%+v\n", globalIPAssignment.Data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Global IP assignment
 
 Delete a Global IP assignment.
@@ -285,6 +311,8 @@ Delete a Global IP assignment.
 	fmt.Printf("%+v\n", globalIPAssignment.Data)
 ```
 
+Returns: `data` (object)
+
 ## Global IP Assignment Usage Metrics
 
 `GET /global_ip_assignments_usage`
@@ -296,6 +324,8 @@ Delete a Global IP assignment.
 	}
 	fmt.Printf("%+v\n", globalIPAssignmentsUsage.Data)
 ```
+
+Returns: `global_ip` (object), `global_ip_assignment` (object), `received` (object), `timestamp` (date-time), `transmitted` (object)
 
 ## List all Global IP Health check types
 
@@ -311,6 +341,8 @@ List all Global IP Health check types.
 	fmt.Printf("%+v\n", globalIPHealthCheckTypes.Data)
 ```
 
+Returns: `data` (array[object])
+
 ## List all Global IP health checks
 
 List all Global IP health checks.
@@ -324,6 +356,8 @@ List all Global IP health checks.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Global IP health check
 
@@ -339,6 +373,8 @@ Create a Global IP health check.
 	fmt.Printf("%+v\n", globalIPHealthCheck.Data)
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Global IP health check
 
 Retrieve a Global IP health check.
@@ -352,6 +388,8 @@ Retrieve a Global IP health check.
 	}
 	fmt.Printf("%+v\n", globalIPHealthCheck.Data)
 ```
+
+Returns: `data` (object)
 
 ## Delete a Global IP health check
 
@@ -367,6 +405,8 @@ Delete a Global IP health check.
 	fmt.Printf("%+v\n", globalIPHealthCheck.Data)
 ```
 
+Returns: `data` (object)
+
 ## Global IP Latency Metrics
 
 `GET /global_ip_latency`
@@ -378,6 +418,8 @@ Delete a Global IP health check.
 	}
 	fmt.Printf("%+v\n", globalIPLatency.Data)
 ```
+
+Returns: `global_ip` (object), `mean_latency` (object), `percentile_latency` (object), `prober_location` (object), `timestamp` (date-time)
 
 ## List all Global IP Protocols
 
@@ -391,6 +433,8 @@ Delete a Global IP health check.
 	fmt.Printf("%+v\n", globalIPProtocols.Data)
 ```
 
+Returns: `data` (array[object])
+
 ## Global IP Usage Metrics
 
 `GET /global_ip_usage`
@@ -402,6 +446,8 @@ Delete a Global IP health check.
 	}
 	fmt.Printf("%+v\n", globalIPUsage.Data)
 ```
+
+Returns: `global_ip` (object), `received` (object), `timestamp` (date-time), `transmitted` (object)
 
 ## List all Global IPs
 
@@ -417,6 +463,8 @@ List all Global IPs.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Global IP
 
 Create a Global IP.
@@ -430,6 +478,8 @@ Create a Global IP.
 	}
 	fmt.Printf("%+v\n", globalIP.Data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Global IP
 
@@ -445,6 +495,8 @@ Retrieve a Global IP.
 	fmt.Printf("%+v\n", globalIP.Data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Global IP
 
 Delete a Global IP.
@@ -459,6 +511,8 @@ Delete a Global IP.
 	fmt.Printf("%+v\n", globalIP.Data)
 ```
 
+Returns: `data` (object)
+
 ## List all Networks
 
 List all Networks.
@@ -472,6 +526,8 @@ List all Networks.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Network
 
@@ -492,6 +548,8 @@ Create a new Network.
 	fmt.Printf("%+v\n", network.Data)
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Network
 
 Retrieve a Network.
@@ -505,6 +563,8 @@ Retrieve a Network.
 	}
 	fmt.Printf("%+v\n", network.Data)
 ```
+
+Returns: `data` (object)
 
 ## Update a Network
 
@@ -529,6 +589,8 @@ Update a Network.
 	fmt.Printf("%+v\n", network.Data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Network
 
 Delete a Network.
@@ -543,6 +605,8 @@ Delete a Network.
 	fmt.Printf("%+v\n", network.Data)
 ```
 
+Returns: `data` (object)
+
 ## Get Default Gateway status.
 
 `GET /networks/{id}/default_gateway`
@@ -554,6 +618,8 @@ Delete a Network.
 	}
 	fmt.Printf("%+v\n", defaultGateway.Data)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create Default Gateway.
 
@@ -571,6 +637,8 @@ Delete a Network.
 	fmt.Printf("%+v\n", defaultGateway.Data)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Delete Default Gateway.
 
 `DELETE /networks/{id}/default_gateway`
@@ -582,6 +650,8 @@ Delete a Network.
 	}
 	fmt.Printf("%+v\n", defaultGateway.Data)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## List all Interfaces for a Network.
 
@@ -599,6 +669,8 @@ Delete a Network.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Get all Private Wireless Gateways
 
 Get all Private Wireless Gateways belonging to the user.
@@ -613,9 +685,11 @@ Get all Private Wireless Gateways belonging to the user.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## Create a Private Wireless Gateway
 
-Asynchronously create a Private Wireless Gateway for SIM cards for a previously created network.
+Asynchronously create a Private Wireless Gateway for SIM cards for a previously created network. This operation may take several minutes so you can check the Private Wireless Gateway status at the section Get a Private Wireless Gateway.
 
 `POST /private_wireless_gateways` — Required: `network_id`, `name`
 
@@ -632,6 +706,8 @@ Optional: `region_code` (string)
 	fmt.Printf("%+v\n", privateWirelessGateway.Data)
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## Get a Private Wireless Gateway
 
 Retrieve information about a Private Wireless Gateway.
@@ -645,6 +721,8 @@ Retrieve information about a Private Wireless Gateway.
 	}
 	fmt.Printf("%+v\n", privateWirelessGateway.Data)
 ```
+
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
 
 ## Delete a Private Wireless Gateway
 
@@ -660,6 +738,8 @@ Deletes the Private Wireless Gateway.
 	fmt.Printf("%+v\n", privateWirelessGateway.Data)
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## List all Public Internet Gateways
 
 List all Public Internet Gateways.
@@ -673,6 +753,8 @@ List all Public Internet Gateways.
 	}
 	fmt.Printf("%+v\n", page)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Public Internet Gateway
 
@@ -688,6 +770,8 @@ Create a new Public Internet Gateway.
 	fmt.Printf("%+v\n", publicInternetGateway.Data)
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Public Internet Gateway
 
 Retrieve a Public Internet Gateway.
@@ -701,6 +785,8 @@ Retrieve a Public Internet Gateway.
 	}
 	fmt.Printf("%+v\n", publicInternetGateway.Data)
 ```
+
+Returns: `data` (object)
 
 ## Delete a Public Internet Gateway
 
@@ -716,6 +802,8 @@ Delete a Public Internet Gateway.
 	fmt.Printf("%+v\n", publicInternetGateway.Data)
 ```
 
+Returns: `data` (object)
+
 ## List all Regions
 
 List all regions and the interfaces that region supports
@@ -729,6 +817,8 @@ List all regions and the interfaces that region supports
 	}
 	fmt.Printf("%+v\n", regions.Data)
 ```
+
+Returns: `code` (string), `created_at` (string), `name` (string), `record_type` (string), `supported_interfaces` (array[string]), `updated_at` (string)
 
 ## List all Virtual Cross Connects
 
@@ -744,9 +834,11 @@ List all Virtual Cross Connects.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Virtual Cross Connect
 
-Create a new Virtual Cross Connect.<br /><br />For AWS and GCE, you have the option of creating the primary connection first and the secondary connection later.
+Create a new Virtual Cross Connect.<br /><br />For AWS and GCE, you have the option of creating the primary connection first and the secondary connection later. You also have the option of disabling the primary and/or secondary connections at any time and later re-enabling them. With Azure, you do not have this option.
 
 `POST /virtual_cross_connects`
 
@@ -759,6 +851,8 @@ Create a new Virtual Cross Connect.<br /><br />For AWS and GCE, you have the opt
 	}
 	fmt.Printf("%+v\n", virtualCrossConnect.Data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Virtual Cross Connect
 
@@ -774,9 +868,11 @@ Retrieve a Virtual Cross Connect.
 	fmt.Printf("%+v\n", virtualCrossConnect.Data)
 ```
 
+Returns: `data` (object)
+
 ## Update the Virtual Cross Connect
 
-Update the Virtual Cross Connect.<br /><br />Cloud IPs can only be patched during the `created` state, as GCE will only inform you of your generated IP once the pending connection requested has bee...
+Update the Virtual Cross Connect.<br /><br />Cloud IPs can only be patched during the `created` state, as GCE will only inform you of your generated IP once the pending connection requested has been accepted.
 
 `PATCH /virtual_cross_connects/{id}`
 
@@ -792,6 +888,8 @@ Update the Virtual Cross Connect.<br /><br />Cloud IPs can only be patched durin
 	fmt.Printf("%+v\n", virtualCrossConnect.Data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Virtual Cross Connect
 
 Delete a Virtual Cross Connect.
@@ -805,6 +903,8 @@ Delete a Virtual Cross Connect.
 	}
 	fmt.Printf("%+v\n", virtualCrossConnect.Data)
 ```
+
+Returns: `data` (object)
 
 ## List Virtual Cross Connect Cloud Coverage
 
@@ -820,6 +920,8 @@ List Virtual Cross Connects Cloud Coverage.<br /><br />This endpoint shows which
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## List all WireGuard Interfaces
 
 List all WireGuard Interfaces.
@@ -834,9 +936,11 @@ List all WireGuard Interfaces.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a WireGuard Interface
 
-Create a new WireGuard Interface.
+Create a new WireGuard Interface. Current limitation of 10 interfaces per user can be created.
 
 `POST /wireguard_interfaces`
 
@@ -849,6 +953,8 @@ Create a new WireGuard Interface.
 	}
 	fmt.Printf("%+v\n", wireguardInterface.Data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a WireGuard Interfaces
 
@@ -864,6 +970,8 @@ Retrieve a WireGuard Interfaces.
 	fmt.Printf("%+v\n", wireguardInterface.Data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a WireGuard Interface
 
 Delete a WireGuard Interface.
@@ -877,6 +985,8 @@ Delete a WireGuard Interface.
 	}
 	fmt.Printf("%+v\n", wireguardInterface.Data)
 ```
+
+Returns: `data` (object)
 
 ## List all WireGuard Peers
 
@@ -892,9 +1002,11 @@ List all WireGuard peers.
 	fmt.Printf("%+v\n", page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a WireGuard Peer
 
-Create a new WireGuard Peer.
+Create a new WireGuard Peer. Current limitation of 5 peers per interface can be created.
 
 `POST /wireguard_peers`
 
@@ -907,6 +1019,8 @@ Create a new WireGuard Peer.
 	}
 	fmt.Printf("%+v\n", wireguardPeer.Data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve the WireGuard Peer
 
@@ -921,6 +1035,8 @@ Retrieve the WireGuard peer.
 	}
 	fmt.Printf("%+v\n", wireguardPeer.Data)
 ```
+
+Returns: `data` (object)
 
 ## Update the WireGuard Peer
 
@@ -944,6 +1060,8 @@ Optional: `public_key` (string)
 	fmt.Printf("%+v\n", wireguardPeer.Data)
 ```
 
+Returns: `data` (object)
+
 ## Delete the WireGuard Peer
 
 Delete the WireGuard peer.
@@ -957,6 +1075,8 @@ Delete the WireGuard peer.
 	}
 	fmt.Printf("%+v\n", wireguardPeer.Data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve Wireguard config template for Peer
 

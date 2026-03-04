@@ -33,7 +33,7 @@ All examples below use `$TELNYX_API_KEY` for authentication.
 
 `POST /messages/rcs` — Required: `agent_id`, `to`, `messaging_profile_id`, `agent_message`
 
-Optional: `mms_fallback` (object), `sms_fallback` (object), `type` (enum), `webhook_url` (url)
+Optional: `mms_fallback` (object), `sms_fallback` (object), `type` (enum: RCS), `webhook_url` (url)
 
 ```bash
 curl \
@@ -50,6 +50,8 @@ curl \
   "https://api.telnyx.com/v2/messages/rcs"
 ```
 
+Returns: `body` (object), `direction` (string), `encoding` (string), `from` (object), `id` (string), `messaging_profile_id` (string), `organization_id` (string), `received_at` (date-time), `record_type` (string), `to` (array[object]), `type` (string)
+
 ## Generate RCS deeplink
 
 Generate a deeplink URL that can be used to start an RCS conversation with a specific agent.
@@ -60,6 +62,8 @@ Generate a deeplink URL that can be used to start an RCS conversation with a spe
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messages/rcs/deeplinks/{agent_id}?phone_number=%2B18445550001&body=hello%20world"
 ```
 
+Returns: `url` (string)
+
 ## List all RCS agents
 
 `GET /messaging/rcs/agents`
@@ -68,6 +72,8 @@ curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messa
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging/rcs/agents"
 ```
 
+Returns: `agent_id` (string), `agent_name` (string), `created_at` (date-time), `enabled` (boolean), `profile_id` (uuid), `updated_at` (date-time), `user_id` (string), `webhook_failover_url` (url), `webhook_url` (url)
+
 ## Retrieve an RCS agent
 
 `GET /messaging/rcs/agents/{id}`
@@ -75,6 +81,8 @@ curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messa
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging/rcs/agents/{id}"
 ```
+
+Returns: `agent_id` (string), `agent_name` (string), `created_at` (date-time), `enabled` (boolean), `profile_id` (uuid), `updated_at` (date-time), `user_id` (string), `webhook_failover_url` (url), `webhook_url` (url)
 
 ## Modify an RCS agent
 
@@ -95,6 +103,8 @@ curl \
   "https://api.telnyx.com/v2/messaging/rcs/agents/{id}"
 ```
 
+Returns: `agent_id` (string), `agent_name` (string), `created_at` (date-time), `enabled` (boolean), `profile_id` (uuid), `updated_at` (date-time), `user_id` (string), `webhook_failover_url` (url), `webhook_url` (url)
+
 ## Check RCS capabilities (batch)
 
 `POST /messaging/rcs/bulk_capabilities` — Required: `agent_id`, `phone_numbers`
@@ -113,6 +123,8 @@ curl \
   "https://api.telnyx.com/v2/messaging/rcs/bulk_capabilities"
 ```
 
+Returns: `agent_id` (string), `agent_name` (string), `features` (array[string]), `phone_number` (string), `record_type` (enum: rcs.capabilities)
+
 ## Check RCS capabilities
 
 `GET /messaging/rcs/capabilities/{agent_id}/{phone_number}`
@@ -120,6 +132,8 @@ curl \
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging/rcs/capabilities/{agent_id}/{phone_number}"
 ```
+
+Returns: `agent_id` (string), `agent_name` (string), `features` (array[string]), `phone_number` (string), `record_type` (enum: rcs.capabilities)
 
 ## Add RCS test number
 
@@ -135,6 +149,8 @@ curl \
   "https://api.telnyx.com/v2/messaging/rcs/test_number_invite/{id}/{phone_number}"
 ```
 
+Returns: `agent_id` (string), `phone_number` (string), `record_type` (enum: rcs.test_number_invite), `status` (string)
+
 ## List messaging hosted number orders
 
 `GET /messaging_hosted_number_orders`
@@ -142,6 +158,8 @@ curl \
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging_hosted_number_orders"
 ```
+
+Returns: `id` (uuid), `messaging_profile_id` (['string', 'null']), `phone_numbers` (array[object]), `record_type` (string), `status` (enum: carrier_rejected, compliance_review_failed, deleted, failed, incomplete_documentation, incorrect_billing_information, ineligible_carrier, loa_file_invalid, loa_file_successful, pending, provisioning, successful)
 
 ## Create a messaging hosted number order
 
@@ -156,6 +174,8 @@ curl \
   -H "Content-Type: application/json" \
   "https://api.telnyx.com/v2/messaging_hosted_number_orders"
 ```
+
+Returns: `id` (uuid), `messaging_profile_id` (['string', 'null']), `phone_numbers` (array[object]), `record_type` (string), `status` (enum: carrier_rejected, compliance_review_failed, deleted, failed, incomplete_documentation, incorrect_billing_information, ineligible_carrier, loa_file_invalid, loa_file_successful, pending, provisioning, successful)
 
 ## Check hosted messaging eligibility
 
@@ -174,6 +194,8 @@ curl \
   "https://api.telnyx.com/v2/messaging_hosted_number_orders/eligibility_numbers_check"
 ```
 
+Returns: `phone_numbers` (array[object])
+
 ## Retrieve a messaging hosted number order
 
 `GET /messaging_hosted_number_orders/{id}`
@@ -181,6 +203,8 @@ curl \
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging_hosted_number_orders/{id}"
 ```
+
+Returns: `id` (uuid), `messaging_profile_id` (['string', 'null']), `phone_numbers` (array[object]), `record_type` (string), `status` (enum: carrier_rejected, compliance_review_failed, deleted, failed, incomplete_documentation, incorrect_billing_information, ineligible_carrier, loa_file_invalid, loa_file_successful, pending, provisioning, successful)
 
 ## Delete a messaging hosted number order
 
@@ -195,6 +219,8 @@ curl \
   "https://api.telnyx.com/v2/messaging_hosted_number_orders/{id}"
 ```
 
+Returns: `id` (uuid), `messaging_profile_id` (['string', 'null']), `phone_numbers` (array[object]), `record_type` (string), `status` (enum: carrier_rejected, compliance_review_failed, deleted, failed, incomplete_documentation, incorrect_billing_information, ineligible_carrier, loa_file_invalid, loa_file_successful, pending, provisioning, successful)
+
 ## Upload hosted number document
 
 `POST /messaging_hosted_number_orders/{id}/actions/file_upload`
@@ -208,9 +234,11 @@ curl \
   "https://api.telnyx.com/v2/messaging_hosted_number_orders/{id}/actions/file_upload"
 ```
 
+Returns: `id` (uuid), `messaging_profile_id` (['string', 'null']), `phone_numbers` (array[object]), `record_type` (string), `status` (enum: carrier_rejected, compliance_review_failed, deleted, failed, incomplete_documentation, incorrect_billing_information, ineligible_carrier, loa_file_invalid, loa_file_successful, pending, provisioning, successful)
+
 ## Validate hosted number codes
 
-Validate the verification codes sent to the numbers of the hosted order.
+Validate the verification codes sent to the numbers of the hosted order. The verification codes must be created in the verification codes endpoint.
 
 `POST /messaging_hosted_number_orders/{id}/validation_codes` — Required: `verification_codes`
 
@@ -227,9 +255,11 @@ curl \
   "https://api.telnyx.com/v2/messaging_hosted_number_orders/{id}/validation_codes"
 ```
 
+Returns: `order_id` (uuid), `phone_numbers` (array[object])
+
 ## Create hosted number verification codes
 
-Create verification codes to validate numbers of the hosted order.
+Create verification codes to validate numbers of the hosted order. The verification codes will be sent to the numbers of the hosted order.
 
 `POST /messaging_hosted_number_orders/{id}/verification_codes` — Required: `phone_numbers`, `verification_method`
 
@@ -247,6 +277,8 @@ curl \
   "https://api.telnyx.com/v2/messaging_hosted_number_orders/{id}/verification_codes"
 ```
 
+Returns: `error` (string), `phone_number` (string), `type` (enum: sms, call, flashcall), `verification_code_id` (uuid)
+
 ## Delete a messaging hosted number
 
 `DELETE /messaging_hosted_numbers/{id}`
@@ -258,6 +290,8 @@ curl \
   "https://api.telnyx.com/v2/messaging_hosted_numbers/{id}"
 ```
 
+Returns: `id` (uuid), `messaging_profile_id` (['string', 'null']), `phone_numbers` (array[object]), `record_type` (string), `status` (enum: carrier_rejected, compliance_review_failed, deleted, failed, incomplete_documentation, incorrect_billing_information, ineligible_carrier, loa_file_invalid, loa_file_successful, pending, provisioning, successful)
+
 ## List Verification Requests
 
 Get a list of previously-submitted tollfree verification requests
@@ -267,6 +301,8 @@ Get a list of previously-submitted tollfree verification requests
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging_tollfree/verification/requests"
 ```
+
+Returns: `records` (array[object]), `total_records` (integer)
 
 ## Submit Verification Request
 
@@ -330,6 +366,8 @@ curl \
   "https://api.telnyx.com/v2/messaging_tollfree/verification/requests"
 ```
 
+Returns: `additionalInformation` (string), `ageGatedContent` (boolean), `businessAddr1` (string), `businessAddr2` (string), `businessCity` (string), `businessContactEmail` (string), `businessContactFirstName` (string), `businessContactLastName` (string), `businessContactPhone` (string), `businessName` (string), `businessRegistrationCountry` (string), `businessRegistrationNumber` (string), `businessRegistrationType` (string), `businessState` (string), `businessZip` (string), `campaignVerifyAuthorizationToken` (['string', 'null']), `corporateWebsite` (string), `doingBusinessAs` (string), `entityType` (object), `helpMessageResponse` (string), `id` (uuid), `isvReseller` (string), `messageVolume` (object), `optInConfirmationResponse` (string), `optInKeywords` (string), `optInWorkflow` (string), `optInWorkflowImageURLs` (array[object]), `phoneNumbers` (array[object]), `privacyPolicyURL` (string), `productionMessageContent` (string), `termsAndConditionURL` (string), `useCase` (object), `useCaseSummary` (string), `verificationRequestId` (string), `verificationStatus` (object), `webhookUrl` (string)
+
 ## Get Verification Request
 
 Get a single verification request by its ID.
@@ -340,9 +378,11 @@ Get a single verification request by its ID.
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging_tollfree/verification/requests/{id}"
 ```
 
+Returns: `additionalInformation` (string), `ageGatedContent` (boolean), `businessAddr1` (string), `businessAddr2` (string), `businessCity` (string), `businessContactEmail` (string), `businessContactFirstName` (string), `businessContactLastName` (string), `businessContactPhone` (string), `businessName` (string), `businessRegistrationCountry` (string), `businessRegistrationNumber` (string), `businessRegistrationType` (string), `businessState` (string), `businessZip` (string), `campaignVerifyAuthorizationToken` (['string', 'null']), `corporateWebsite` (string), `createdAt` (date-time), `doingBusinessAs` (string), `entityType` (object), `helpMessageResponse` (string), `id` (uuid), `isvReseller` (string), `messageVolume` (object), `optInConfirmationResponse` (string), `optInKeywords` (string), `optInWorkflow` (string), `optInWorkflowImageURLs` (array[object]), `phoneNumbers` (array[object]), `privacyPolicyURL` (string), `productionMessageContent` (string), `reason` (string), `termsAndConditionURL` (string), `updatedAt` (date-time), `useCase` (object), `useCaseSummary` (string), `verificationStatus` (object), `webhookUrl` (string)
+
 ## Update Verification Request
 
-Update an existing tollfree verification request.
+Update an existing tollfree verification request. This is particularly useful when there are pending customer actions to be taken.
 
 `PATCH /messaging_tollfree/verification/requests/{id}` — Required: `businessName`, `corporateWebsite`, `businessAddr1`, `businessCity`, `businessState`, `businessZip`, `businessContactFirstName`, `businessContactLastName`, `businessContactEmail`, `businessContactPhone`, `messageVolume`, `phoneNumbers`, `useCase`, `useCaseSummary`, `productionMessageContent`, `optInWorkflow`, `optInWorkflowImageURLs`, `additionalInformation`
 
@@ -402,11 +442,15 @@ curl \
   "https://api.telnyx.com/v2/messaging_tollfree/verification/requests/{id}"
 ```
 
+Returns: `additionalInformation` (string), `ageGatedContent` (boolean), `businessAddr1` (string), `businessAddr2` (string), `businessCity` (string), `businessContactEmail` (string), `businessContactFirstName` (string), `businessContactLastName` (string), `businessContactPhone` (string), `businessName` (string), `businessRegistrationCountry` (string), `businessRegistrationNumber` (string), `businessRegistrationType` (string), `businessState` (string), `businessZip` (string), `campaignVerifyAuthorizationToken` (['string', 'null']), `corporateWebsite` (string), `doingBusinessAs` (string), `entityType` (object), `helpMessageResponse` (string), `id` (uuid), `isvReseller` (string), `messageVolume` (object), `optInConfirmationResponse` (string), `optInKeywords` (string), `optInWorkflow` (string), `optInWorkflowImageURLs` (array[object]), `phoneNumbers` (array[object]), `privacyPolicyURL` (string), `productionMessageContent` (string), `termsAndConditionURL` (string), `useCase` (object), `useCaseSummary` (string), `verificationRequestId` (string), `verificationStatus` (object), `webhookUrl` (string)
+
 ## Delete Verification Request
 
 Delete a verification request
 
-A request may only be deleted when when the request is in the "rejected" state.
+A request may only be deleted when when the request is in the "rejected" state. * `HTTP 200`: request successfully deleted
+* `HTTP 400`: request exists but can't be deleted (i.e. not rejected)
+* `HTTP 404`: request unknown or already deleted
 
 `DELETE /messaging_tollfree/verification/requests/{id}`
 
@@ -419,13 +463,15 @@ curl \
 
 ## Get Verification Request Status History
 
-Get the history of status changes for a verification request.
+Get the history of status changes for a verification request. Returns a paginated list of historical status changes including the reason for each change and when it occurred.
 
 `GET /messaging_tollfree/verification/requests/{id}/status_history`
 
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging_tollfree/verification/requests/{id}/status_history"
 ```
+
+Returns: `records` (array[object]), `total_records` (integer)
 
 ## List messaging URL domains
 
@@ -434,3 +480,5 @@ curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messa
 ```bash
 curl -H "Authorization: Bearer $TELNYX_API_KEY" "https://api.telnyx.com/v2/messaging_url_domains"
 ```
+
+Returns: `id` (string), `record_type` (string), `url_domain` (string), `use_case` (string)

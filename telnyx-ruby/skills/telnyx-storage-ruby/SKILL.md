@@ -44,6 +44,8 @@ ssl_certificate = client.storage.buckets.ssl_certificate.retrieve("")
 puts(ssl_certificate)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `issued_by` (object), `issued_to` (object), `valid_from` (date-time), `valid_to` (date-time)
+
 ## Add SSL Certificate
 
 Uploads an SSL certificate and its matching secret so that you can use Telnyx's storage as your CDN.
@@ -56,6 +58,8 @@ ssl_certificate = client.storage.buckets.ssl_certificate.create("")
 puts(ssl_certificate)
 ```
 
+Returns: `created_at` (date-time), `id` (string), `issued_by` (object), `issued_to` (object), `valid_from` (date-time), `valid_to` (date-time)
+
 ## Remove SSL Certificate
 
 Deletes an SSL certificate and its matching secret.
@@ -67,6 +71,8 @@ ssl_certificate = client.storage.buckets.ssl_certificate.delete("")
 
 puts(ssl_certificate)
 ```
+
+Returns: `created_at` (date-time), `id` (string), `issued_by` (object), `issued_to` (object), `valid_from` (date-time), `valid_to` (date-time)
 
 ## Get API Usage
 
@@ -83,6 +89,8 @@ response = client.storage.buckets.usage.get_api_usage(
 puts(response)
 ```
 
+Returns: `categories` (array[object]), `timestamp` (date-time), `total` (object)
+
 ## Get Bucket Usage
 
 Returns the amount of storage space and number of files a bucket takes up.
@@ -95,9 +103,11 @@ response = client.storage.buckets.usage.get_bucket_usage("")
 puts(response)
 ```
 
+Returns: `num_objects` (integer), `size` (integer), `size_kb` (integer), `timestamp` (date-time)
+
 ## Create Presigned Object URL
 
-Returns a timed and authenticated URL to download (GET) or upload (PUT) an object.
+Returns a timed and authenticated URL to download (GET) or upload (PUT) an object. This is the equivalent to AWS S3’s “presigned” URL. Please note that Telnyx performs authentication differently from AWS S3 and you MUST NOT use the presign method of AWS s3api CLI or SDK to generate the presigned URL.
 
 `POST /storage/buckets/{bucketName}/{objectName}/presigned_url`
 
@@ -108,3 +118,5 @@ response = client.storage.buckets.create_presigned_url("", bucket_name: "")
 
 puts(response)
 ```
+
+Returns: `content` (object)

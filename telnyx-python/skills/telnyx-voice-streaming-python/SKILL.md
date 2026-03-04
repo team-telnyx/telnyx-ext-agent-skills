@@ -36,11 +36,12 @@ All examples below assume `client` is already initialized as shown above.
 
 ## Forking start
 
-Call forking allows you to stream the media from a call to a specific target in realtime.
+Call forking allows you to stream the media from a call to a specific target in realtime. This stream can be used to enable realtime audio analysis to support a 
+variety of use cases, including fraud detection, or the creation of AI-generated audio responses. Requests must specify either the `target` attribute or the `rx` and `tx` attributes.
 
 `POST /calls/{call_control_id}/actions/fork_start`
 
-Optional: `client_state` (string), `command_id` (string), `rx` (string), `stream_type` (enum), `tx` (string)
+Optional: `client_state` (string), `command_id` (string), `rx` (string), `stream_type` (enum: decrypted), `tx` (string)
 
 ```python
 response = client.calls.actions.start_forking(
@@ -49,13 +50,17 @@ response = client.calls.actions.start_forking(
 print(response.data)
 ```
 
+Returns: `result` (string)
+
 ## Forking stop
 
-Stop forking a call.
+Stop forking a call. **Expected Webhooks:**
+
+- `call.fork.stopped`
 
 `POST /calls/{call_control_id}/actions/fork_stop`
 
-Optional: `client_state` (string), `command_id` (string), `stream_type` (enum)
+Optional: `client_state` (string), `command_id` (string), `stream_type` (enum: raw, decrypted)
 
 ```python
 response = client.calls.actions.stop_forking(
@@ -64,13 +69,15 @@ response = client.calls.actions.stop_forking(
 print(response.data)
 ```
 
+Returns: `result` (string)
+
 ## Streaming start
 
-Start streaming the media from a call to a specific WebSocket address or Dialogflow connection in near-realtime.
+Start streaming the media from a call to a specific WebSocket address or Dialogflow connection in near-realtime. Audio will be delivered as base64-encoded RTP payload (raw audio), wrapped in JSON payloads. Please find more details about media streaming messages specification under the [link](https://developers.telnyx.com/docs/voice/programmable-voice/media-streaming).
 
 `POST /calls/{call_control_id}/actions/streaming_start`
 
-Optional: `client_state` (string), `command_id` (string), `custom_parameters` (array[object]), `dialogflow_config` (object), `enable_dialogflow` (boolean), `stream_auth_token` (string), `stream_bidirectional_codec` (enum), `stream_bidirectional_mode` (enum), `stream_bidirectional_sampling_rate` (enum), `stream_bidirectional_target_legs` (enum), `stream_codec` (enum), `stream_track` (enum), `stream_url` (string)
+Optional: `client_state` (string), `command_id` (string), `custom_parameters` (array[object]), `dialogflow_config` (object), `enable_dialogflow` (boolean), `stream_auth_token` (string), `stream_bidirectional_codec` (enum: PCMU, PCMA, G722, OPUS, AMR-WB, L16), `stream_bidirectional_mode` (enum: mp3, rtp), `stream_bidirectional_sampling_rate` (enum: 8000, 16000, 22050, 24000, 48000), `stream_bidirectional_target_legs` (enum: both, self, opposite), `stream_codec` (enum: PCMU, PCMA, G722, OPUS, AMR-WB, L16, default), `stream_track` (enum: inbound_track, outbound_track, both_tracks), `stream_url` (string)
 
 ```python
 response = client.calls.actions.start_streaming(
@@ -79,9 +86,13 @@ response = client.calls.actions.start_streaming(
 print(response.data)
 ```
 
+Returns: `result` (string)
+
 ## Streaming stop
 
-Stop streaming a call to a WebSocket.
+Stop streaming a call to a WebSocket. **Expected Webhooks:**
+
+- `streaming.stopped`
 
 `POST /calls/{call_control_id}/actions/streaming_stop`
 
@@ -94,13 +105,17 @@ response = client.calls.actions.stop_streaming(
 print(response.data)
 ```
 
+Returns: `result` (string)
+
 ## Transcription start
 
-Start real-time transcription.
+Start real-time transcription. Transcription will stop on call hang-up, or can be initiated via the Transcription stop command. **Expected Webhooks:**
+
+- `call.transcription`
 
 `POST /calls/{call_control_id}/actions/transcription_start`
 
-Optional: `client_state` (string), `command_id` (string), `transcription_engine` (enum), `transcription_engine_config` (object), `transcription_tracks` (string)
+Optional: `client_state` (string), `command_id` (string), `transcription_engine` (enum: Google, Telnyx, Deepgram, Azure, A, B), `transcription_engine_config` (object), `transcription_tracks` (string)
 
 ```python
 response = client.calls.actions.start_transcription(
@@ -108,6 +123,8 @@ response = client.calls.actions.start_transcription(
 )
 print(response.data)
 ```
+
+Returns: `result` (string)
 
 ## Transcription stop
 
@@ -123,6 +140,8 @@ response = client.calls.actions.stop_transcription(
 )
 print(response.data)
 ```
+
+Returns: `result` (string)
 
 ---
 
@@ -146,8 +165,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: call.fork.started | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
@@ -155,14 +174,14 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 | `data.payload.call_leg_id` | string | ID that is unique to the call and can be used to correlate webhook events. |
 | `data.payload.call_session_id` | string | ID that is unique to the call session and can be used to correlate webhook events. |
 | `data.payload.client_state` | string | State received from a command. |
-| `data.payload.stream_type` | enum | Type of media streamed. |
+| `data.payload.stream_type` | enum: decrypted | Type of media streamed. |
 
 **`callForkStopped`**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: call.fork.stopped | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.connection_id` | string | Call Control App ID (formerly Telnyx connection ID) used in the call. |
@@ -170,14 +189,14 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 | `data.payload.call_leg_id` | string | ID that is unique to the call and can be used to correlate webhook events. |
 | `data.payload.call_session_id` | string | ID that is unique to the call session and can be used to correlate webhook events. |
 | `data.payload.client_state` | string | State received from a command. |
-| `data.payload.stream_type` | enum | Type of media streamed. |
+| `data.payload.stream_type` | enum: decrypted | Type of media streamed. |
 
 **`callStreamingFailed`**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the resource. |
+| `data.event_type` | enum: streaming.failed | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
@@ -187,14 +206,14 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 | `data.payload.client_state` | string | State received from a command. |
 | `data.payload.failure_reason` | string | A short description explaning why the media streaming failed. |
 | `data.payload.stream_id` | uuid | Identifies the streaming. |
-| `data.payload.stream_type` | enum | The type of stream connection the stream is performing. |
+| `data.payload.stream_type` | enum: websocket, dialogflow | The type of stream connection the stream is performing. |
 
 **`callStreamingStarted`**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: streaming.started | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
@@ -208,8 +227,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: streaming.stopped | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Call ID used to issue commands via Call Control API. |
@@ -223,8 +242,8 @@ All webhooks include `telnyx-timestamp` and `telnyx-signature-ed25519` headers f
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data.record_type` | enum | Identifies the type of the resource. |
-| `data.event_type` | enum | The type of event being delivered. |
+| `data.record_type` | enum: event | Identifies the type of the resource. |
+| `data.event_type` | enum: call.transcription | The type of event being delivered. |
 | `data.id` | uuid | Identifies the type of resource. |
 | `data.occurred_at` | date-time | ISO 8601 datetime of when the event occurred. |
 | `data.payload.call_control_id` | string | Unique identifier and token for controlling the call. |

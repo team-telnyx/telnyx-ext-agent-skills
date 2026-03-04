@@ -42,6 +42,8 @@ page = client.room_compositions.list
 puts(page)
 ```
 
+Returns: `completed_at` (date-time), `created_at` (date-time), `download_url` (string), `duration_secs` (integer), `ended_at` (date-time), `format` (enum: mp4), `id` (uuid), `record_type` (string), `resolution` (string), `room_id` (uuid), `session_id` (uuid), `size_mb` (float), `started_at` (date-time), `status` (enum: completed, enqueued, processing), `updated_at` (date-time), `user_id` (uuid), `video_layout` (object), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (integer)
+
 ## Create a room composition.
 
 Asynchronously create a room composition.
@@ -56,6 +58,8 @@ room_composition = client.room_compositions.create
 puts(room_composition)
 ```
 
+Returns: `completed_at` (date-time), `created_at` (date-time), `download_url` (string), `duration_secs` (integer), `ended_at` (date-time), `format` (enum: mp4), `id` (uuid), `record_type` (string), `resolution` (string), `room_id` (uuid), `session_id` (uuid), `size_mb` (float), `started_at` (date-time), `status` (enum: completed, enqueued, processing), `updated_at` (date-time), `user_id` (uuid), `video_layout` (object), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (integer)
+
 ## View a room composition.
 
 `GET /room_compositions/{room_composition_id}`
@@ -65,6 +69,8 @@ room_composition = client.room_compositions.retrieve("5219b3af-87c6-4c08-9b58-5a
 
 puts(room_composition)
 ```
+
+Returns: `completed_at` (date-time), `created_at` (date-time), `download_url` (string), `duration_secs` (integer), `ended_at` (date-time), `format` (enum: mp4), `id` (uuid), `record_type` (string), `resolution` (string), `room_id` (uuid), `session_id` (uuid), `size_mb` (float), `started_at` (date-time), `status` (enum: completed, enqueued, processing), `updated_at` (date-time), `user_id` (uuid), `video_layout` (object), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (integer)
 
 ## Delete a room composition.
 
@@ -88,6 +94,8 @@ page = client.room_participants.list
 puts(page)
 ```
 
+Returns: `context` (string), `id` (uuid), `joined_at` (date-time), `left_at` (date-time), `record_type` (string), `session_id` (uuid), `updated_at` (date-time)
+
 ## View a room participant.
 
 `GET /room_participants/{room_participant_id}`
@@ -97,6 +105,8 @@ room_participant = client.room_participants.retrieve("0ccc7b54-4df3-4bca-a65a-3d
 
 puts(room_participant)
 ```
+
+Returns: `context` (string), `id` (uuid), `joined_at` (date-time), `left_at` (date-time), `record_type` (string), `session_id` (uuid), `updated_at` (date-time)
 
 ## View a list of room recordings.
 
@@ -108,6 +118,8 @@ page = client.room_recordings.list
 puts(page)
 ```
 
+Returns: `codec` (string), `completed_at` (date-time), `created_at` (date-time), `download_url` (string), `duration_secs` (integer), `ended_at` (date-time), `id` (uuid), `participant_id` (uuid), `record_type` (string), `room_id` (uuid), `session_id` (uuid), `size_mb` (float), `started_at` (date-time), `status` (enum: completed, processing), `type` (enum: audio, video), `updated_at` (date-time)
+
 ## Delete several room recordings in a bulk.
 
 `DELETE /room_recordings`
@@ -118,6 +130,8 @@ response = client.room_recordings.delete_bulk
 puts(response)
 ```
 
+Returns: `room_recordings` (integer)
+
 ## View a room recording.
 
 `GET /room_recordings/{room_recording_id}`
@@ -127,6 +141,8 @@ room_recording = client.room_recordings.retrieve("0ccc7b54-4df3-4bca-a65a-3da1ec
 
 puts(room_recording)
 ```
+
+Returns: `codec` (string), `completed_at` (date-time), `created_at` (date-time), `download_url` (string), `duration_secs` (integer), `ended_at` (date-time), `id` (uuid), `participant_id` (uuid), `record_type` (string), `room_id` (uuid), `session_id` (uuid), `size_mb` (float), `started_at` (date-time), `status` (enum: completed, processing), `type` (enum: audio, video), `updated_at` (date-time)
 
 ## Delete a room recording.
 
@@ -150,6 +166,8 @@ page = client.rooms.sessions.list_0
 puts(page)
 ```
 
+Returns: `active` (boolean), `created_at` (date-time), `ended_at` (date-time), `id` (uuid), `participants` (array[object]), `record_type` (string), `room_id` (uuid), `updated_at` (date-time)
+
 ## View a room session.
 
 `GET /room_sessions/{room_session_id}`
@@ -159,6 +177,8 @@ session = client.rooms.sessions.retrieve("0ccc7b54-4df3-4bca-a65a-3da1ecc777f0")
 
 puts(session)
 ```
+
+Returns: `active` (boolean), `created_at` (date-time), `ended_at` (date-time), `id` (uuid), `participants` (array[object]), `record_type` (string), `room_id` (uuid), `updated_at` (date-time)
 
 ## End a room session.
 
@@ -172,6 +192,8 @@ response = client.rooms.sessions.actions.end_("0ccc7b54-4df3-4bca-a65a-3da1ecc77
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Kick participants from a room session.
 
 `POST /room_sessions/{room_session_id}/actions/kick`
@@ -183,6 +205,8 @@ response = client.rooms.sessions.actions.kick("0ccc7b54-4df3-4bca-a65a-3da1ecc77
 
 puts(response)
 ```
+
+Returns: `result` (string)
 
 ## Mute participants in room session.
 
@@ -196,6 +220,8 @@ response = client.rooms.sessions.actions.mute("0ccc7b54-4df3-4bca-a65a-3da1ecc77
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## Unmute participants in room session.
 
 `POST /room_sessions/{room_session_id}/actions/unmute`
@@ -208,6 +234,8 @@ response = client.rooms.sessions.actions.unmute("0ccc7b54-4df3-4bca-a65a-3da1ecc
 puts(response)
 ```
 
+Returns: `result` (string)
+
 ## View a list of room participants.
 
 `GET /room_sessions/{room_session_id}/participants`
@@ -218,6 +246,8 @@ page = client.rooms.sessions.retrieve_participants("0ccc7b54-4df3-4bca-a65a-3da1
 puts(page)
 ```
 
+Returns: `context` (string), `id` (uuid), `joined_at` (date-time), `left_at` (date-time), `record_type` (string), `session_id` (uuid), `updated_at` (date-time)
+
 ## View a list of rooms.
 
 `GET /rooms`
@@ -227,6 +257,8 @@ page = client.rooms.list
 
 puts(page)
 ```
+
+Returns: `active_session_id` (uuid), `created_at` (date-time), `enable_recording` (boolean), `id` (uuid), `max_participants` (integer), `record_type` (string), `sessions` (array[object]), `unique_name` (string), `updated_at` (date-time), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (integer)
 
 ## Create a room.
 
@@ -242,6 +274,8 @@ room = client.rooms.create
 puts(room)
 ```
 
+Returns: `active_session_id` (uuid), `created_at` (date-time), `enable_recording` (boolean), `id` (uuid), `max_participants` (integer), `record_type` (string), `sessions` (array[object]), `unique_name` (string), `updated_at` (date-time), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (integer)
+
 ## View a room.
 
 `GET /rooms/{room_id}`
@@ -251,6 +285,8 @@ room = client.rooms.retrieve("0ccc7b54-4df3-4bca-a65a-3da1ecc777f0")
 
 puts(room)
 ```
+
+Returns: `active_session_id` (uuid), `created_at` (date-time), `enable_recording` (boolean), `id` (uuid), `max_participants` (integer), `record_type` (string), `sessions` (array[object]), `unique_name` (string), `updated_at` (date-time), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (integer)
 
 ## Update a room.
 
@@ -266,9 +302,11 @@ room = client.rooms.update("0ccc7b54-4df3-4bca-a65a-3da1ecc777f0")
 puts(room)
 ```
 
+Returns: `active_session_id` (uuid), `created_at` (date-time), `enable_recording` (boolean), `id` (uuid), `max_participants` (integer), `record_type` (string), `sessions` (array[object]), `unique_name` (string), `updated_at` (date-time), `webhook_event_failover_url` (uri), `webhook_event_url` (uri), `webhook_timeout_secs` (integer)
+
 ## Delete a room.
 
-Synchronously delete a Room.
+Synchronously delete a Room. Participants from that room will be kicked out, they won't be able to join that room anymore, and you won't be charged anymore for that room.
 
 `DELETE /rooms/{room_id}`
 
@@ -280,7 +318,7 @@ puts(result)
 
 ## Create Client Token to join a room.
 
-Synchronously create an Client Token to join a Room.
+Synchronously create an Client Token to join a Room. Client Token is necessary to join a Telnyx Room. Client Token will expire after `token_ttl_secs`, a Refresh Token is also provided to refresh a Client Token, the Refresh Token expires after `refresh_token_ttl_secs`.
 
 `POST /rooms/{room_id}/actions/generate_join_client_token`
 
@@ -292,9 +330,11 @@ response = client.rooms.actions.generate_join_client_token("0ccc7b54-4df3-4bca-a
 puts(response)
 ```
 
+Returns: `refresh_token` (string), `refresh_token_expires_at` (date-time), `token` (string), `token_expires_at` (date-time)
+
 ## Refresh Client Token to join a room.
 
-Synchronously refresh an Client Token to join a Room.
+Synchronously refresh an Client Token to join a Room. Client Token is necessary to join a Telnyx Room. Client Token will expire after `token_ttl_secs`.
 
 `POST /rooms/{room_id}/actions/refresh_client_token` — Required: `refresh_token`
 
@@ -309,6 +349,8 @@ response = client.rooms.actions.refresh_client_token(
 puts(response)
 ```
 
+Returns: `token` (string), `token_expires_at` (date-time)
+
 ## View a list of room sessions.
 
 `GET /rooms/{room_id}/sessions`
@@ -318,3 +360,5 @@ page = client.rooms.sessions.list_1("0ccc7b54-4df3-4bca-a65a-3da1ecc777f0")
 
 puts(page)
 ```
+
+Returns: `active` (boolean), `created_at` (date-time), `ended_at` (date-time), `id` (uuid), `participants` (array[object]), `record_type` (string), `room_id` (uuid), `updated_at` (date-time)

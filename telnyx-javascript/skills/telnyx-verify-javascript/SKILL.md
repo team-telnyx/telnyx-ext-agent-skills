@@ -45,6 +45,8 @@ const numberLookup = await client.numberLookup.retrieve('+18665552368');
 console.log(numberLookup.data);
 ```
 
+Returns: `caller_name` (object), `carrier` (object), `country_code` (string), `fraud` (['string', 'null']), `national_format` (string), `phone_number` (string), `portability` (object), `record_type` (string)
+
 ## List verifications by phone number
 
 `GET /verifications/by_phone_number/{phone_number}`
@@ -54,6 +56,8 @@ const byPhoneNumbers = await client.verifications.byPhoneNumber.list('+130355512
 
 console.log(byPhoneNumbers.data);
 ```
+
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
 
 ## Verify verification code by phone number
 
@@ -67,6 +71,8 @@ const verifyVerificationCodeResponse = await client.verifications.byPhoneNumber.
 
 console.log(verifyVerificationCodeResponse.data);
 ```
+
+Returns: `phone_number` (string), `response_code` (enum: accepted, rejected)
 
 ## Trigger Call verification
 
@@ -83,6 +89,8 @@ const createVerificationResponse = await client.verifications.triggerCall({
 console.log(createVerificationResponse.data);
 ```
 
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
+
 ## Trigger Flash call verification
 
 `POST /verifications/flashcall` — Required: `phone_number`, `verify_profile_id`
@@ -97,6 +105,8 @@ const createVerificationResponse = await client.verifications.triggerFlashcall({
 
 console.log(createVerificationResponse.data);
 ```
+
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
 
 ## Trigger SMS verification
 
@@ -113,6 +123,8 @@ const createVerificationResponse = await client.verifications.triggerSMS({
 console.log(createVerificationResponse.data);
 ```
 
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
+
 ## Retrieve verification
 
 `GET /verifications/{verification_id}`
@@ -123,11 +135,13 @@ const verification = await client.verifications.retrieve('12ade33a-21c0-473b-b05
 console.log(verification.data);
 ```
 
+Returns: `created_at` (string), `custom_code` (['string', 'null']), `id` (uuid), `phone_number` (string), `record_type` (enum: verification), `status` (enum: pending, accepted, invalid, expired, error), `timeout_secs` (integer), `type` (enum: sms, call, flashcall), `updated_at` (string), `verify_profile_id` (uuid)
+
 ## Verify verification code by ID
 
 `POST /verifications/{verification_id}/actions/verify`
 
-Optional: `code` (string), `status` (enum)
+Optional: `code` (string), `status` (enum: accepted, rejected)
 
 ```javascript
 const verifyVerificationCodeResponse = await client.verifications.actions.verify(
@@ -136,6 +150,8 @@ const verifyVerificationCodeResponse = await client.verifications.actions.verify
 
 console.log(verifyVerificationCodeResponse.data);
 ```
+
+Returns: `phone_number` (string), `response_code` (enum: accepted, rejected)
 
 ## List all Verify profiles
 
@@ -149,6 +165,8 @@ for await (const verifyProfile of client.verifyProfiles.list()) {
   console.log(verifyProfile.id);
 }
 ```
+
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
 
 ## Create a Verify profile
 
@@ -164,6 +182,8 @@ const verifyProfileData = await client.verifyProfiles.create({ name: 'Test Profi
 console.log(verifyProfileData.data);
 ```
 
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
+
 ## Retrieve Verify profile message templates
 
 List all Verify profile message templates.
@@ -175,6 +195,8 @@ const response = await client.verifyProfiles.retrieveTemplates();
 
 console.log(response.data);
 ```
+
+Returns: `id` (uuid), `text` (string)
 
 ## Create message template
 
@@ -189,6 +211,8 @@ const messageTemplate = await client.verifyProfiles.createTemplate({
 
 console.log(messageTemplate.data);
 ```
+
+Returns: `id` (uuid), `text` (string)
 
 ## Update message template
 
@@ -205,6 +229,8 @@ const messageTemplate = await client.verifyProfiles.updateTemplate(
 console.log(messageTemplate.data);
 ```
 
+Returns: `id` (uuid), `text` (string)
+
 ## Retrieve Verify profile
 
 Gets a single Verify profile.
@@ -218,6 +244,8 @@ const verifyProfileData = await client.verifyProfiles.retrieve(
 
 console.log(verifyProfileData.data);
 ```
+
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
 
 ## Update Verify profile
 
@@ -233,6 +261,8 @@ const verifyProfileData = await client.verifyProfiles.update(
 console.log(verifyProfileData.data);
 ```
 
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)
+
 ## Delete Verify profile
 
 `DELETE /verify_profiles/{verify_profile_id}`
@@ -244,3 +274,5 @@ const verifyProfileData = await client.verifyProfiles.delete(
 
 console.log(verifyProfileData.data);
 ```
+
+Returns: `call` (object), `created_at` (string), `flashcall` (object), `id` (uuid), `language` (string), `name` (string), `rcs` (object), `record_type` (enum: verification_profile), `sms` (object), `updated_at` (string), `webhook_failover_url` (string), `webhook_url` (string)

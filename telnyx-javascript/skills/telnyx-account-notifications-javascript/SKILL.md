@@ -45,19 +45,23 @@ for await (const notificationChannel of client.notificationChannels.list()) {
 }
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Create a notification channel
 
 Create a notification channel.
 
 `POST /notification_channels`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```javascript
 const notificationChannel = await client.notificationChannels.create();
 
 console.log(notificationChannel.data);
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## Get a notification channel
 
@@ -73,13 +77,15 @@ const notificationChannel = await client.notificationChannels.retrieve(
 console.log(notificationChannel.data);
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## Update a notification channel
 
 Update a notification channel.
 
 `PATCH /notification_channels/{id}`
 
-Optional: `channel_destination` (string), `channel_type_id` (enum), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+Optional: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ```javascript
 const notificationChannel = await client.notificationChannels.update(
@@ -88,6 +94,8 @@ const notificationChannel = await client.notificationChannels.update(
 
 console.log(notificationChannel.data);
 ```
+
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
 
 ## Delete a notification channel
 
@@ -103,6 +111,8 @@ const notificationChannel = await client.notificationChannels.delete(
 console.log(notificationChannel.data);
 ```
 
+Returns: `channel_destination` (string), `channel_type_id` (enum: sms, voice, email, webhook), `created_at` (date-time), `id` (string), `notification_profile_id` (string), `updated_at` (date-time)
+
 ## List all Notifications Events Conditions
 
 Returns a list of your notifications events conditions.
@@ -115,6 +125,8 @@ for await (const notificationEventConditionListResponse of client.notificationEv
   console.log(notificationEventConditionListResponse.id);
 }
 ```
+
+Returns: `allow_multiple_channels` (boolean), `associated_record_type` (enum: account, phone_number), `asynchronous` (boolean), `created_at` (date-time), `description` (string), `enabled` (boolean), `id` (string), `name` (string), `notification_event_id` (string), `parameters` (array[object]), `supported_channels` (array[string]), `updated_at` (date-time)
 
 ## List all Notifications Events
 
@@ -129,6 +141,8 @@ for await (const notificationEventListResponse of client.notificationEvents.list
 }
 ```
 
+Returns: `created_at` (date-time), `enabled` (boolean), `id` (string), `name` (string), `notification_category` (string), `updated_at` (date-time)
+
 ## List all Notifications Profiles
 
 Returns a list of your notifications profiles.
@@ -141,6 +155,8 @@ for await (const notificationProfile of client.notificationProfiles.list()) {
   console.log(notificationProfile.id);
 }
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Create a notification profile
 
@@ -156,6 +172,8 @@ const notificationProfile = await client.notificationProfiles.create();
 console.log(notificationProfile.data);
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Get a notification profile
 
 Get a notification profile.
@@ -169,6 +187,8 @@ const notificationProfile = await client.notificationProfiles.retrieve(
 
 console.log(notificationProfile.data);
 ```
+
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
 
 ## Update a notification profile
 
@@ -186,6 +206,8 @@ const notificationProfile = await client.notificationProfiles.update(
 console.log(notificationProfile.data);
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## Delete a notification profile
 
 Delete a notification profile.
@@ -200,6 +222,8 @@ const notificationProfile = await client.notificationProfiles.delete(
 console.log(notificationProfile.data);
 ```
 
+Returns: `created_at` (date-time), `id` (string), `name` (string), `updated_at` (date-time)
+
 ## List notification settings
 
 List notification settings.
@@ -213,19 +237,23 @@ for await (const notificationSetting of client.notificationSettings.list()) {
 }
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Add a Notification Setting
 
 Add a notification setting.
 
 `POST /notification_settings`
 
-Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum), `updated_at` (date-time)
+Optional: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ```javascript
 const notificationSetting = await client.notificationSettings.create();
 
 console.log(notificationSetting.data);
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
 
 ## Get a notification setting
 
@@ -241,6 +269,8 @@ const notificationSetting = await client.notificationSettings.retrieve(
 console.log(notificationSetting.data);
 ```
 
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)
+
 ## Delete a notification setting
 
 Delete a notification setting.
@@ -254,3 +284,5 @@ const notificationSetting = await client.notificationSettings.delete(
 
 console.log(notificationSetting.data);
 ```
+
+Returns: `associated_record_type` (string), `associated_record_type_value` (string), `created_at` (date-time), `id` (string), `notification_channel_id` (string), `notification_event_condition_id` (string), `notification_profile_id` (string), `parameters` (array[object]), `status` (enum: enabled, enable-received, enable-pending, enable-submtited, delete-received, delete-pending, delete-submitted, deleted), `updated_at` (date-time)

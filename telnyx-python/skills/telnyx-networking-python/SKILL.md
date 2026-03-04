@@ -43,9 +43,11 @@ page = page.data[0]
 print(page.task_id)
 ```
 
+Returns: `bucket` (string), `created_at` (date-time), `finished_at` (date-time), `min_cluster_size` (integer), `min_subcluster_size` (integer), `status` (enum: pending, starting, running, completed, failed), `task_id` (string)
+
 ## Compute new clusters
 
-Starts a background task to compute how the data in an [embedded storage bucket](https://developers.telnyx.com/api-reference/embeddings/embed-documents) is clustered.
+Starts a background task to compute how the data in an [embedded storage bucket](https://developers.telnyx.com/api-reference/embeddings/embed-documents) is clustered. This helps identify common themes and patterns in the data.
 
 `POST /ai/clusters` — Required: `bucket`
 
@@ -58,6 +60,8 @@ response = client.ai.clusters.compute(
 print(response.data)
 ```
 
+Returns: `task_id` (string)
+
 ## Fetch a cluster
 
 `GET /ai/clusters/{task_id}`
@@ -68,6 +72,8 @@ cluster = client.ai.clusters.retrieve(
 )
 print(cluster.data)
 ```
+
+Returns: `bucket` (string), `clusters` (array[object]), `status` (enum: pending, starting, running, completed, failed)
 
 ## Delete a cluster
 
@@ -103,6 +109,8 @@ integrations = client.ai.integrations.list()
 print(integrations.data)
 ```
 
+Returns: `available_tools` (array[string]), `description` (string), `display_name` (string), `id` (string), `logo_url` (string), `name` (string), `status` (enum: disconnected, connected)
+
 ## List User Integrations
 
 List user setup integrations
@@ -113,6 +121,8 @@ List user setup integrations
 connections = client.ai.integrations.connections.list()
 print(connections.data)
 ```
+
+Returns: `allowed_tools` (array[string]), `id` (string), `integration_id` (string)
 
 ## Get User Integration connection By Id
 
@@ -126,6 +136,8 @@ connection = client.ai.integrations.connections.retrieve(
 )
 print(connection.data)
 ```
+
+Returns: `allowed_tools` (array[string]), `id` (string), `integration_id` (string)
 
 ## Delete Integration Connection
 
@@ -152,6 +164,8 @@ integration = client.ai.integrations.retrieve(
 print(integration.id)
 ```
 
+Returns: `available_tools` (array[string]), `description` (string), `display_name` (string), `id` (string), `logo_url` (string), `name` (string), `status` (enum: disconnected, connected)
+
 ## List all Global IP Allowed Ports
 
 `GET /global_ip_allowed_ports`
@@ -161,6 +175,8 @@ global_ip_allowed_ports = client.global_ip_allowed_ports.list()
 print(global_ip_allowed_ports.data)
 ```
 
+Returns: `data` (array[object])
+
 ## Global IP Assignment Health Check Metrics
 
 `GET /global_ip_assignment_health`
@@ -169,6 +185,8 @@ print(global_ip_allowed_ports.data)
 global_ip_assignment_health = client.global_ip_assignment_health.retrieve()
 print(global_ip_assignment_health.data)
 ```
+
+Returns: `global_ip` (object), `global_ip_assignment` (object), `health` (object), `timestamp` (date-time)
 
 ## List all Global IP assignments
 
@@ -182,6 +200,8 @@ page = page.data[0]
 print(page.id)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Global IP assignment
 
 Create a Global IP assignment.
@@ -192,6 +212,8 @@ Create a Global IP assignment.
 global_ip_assignment = client.global_ip_assignments.create()
 print(global_ip_assignment.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Global IP
 
@@ -205,6 +227,8 @@ global_ip_assignment = client.global_ip_assignments.retrieve(
 )
 print(global_ip_assignment.data)
 ```
+
+Returns: `data` (object)
 
 ## Update a Global IP assignment
 
@@ -220,6 +244,8 @@ global_ip_assignment = client.global_ip_assignments.update(
 print(global_ip_assignment.data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Global IP assignment
 
 Delete a Global IP assignment.
@@ -233,6 +259,8 @@ global_ip_assignment = client.global_ip_assignments.delete(
 print(global_ip_assignment.data)
 ```
 
+Returns: `data` (object)
+
 ## Global IP Assignment Usage Metrics
 
 `GET /global_ip_assignments_usage`
@@ -241,6 +269,8 @@ print(global_ip_assignment.data)
 global_ip_assignments_usage = client.global_ip_assignments_usage.retrieve()
 print(global_ip_assignments_usage.data)
 ```
+
+Returns: `global_ip` (object), `global_ip_assignment` (object), `received` (object), `timestamp` (date-time), `transmitted` (object)
 
 ## List all Global IP Health check types
 
@@ -252,6 +282,8 @@ List all Global IP Health check types.
 global_ip_health_check_types = client.global_ip_health_check_types.list()
 print(global_ip_health_check_types.data)
 ```
+
+Returns: `data` (array[object])
 
 ## List all Global IP health checks
 
@@ -265,6 +297,8 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Global IP health check
 
 Create a Global IP health check.
@@ -275,6 +309,8 @@ Create a Global IP health check.
 global_ip_health_check = client.global_ip_health_checks.create()
 print(global_ip_health_check.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Global IP health check
 
@@ -289,6 +325,8 @@ global_ip_health_check = client.global_ip_health_checks.retrieve(
 print(global_ip_health_check.data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Global IP health check
 
 Delete a Global IP health check.
@@ -302,6 +340,8 @@ global_ip_health_check = client.global_ip_health_checks.delete(
 print(global_ip_health_check.data)
 ```
 
+Returns: `data` (object)
+
 ## Global IP Latency Metrics
 
 `GET /global_ip_latency`
@@ -310,6 +350,8 @@ print(global_ip_health_check.data)
 global_ip_latency = client.global_ip_latency.retrieve()
 print(global_ip_latency.data)
 ```
+
+Returns: `global_ip` (object), `mean_latency` (object), `percentile_latency` (object), `prober_location` (object), `timestamp` (date-time)
 
 ## List all Global IP Protocols
 
@@ -320,6 +362,8 @@ global_ip_protocols = client.global_ip_protocols.list()
 print(global_ip_protocols.data)
 ```
 
+Returns: `data` (array[object])
+
 ## Global IP Usage Metrics
 
 `GET /global_ip_usage`
@@ -328,6 +372,8 @@ print(global_ip_protocols.data)
 global_ip_usage = client.global_ip_usage.retrieve()
 print(global_ip_usage.data)
 ```
+
+Returns: `global_ip` (object), `received` (object), `timestamp` (date-time), `transmitted` (object)
 
 ## List all Global IPs
 
@@ -341,6 +387,8 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Global IP
 
 Create a Global IP.
@@ -351,6 +399,8 @@ Create a Global IP.
 global_ip = client.global_ips.create()
 print(global_ip.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Global IP
 
@@ -365,6 +415,8 @@ global_ip = client.global_ips.retrieve(
 print(global_ip.data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Global IP
 
 Delete a Global IP.
@@ -378,6 +430,8 @@ global_ip = client.global_ips.delete(
 print(global_ip.data)
 ```
 
+Returns: `data` (object)
+
 ## List all Networks
 
 List all Networks.
@@ -389,6 +443,8 @@ page = client.networks.list()
 page = page.data[0]
 print(page)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create a Network
 
@@ -403,6 +459,8 @@ network = client.networks.create(
 print(network.data)
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a Network
 
 Retrieve a Network.
@@ -415,6 +473,8 @@ network = client.networks.retrieve(
 )
 print(network.data)
 ```
+
+Returns: `data` (object)
 
 ## Update a Network
 
@@ -430,6 +490,8 @@ network = client.networks.update(
 print(network.data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Network
 
 Delete a Network.
@@ -443,6 +505,8 @@ network = client.networks.delete(
 print(network.data)
 ```
 
+Returns: `data` (object)
+
 ## Get Default Gateway status.
 
 `GET /networks/{id}/default_gateway`
@@ -453,6 +517,8 @@ default_gateway = client.networks.default_gateway.retrieve(
 )
 print(default_gateway.data)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Create Default Gateway.
 
@@ -465,6 +531,8 @@ default_gateway = client.networks.default_gateway.create(
 print(default_gateway.data)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Delete Default Gateway.
 
 `DELETE /networks/{id}/default_gateway`
@@ -475,6 +543,8 @@ default_gateway = client.networks.default_gateway.delete(
 )
 print(default_gateway.data)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## List all Interfaces for a Network.
 
@@ -488,6 +558,8 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Get all Private Wireless Gateways
 
 Get all Private Wireless Gateways belonging to the user.
@@ -500,9 +572,11 @@ page = page.data[0]
 print(page.id)
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## Create a Private Wireless Gateway
 
-Asynchronously create a Private Wireless Gateway for SIM cards for a previously created network.
+Asynchronously create a Private Wireless Gateway for SIM cards for a previously created network. This operation may take several minutes so you can check the Private Wireless Gateway status at the section Get a Private Wireless Gateway.
 
 `POST /private_wireless_gateways` — Required: `network_id`, `name`
 
@@ -515,6 +589,8 @@ private_wireless_gateway = client.private_wireless_gateways.create(
 )
 print(private_wireless_gateway.data)
 ```
+
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
 
 ## Get a Private Wireless Gateway
 
@@ -529,6 +605,8 @@ private_wireless_gateway = client.private_wireless_gateways.retrieve(
 print(private_wireless_gateway.data)
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## Delete a Private Wireless Gateway
 
 Deletes the Private Wireless Gateway.
@@ -542,6 +620,8 @@ private_wireless_gateway = client.private_wireless_gateways.delete(
 print(private_wireless_gateway.data)
 ```
 
+Returns: `assigned_resources` (array[object]), `created_at` (string), `id` (uuid), `ip_range` (string), `name` (string), `network_id` (uuid), `record_type` (string), `region_code` (string), `status` (object), `updated_at` (string)
+
 ## List all Public Internet Gateways
 
 List all Public Internet Gateways.
@@ -554,6 +634,8 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Public Internet Gateway
 
 Create a new Public Internet Gateway.
@@ -564,6 +646,8 @@ Create a new Public Internet Gateway.
 public_internet_gateway = client.public_internet_gateways.create()
 print(public_internet_gateway.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Public Internet Gateway
 
@@ -578,6 +662,8 @@ public_internet_gateway = client.public_internet_gateways.retrieve(
 print(public_internet_gateway.data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a Public Internet Gateway
 
 Delete a Public Internet Gateway.
@@ -591,6 +677,8 @@ public_internet_gateway = client.public_internet_gateways.delete(
 print(public_internet_gateway.data)
 ```
 
+Returns: `data` (object)
+
 ## List all Regions
 
 List all regions and the interfaces that region supports
@@ -601,6 +689,8 @@ List all regions and the interfaces that region supports
 regions = client.regions.list()
 print(regions.data)
 ```
+
+Returns: `code` (string), `created_at` (string), `name` (string), `record_type` (string), `supported_interfaces` (array[string]), `updated_at` (string)
 
 ## List all Virtual Cross Connects
 
@@ -614,9 +704,11 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a Virtual Cross Connect
 
-Create a new Virtual Cross Connect.<br /><br />For AWS and GCE, you have the option of creating the primary connection first and the secondary connection later.
+Create a new Virtual Cross Connect.<br /><br />For AWS and GCE, you have the option of creating the primary connection first and the secondary connection later. You also have the option of disabling the primary and/or secondary connections at any time and later re-enabling them. With Azure, you do not have this option.
 
 `POST /virtual_cross_connects`
 
@@ -626,6 +718,8 @@ virtual_cross_connect = client.virtual_cross_connects.create(
 )
 print(virtual_cross_connect.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a Virtual Cross Connect
 
@@ -640,9 +734,11 @@ virtual_cross_connect = client.virtual_cross_connects.retrieve(
 print(virtual_cross_connect.data)
 ```
 
+Returns: `data` (object)
+
 ## Update the Virtual Cross Connect
 
-Update the Virtual Cross Connect.<br /><br />Cloud IPs can only be patched during the `created` state, as GCE will only inform you of your generated IP once the pending connection requested has bee...
+Update the Virtual Cross Connect.<br /><br />Cloud IPs can only be patched during the `created` state, as GCE will only inform you of your generated IP once the pending connection requested has been accepted.
 
 `PATCH /virtual_cross_connects/{id}`
 
@@ -652,6 +748,8 @@ virtual_cross_connect = client.virtual_cross_connects.update(
 )
 print(virtual_cross_connect.data)
 ```
+
+Returns: `data` (object)
 
 ## Delete a Virtual Cross Connect
 
@@ -666,6 +764,8 @@ virtual_cross_connect = client.virtual_cross_connects.delete(
 print(virtual_cross_connect.data)
 ```
 
+Returns: `data` (object)
+
 ## List Virtual Cross Connect Cloud Coverage
 
 List Virtual Cross Connects Cloud Coverage.<br /><br />This endpoint shows which cloud regions are available for the `location_code` your Virtual Cross Connect will be provisioned in.
@@ -677,6 +777,8 @@ page = client.virtual_cross_connects_coverage.list()
 page = page.data[0]
 print(page.available_bandwidth)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## List all WireGuard Interfaces
 
@@ -690,9 +792,11 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a WireGuard Interface
 
-Create a new WireGuard Interface.
+Create a new WireGuard Interface. Current limitation of 10 interfaces per user can be created.
 
 `POST /wireguard_interfaces`
 
@@ -702,6 +806,8 @@ wireguard_interface = client.wireguard_interfaces.create(
 )
 print(wireguard_interface.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve a WireGuard Interfaces
 
@@ -716,6 +822,8 @@ wireguard_interface = client.wireguard_interfaces.retrieve(
 print(wireguard_interface.data)
 ```
 
+Returns: `data` (object)
+
 ## Delete a WireGuard Interface
 
 Delete a WireGuard Interface.
@@ -729,6 +837,8 @@ wireguard_interface = client.wireguard_interfaces.delete(
 print(wireguard_interface.data)
 ```
 
+Returns: `data` (object)
+
 ## List all WireGuard Peers
 
 List all WireGuard peers.
@@ -741,9 +851,11 @@ page = page.data[0]
 print(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## Create a WireGuard Peer
 
-Create a new WireGuard Peer.
+Create a new WireGuard Peer. Current limitation of 5 peers per interface can be created.
 
 `POST /wireguard_peers`
 
@@ -753,6 +865,8 @@ wireguard_peer = client.wireguard_peers.create(
 )
 print(wireguard_peer.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve the WireGuard Peer
 
@@ -766,6 +880,8 @@ wireguard_peer = client.wireguard_peers.retrieve(
 )
 print(wireguard_peer.data)
 ```
+
+Returns: `data` (object)
 
 ## Update the WireGuard Peer
 
@@ -782,6 +898,8 @@ wireguard_peer = client.wireguard_peers.update(
 print(wireguard_peer.data)
 ```
 
+Returns: `data` (object)
+
 ## Delete the WireGuard Peer
 
 Delete the WireGuard peer.
@@ -794,6 +912,8 @@ wireguard_peer = client.wireguard_peers.delete(
 )
 print(wireguard_peer.data)
 ```
+
+Returns: `data` (object)
 
 ## Retrieve Wireguard config template for Peer
 

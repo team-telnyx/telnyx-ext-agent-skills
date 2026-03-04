@@ -44,6 +44,8 @@ page = client.bundle_pricing.billing_bundles.list
 puts(page)
 ```
 
+Returns: `cost_code` (string), `created_at` (date), `currency` (string), `id` (uuid), `is_public` (boolean), `mrc_price` (float), `name` (string), `slug` (string), `specs` (array[string])
+
 ## Get Bundle By Id
 
 Get a single bundle by ID.
@@ -56,6 +58,8 @@ billing_bundle = client.bundle_pricing.billing_bundles.retrieve("8661948c-a386-4
 puts(billing_bundle)
 ```
 
+Returns: `active` (boolean), `bundle_limits` (array[object]), `cost_code` (string), `created_at` (date), `id` (uuid), `is_public` (boolean), `name` (string), `slug` (string)
+
 ## Get User Bundles
 
 Get a paginated list of user bundles.
@@ -67,6 +71,8 @@ page = client.bundle_pricing.user_bundles.list
 
 puts(page)
 ```
+
+Returns: `active` (boolean), `billing_bundle` (object), `created_at` (date), `id` (uuid), `resources` (array[object]), `updated_at` (date), `user_id` (uuid)
 
 ## Create User Bundles
 
@@ -82,6 +88,8 @@ user_bundle = client.bundle_pricing.user_bundles.create
 puts(user_bundle)
 ```
 
+Returns: `active` (boolean), `billing_bundle` (object), `created_at` (date), `id` (uuid), `resources` (array[object]), `updated_at` (date), `user_id` (uuid)
+
 ## Get Unused User Bundles
 
 Returns all user bundles that aren't in use.
@@ -93,6 +101,8 @@ response = client.bundle_pricing.user_bundles.list_unused
 
 puts(response)
 ```
+
+Returns: `billing_bundle` (object), `user_bundle_ids` (array[string])
 
 ## Get User Bundle by Id
 
@@ -106,6 +116,8 @@ user_bundle = client.bundle_pricing.user_bundles.retrieve("ca1d2263-d1f1-43ac-ba
 puts(user_bundle)
 ```
 
+Returns: `active` (boolean), `billing_bundle` (object), `created_at` (date), `id` (uuid), `resources` (array[object]), `updated_at` (date), `user_id` (uuid)
+
 ## Deactivate User Bundle
 
 Deactivates a user bundle by its ID.
@@ -117,6 +129,8 @@ response = client.bundle_pricing.user_bundles.deactivate("ca1d2263-d1f1-43ac-ba5
 
 puts(response)
 ```
+
+Returns: `active` (boolean), `billing_bundle` (object), `created_at` (date), `id` (uuid), `resources` (array[object]), `updated_at` (date), `user_id` (uuid)
 
 ## Get User Bundle Resources
 
@@ -130,6 +144,8 @@ response = client.bundle_pricing.user_bundles.list_resources("ca1d2263-d1f1-43ac
 puts(response)
 ```
 
+Returns: `created_at` (date), `id` (uuid), `resource` (string), `resource_type` (string), `updated_at` (date)
+
 ## List all document links
 
 List all documents links ordered by created_at descending.
@@ -142,6 +158,8 @@ page = client.document_links.list
 puts(page)
 ```
 
+Returns: `data` (array[object]), `meta` (object)
+
 ## List all documents
 
 List all documents ordered by created_at descending.
@@ -153,6 +171,8 @@ page = client.documents.list
 
 puts(page)
 ```
+
+Returns: `data` (array[object]), `meta` (object)
 
 ## Upload a document
 
@@ -168,6 +188,8 @@ response = client.documents.upload_json(document: {})
 puts(response)
 ```
 
+Returns: `data` (object)
+
 ## Retrieve a document
 
 Retrieve a document.
@@ -179,6 +201,8 @@ document = client.documents.retrieve("6a09cdc3-8948-47f0-aa62-74ac943d6c58")
 
 puts(document)
 ```
+
+Returns: `data` (object)
 
 ## Update a document
 
@@ -192,9 +216,11 @@ document = client.documents.update("6a09cdc3-8948-47f0-aa62-74ac943d6c58")
 puts(document)
 ```
 
+Returns: `data` (object)
+
 ## Delete a document
 
-Delete a document.<br /><br />A document can only be deleted if it's not linked to a service.
+Delete a document.<br /><br />A document can only be deleted if it's not linked to a service. If it is linked to a service, it must be unlinked prior to deleting.
 
 `DELETE /documents/{id}`
 
@@ -203,6 +229,8 @@ document = client.documents.delete("6a09cdc3-8948-47f0-aa62-74ac943d6c58")
 
 puts(document)
 ```
+
+Returns: `data` (object)
 
 ## Download a document
 
@@ -228,6 +256,8 @@ response = client.documents.generate_download_link("550e8400-e29b-41d4-a716-4466
 puts(response)
 ```
 
+Returns: `url` (uri)
+
 ## Update requirement group for a phone number order
 
 `POST /number_order_phone_numbers/{id}/requirement_group` — Required: `requirement_group_id`
@@ -241,6 +271,8 @@ response = client.number_order_phone_numbers.update_requirement_group(
 puts(response)
 ```
 
+Returns: `bundle_id` (uuid), `country_code` (string), `deadline` (date-time), `id` (uuid), `is_block_number` (boolean), `locality` (string), `order_request_id` (uuid), `phone_number` (string), `phone_number_type` (string), `record_type` (string), `regulatory_requirements` (array[object]), `requirements_met` (boolean), `requirements_status` (string), `status` (string), `sub_number_order_id` (uuid)
+
 ## Retrieve regulatory requirements for a list of phone numbers
 
 `GET /phone_numbers_regulatory_requirements`
@@ -251,6 +283,8 @@ phone_numbers_regulatory_requirement = client.phone_numbers_regulatory_requireme
 puts(phone_numbers_regulatory_requirement)
 ```
 
+Returns: `phone_number` (string), `phone_number_type` (string), `record_type` (string), `region_information` (array[object]), `regulatory_requirements` (array[object])
+
 ## Retrieve regulatory requirements
 
 `GET /regulatory_requirements`
@@ -260,6 +294,8 @@ regulatory_requirement = client.regulatory_requirements.retrieve
 
 puts(regulatory_requirement)
 ```
+
+Returns: `action` (string), `country_code` (string), `phone_number_type` (string), `regulatory_requirements` (array[object])
 
 ## List requirement groups
 
@@ -283,6 +319,8 @@ requirement_group = client.requirement_groups.create(action: :ordering, country_
 puts(requirement_group)
 ```
 
+Returns: `action` (string), `country_code` (string), `created_at` (date-time), `customer_reference` (string), `id` (string), `phone_number_type` (string), `record_type` (string), `regulatory_requirements` (array[object]), `status` (enum: approved, unapproved, pending-approval, declined, expired), `updated_at` (date-time)
+
 ## Get a single requirement group by ID
 
 `GET /requirement_groups/{id}`
@@ -292,6 +330,8 @@ requirement_group = client.requirement_groups.retrieve("id")
 
 puts(requirement_group)
 ```
+
+Returns: `action` (string), `country_code` (string), `created_at` (date-time), `customer_reference` (string), `id` (string), `phone_number_type` (string), `record_type` (string), `regulatory_requirements` (array[object]), `status` (enum: approved, unapproved, pending-approval, declined, expired), `updated_at` (date-time)
 
 ## Update requirement values in requirement group
 
@@ -305,6 +345,8 @@ requirement_group = client.requirement_groups.update("id")
 puts(requirement_group)
 ```
 
+Returns: `action` (string), `country_code` (string), `created_at` (date-time), `customer_reference` (string), `id` (string), `phone_number_type` (string), `record_type` (string), `regulatory_requirements` (array[object]), `status` (enum: approved, unapproved, pending-approval, declined, expired), `updated_at` (date-time)
+
 ## Delete a requirement group by ID
 
 `DELETE /requirement_groups/{id}`
@@ -315,6 +357,8 @@ requirement_group = client.requirement_groups.delete("id")
 puts(requirement_group)
 ```
 
+Returns: `action` (string), `country_code` (string), `created_at` (date-time), `customer_reference` (string), `id` (string), `phone_number_type` (string), `record_type` (string), `regulatory_requirements` (array[object]), `status` (enum: approved, unapproved, pending-approval, declined, expired), `updated_at` (date-time)
+
 ## Submit a Requirement Group for Approval
 
 `POST /requirement_groups/{id}/submit_for_approval`
@@ -324,6 +368,8 @@ requirement_group = client.requirement_groups.submit_for_approval("id")
 
 puts(requirement_group)
 ```
+
+Returns: `action` (string), `country_code` (string), `created_at` (date-time), `customer_reference` (string), `id` (string), `phone_number_type` (string), `record_type` (string), `regulatory_requirements` (array[object]), `status` (enum: approved, unapproved, pending-approval, declined, expired), `updated_at` (date-time)
 
 ## List all requirement types
 
@@ -337,6 +383,8 @@ requirement_types = client.requirement_types.list
 puts(requirement_types)
 ```
 
+Returns: `acceptance_criteria` (object), `created_at` (string), `description` (string), `example` (string), `id` (uuid), `name` (string), `record_type` (string), `type` (enum: document, address, textual), `updated_at` (string)
+
 ## Retrieve a requirement types
 
 Retrieve a requirement type by id
@@ -348,6 +396,8 @@ requirement_type = client.requirement_types.retrieve("a38c217a-8019-48f8-bff6-0f
 
 puts(requirement_type)
 ```
+
+Returns: `acceptance_criteria` (object), `created_at` (string), `description` (string), `example` (string), `id` (uuid), `name` (string), `record_type` (string), `type` (enum: document, address, textual), `updated_at` (string)
 
 ## List all requirements
 
@@ -361,6 +411,8 @@ page = client.requirements.list
 puts(page)
 ```
 
+Returns: `action` (enum: both, branded_calling, ordering, porting), `country_code` (string), `created_at` (string), `id` (uuid), `locality` (string), `phone_number_type` (enum: local, national, toll_free), `record_type` (string), `requirements_types` (array[object]), `updated_at` (string)
+
 ## Retrieve a document requirement
 
 Retrieve a document requirement record
@@ -372,6 +424,8 @@ requirement = client.requirements.retrieve("a9dad8d5-fdbd-49d7-aa23-39bb08a5ebaa
 
 puts(requirement)
 ```
+
+Returns: `action` (enum: both, branded_calling, ordering, porting), `country_code` (string), `created_at` (string), `id` (uuid), `locality` (string), `phone_number_type` (enum: local, national, toll_free), `record_type` (string), `requirements_types` (array[object]), `updated_at` (string)
 
 ## Update requirement group for a sub number order
 
@@ -386,6 +440,8 @@ response = client.sub_number_orders.update_requirement_group(
 puts(response)
 ```
 
+Returns: `country_code` (string), `created_at` (date-time), `customer_reference` (string), `id` (uuid), `is_block_sub_number_order` (boolean), `order_request_id` (uuid), `phone_number_type` (string), `phone_numbers` (array[object]), `phone_numbers_count` (integer), `record_type` (string), `regulatory_requirements` (array[object]), `requirements_met` (boolean), `status` (string), `updated_at` (date-time)
+
 ## List all user addresses
 
 Returns a list of your user addresses.
@@ -397,6 +453,8 @@ page = client.user_addresses.list
 
 puts(page)
 ```
+
+Returns: `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (uuid), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string)
 
 ## Creates a user address
 
@@ -419,6 +477,8 @@ user_address = client.user_addresses.create(
 puts(user_address)
 ```
 
+Returns: `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (uuid), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string)
+
 ## Retrieve a user address
 
 Retrieves the details of an existing user address.
@@ -430,6 +490,8 @@ user_address = client.user_addresses.retrieve("id")
 
 puts(user_address)
 ```
+
+Returns: `administrative_area` (string), `borough` (string), `business_name` (string), `country_code` (string), `created_at` (string), `customer_reference` (string), `extended_address` (string), `first_name` (string), `id` (uuid), `last_name` (string), `locality` (string), `neighborhood` (string), `phone_number` (string), `postal_code` (string), `record_type` (string), `street_address` (string), `updated_at` (string)
 
 ## List all Verified Numbers
 
@@ -443,9 +505,11 @@ page = client.verified_numbers.list
 puts(page)
 ```
 
+Returns: `phone_number` (string), `record_type` (enum: verified_number), `verified_at` (string)
+
 ## Request phone number verification
 
-Initiates phone number verification procedure.
+Initiates phone number verification procedure. Supports DTMF extension dialing for voice calls to numbers behind IVR systems.
 
 `POST /verified_numbers` — Required: `phone_number`, `verification_method`
 
@@ -457,6 +521,8 @@ verified_number = client.verified_numbers.create(phone_number: "+15551234567", v
 puts(verified_number)
 ```
 
+Returns: `phone_number` (string), `verification_method` (string)
+
 ## Retrieve a verified number
 
 `GET /verified_numbers/{phone_number}`
@@ -466,6 +532,8 @@ verified_number_data_wrapper = client.verified_numbers.retrieve("+15551234567")
 
 puts(verified_number_data_wrapper)
 ```
+
+Returns: `phone_number` (string), `record_type` (enum: verified_number), `verified_at` (string)
 
 ## Delete a verified number
 
@@ -477,6 +545,8 @@ verified_number_data_wrapper = client.verified_numbers.delete("+15551234567")
 puts(verified_number_data_wrapper)
 ```
 
+Returns: `phone_number` (string), `record_type` (enum: verified_number), `verified_at` (string)
+
 ## Submit verification code
 
 `POST /verified_numbers/{phone_number}/actions/verify` — Required: `verification_code`
@@ -486,3 +556,5 @@ verified_number_data_wrapper = client.verified_numbers.actions.submit_verificati
 
 puts(verified_number_data_wrapper)
 ```
+
+Returns: `phone_number` (string), `record_type` (enum: verified_number), `verified_at` (string)
