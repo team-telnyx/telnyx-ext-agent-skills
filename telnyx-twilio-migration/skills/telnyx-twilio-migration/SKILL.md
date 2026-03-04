@@ -209,8 +209,9 @@ Python: `pip install telnyx` | Node: `npm install telnyx` | Ruby: `gem 'telnyx'`
 | `TWILIO_PHONE_NUMBER` | `TELNYX_PHONE_NUMBER` | Your Telnyx number (E.164) |
 | `TWILIO_MESSAGING_SERVICE_SID` | `TELNYX_MESSAGING_PROFILE_ID` | Messaging profile UUID |
 | `TWILIO_VERIFY_SERVICE_SID` | `TELNYX_VERIFY_PROFILE_ID` | Verify profile UUID |
+| *(voice with TeXML)* | `TELNYX_CONNECTION_ID` | TeXML App connection ID (required for outbound calls) |
 
-Update `.env`, secrets manager, CI/CD variables, and deployment configs.
+Update `.env`, `.env.example`, secrets manager, CI/CD variables, and deployment configs. **Ensure every env var used in the migrated code is present in `.env.example`** — missing env vars are a top cause of runtime failures.
 
 > **Rate limits**: Messaging: 1 msg/sec per number (10DLC), voice: varies by connection type. Implement exponential backoff for 429 responses.
 
@@ -265,6 +266,10 @@ Process each product area in priority order: **messaging → voice → verify �
 9. **Commit**: `git add <changed-files> && git commit -m "migrate: {product} — Twilio to Telnyx"`
 10. **Track**: `bash {baseDir}/scripts/migration-state.sh add-product <project-root> {product}` (and `add-file` for each file migrated)
 
+**After ALL product areas are migrated:**
+
+11. **Env var audit**: Grep all migrated source files for `process.env.TELNYX_` / `os.environ["TELNYX_"]` / `ENV["TELNYX_"]` references. Verify EVERY referenced env var exists in `.env.example` (or equivalent config template). Missing env vars are the #1 cause of "works in dev, fails in prod" bugs.
+
 **Phase 4 exit**: `bash {baseDir}/scripts/migration-state.sh set-phase <project-root> 4 && bash {baseDir}/scripts/migration-state.sh set-commit <project-root> 4`
 
 If validation fails and you cannot fix the issue, document it and continue to the next product. Do not abandon the migration.
@@ -310,6 +315,7 @@ If validation fails and you cannot fix the issue, document it and continue to th
 - Parse JSON body instead of form data: `request.json['data']['payload']` not `request.form`
 - Access fields via `data.payload.*` — `from` is an object (`from.phone_number`), `to` is an array
 - Replace HMAC-SHA1 (`RequestValidator`) with Ed25519 signature verification using `telnyx-signature-ed25519` + `telnyx-timestamp` headers
+- **Use the exact signature verification pattern from `webhook-migration.md`** — do NOT use patterns from your own training data. The correct Node.js pattern is `client.webhooks.signature.verifySignature(rawBody, signatureHeader, timestampHeader, publicKey)`, NOT `new TelnyxWebhook()`.
 
 **Error Handling (all products):**
 When transforming API calls, always wrap in try/catch with proper error handling. Telnyx errors return `{ "errors": [{ "code": "...", "title": "...", "detail": "..." }] }`. Handle these HTTP status codes:

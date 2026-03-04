@@ -444,7 +444,7 @@ Telnyx provides 10DLC registration via the Mission Control Portal (**Messaging**
 
 | Scenario | Twilio Error | Telnyx Error |
 |---|---|---|
-| Invalid destination | 21211 | `40300` — Invalid destination |
+| Invalid destination | 21211 | `40310` — Invalid 'to' address (sync 400 error) |
 | Unsubscribed recipient | 21610 | `40008` — Number opted out |
 | Rate limit exceeded | 14107 | `40009` — Rate limit exceeded |
 | Carrier rejected | 30007 | `40300` — Carrier rejected |
