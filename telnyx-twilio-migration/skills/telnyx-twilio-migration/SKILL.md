@@ -324,7 +324,12 @@ bash {baseDir}/scripts/run-validation.sh <project-root>
 
 **You must run this script.** It checks for: residual Twilio imports, API URLs, env vars, signature patterns, Telnyx SDK presence, Bearer auth, Ed25519 validation code.
 
-**If validation fails, STOP.** Fix the issues, re-run validation, and do not proceed until exit code is 0.
+**Validation gating rules:**
+- **FAIL** (exit code 1) = **CRITICAL** — migration is incomplete. Residual Twilio imports, API URLs, SDK usage, or missing Telnyx SDK. **You MUST fix all FAIL items before proceeding.** Do not proceed to Phase 6 with any FAIL.
+- **WARN** (exit code 0) = **informational** — potential issues that may not need fixing (e.g., Twilio string in a comment, docs reference, or test mock). Document WARN items but proceed. The agent should review each WARN to confirm it's not an actual API call missed by pattern matching.
+- **PASS** = check passed, no action needed.
+
+**Rule: 0 FAIL items = proceed to Phase 6. 1+ FAIL items = stop and fix.**
 
 ### Step 5.2: Integration Tests (Recommended)
 
