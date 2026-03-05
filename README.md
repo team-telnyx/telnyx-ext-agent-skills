@@ -168,7 +168,7 @@ A comprehensive migration guide for moving from Twilio to Telnyx across all prod
 
 | Area | Description |
 |------|-------------|
-| Voice (TwiML → TeXML) | Near drop-in XML compatibility with complete verb reference (15 verbs, 8 nouns) |
+| Voice (TwiML → TeXML + Call Control) | Near drop-in XML compatibility (15 verbs, 8 nouns) plus Call Control API for real-time call manipulation |
 | Messaging (SMS/MMS) | Parameter mapping, messaging profiles, 10DLC registration |
 | WebRTC / Client SDKs | Architecture differences, endpoint migration, mobile SDK guides (iOS, Android, Flutter, React Native) |
 | Number Porting | FastPort API for same-day US/Canada activation |
