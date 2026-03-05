@@ -514,6 +514,33 @@ if product_applies "all"; then
   else
     check_fail "telnyx_sdk_dependency" "Telnyx SDK not found in any dependency file (requirements.txt, package.json, Gemfile, etc.)"
   fi
+
+  # --- Check 6a: Telnyx SDK version pinning ---
+  version_pinned=false
+  # Python: check for version constraint (>=, <, ~=, ==)
+  if grep -qE 'telnyx[><=~!]+' "$PROJECT_ROOT"/{requirements.txt,setup.py,setup.cfg,pyproject.toml,Pipfile} 2>/dev/null; then
+    version_pinned=true
+  fi
+  # Node: check package.json for version constraint (^, ~, >=)
+  if grep -qE '"telnyx"\s*:\s*"[\^~>=]' "$PROJECT_ROOT"/package.json 2>/dev/null; then
+    version_pinned=true
+  fi
+  # Ruby: check Gemfile for version constraint (~>)
+  if grep -qE "gem\s+['\"]telnyx['\"].*~>" "$PROJECT_ROOT"/Gemfile 2>/dev/null; then
+    version_pinned=true
+  fi
+  # If no dependency files found at all, skip the check
+  has_deps=false
+  for f in requirements.txt setup.py setup.cfg pyproject.toml Pipfile package.json Gemfile go.mod; do
+    if [ -f "$PROJECT_ROOT/$f" ]; then has_deps=true; break; fi
+  done
+  if [ "$has_deps" = true ]; then
+    if [ "$version_pinned" = true ]; then
+      check_pass "telnyx_sdk_version_pinned" "Telnyx SDK version is pinned in dependency file"
+    else
+      check_warn "telnyx_sdk_version_pinned" "Telnyx SDK has no version constraint — pin to a major version (e.g., telnyx>=2.0,<3.0 for Python, telnyx@^2 for Node, ~> 2.0 for Ruby) to prevent breaking changes on upgrade"
+    fi
+  fi
 fi
 
 # --- Check 6b: Telnyx mobile SDK in dependency files ---

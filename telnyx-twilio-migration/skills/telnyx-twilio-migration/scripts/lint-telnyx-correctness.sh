@@ -46,6 +46,7 @@ JSON_CHECKS="[]"
 
 EXCLUDE_DIRS="node_modules .git vendor __pycache__ venv .venv dist build"
 EXCLUDE_LOCK_FILES="--exclude=package-lock.json --exclude=yarn.lock --exclude=pnpm-lock.yaml --exclude=Gemfile.lock --exclude=Pipfile.lock --exclude=poetry.lock --exclude=go.sum"
+EXCLUDE_SCAN_FILES="--exclude=twilio-scan.json --exclude=twilio-deep-scan.json --exclude=migration-state.json --exclude=MIGRATION-PLAN.md --exclude=MIGRATION-REPORT.md"
 
 # --- Helpers ---
 
@@ -64,6 +65,7 @@ build_exclude_args() {
     args="$args --exclude-dir=$d"
   done
   args="$args $EXCLUDE_LOCK_FILES"
+  args="$args $EXCLUDE_SCAN_FILES"
   args="$args --exclude=*.md --exclude=*.min.js"
   echo "$args"
 }

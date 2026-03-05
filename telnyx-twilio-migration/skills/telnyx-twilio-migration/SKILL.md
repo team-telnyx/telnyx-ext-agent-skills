@@ -180,7 +180,12 @@ cd <project-root> && git checkout -b migrate/twilio-to-telnyx
 
 Install Telnyx SDK **alongside** Twilio — do NOT remove Twilio from the package manifest yet (removal is Phase 6). Keep `twilio` in `requirements.txt`/`package.json`/`Gemfile`/`go.mod` until Phase 6 so you can revert if validation fails.
 
-**Server SDKs**: Python: `pip install 'telnyx>=2.0,<3.0'` | Node: `npm install telnyx@^2` | Ruby: `gem 'telnyx', '~> 2.0'` in Gemfile + `bundle install` | Go: `go get github.com/team-telnyx/telnyx-go` | Java/PHP/C#: No official SDK — use REST API with `{baseDir}/sdk-reference/curl/` for API examples
+**Server SDKs** — use these EXACT commands with version constraints (do NOT use `pip install telnyx` or `npm install telnyx` without a version range):
+- Python: `pip install 'telnyx>=2.0,<3.0'` — and write `telnyx>=2.0,<3.0` in `requirements.txt` (NOT just `telnyx`)
+- Node: `npm install telnyx@^2` — writes `"telnyx": "^2.x.x"` in `package.json` automatically
+- Ruby: `gem 'telnyx', '~> 2.0'` in Gemfile + `bundle install`
+- Go: `go get github.com/team-telnyx/telnyx-go`
+- Java/PHP/C#: No official SDK — use REST API with `{baseDir}/sdk-reference/curl/` for API examples
 
 **Client-side WebRTC SDK** (if WebRTC detected): `npm install @telnyx/webrtc` — see `{baseDir}/sdk-reference/webrtc-client/javascript.md` for the full API reference
 
@@ -257,6 +262,14 @@ Process each product area in priority order: **messaging → voice → verify �
 **After ALL product areas are migrated:**
 
 11. **Env var audit**: Grep all migrated source files for `process.env.TELNYX_` / `os.environ["TELNYX_"]` / `ENV["TELNYX_"]` references. Verify EVERY referenced env var exists in `.env.example` (or equivalent config template). Missing env vars are the #1 cause of "works in dev, fails in prod" bugs.
+
+12. **Update documentation**: Find and update all `README.md`, `README`, `CONTRIBUTING.md`, and other documentation files that reference Twilio. Replace Twilio service names, setup instructions, environment variable names, and URLs with their Telnyx equivalents. This includes:
+    - Project description (e.g., "uses Twilio" → "uses Telnyx")
+    - Setup/install instructions (account creation, API key generation)
+    - Environment variable documentation (`TWILIO_*` → `TELNYX_*`)
+    - API endpoint references
+    - Architecture diagrams or flow descriptions
+    Do NOT skip this — outdated documentation causes confusion for future maintainers.
 
 **Phase 4 exit**: `bash {baseDir}/scripts/migration-state.sh set-phase <project-root> 4 && bash {baseDir}/scripts/migration-state.sh set-commit <project-root> 4`
 
