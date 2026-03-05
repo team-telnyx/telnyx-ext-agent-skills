@@ -198,25 +198,190 @@ cmd_status() {
   echo "Phase $phase/6 | Products done: ${products:-none} | Files migrated: $file_count"
 }
 
+# ---------------------------------------------------------------------------
+# Runner step-tracking commands
+# ---------------------------------------------------------------------------
+
+cmd_step_start() {
+  local root="${1:?Usage: migration-state.sh step-start <project-root> <step-id>}"
+  local step_id="${2:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local tmp
+  tmp=$(jq --arg t "$now" --arg s "$step_id" \
+    '.runner.steps[$s] = ((.runner.steps[$s] // {}) + {"status": "running", "started_at": $t}) | .runner.current_step = $s | .updated_at = $t' \
+    "$path")
+  echo "$tmp" > "$path"
+  echo "Step $step_id started"
+}
+
+cmd_step_done() {
+  local root="${1:?Usage: migration-state.sh step-done <project-root> <step-id> <result>}"
+  local step_id="${2:?}"
+  local result="${3:?}" # pass, fail, skip
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local tmp
+  tmp=$(jq --arg t "$now" --arg s "$step_id" --arg r "$result" \
+    '.runner.steps[$s].status = $r | .runner.steps[$s].completed_at = $t | .updated_at = $t |
+     if $r == "pass" then .runner.completed_steps = ((.runner.completed_steps // 0) + 1) else . end' \
+    "$path")
+  echo "$tmp" > "$path"
+  echo "Step $step_id: $result"
+}
+
+cmd_step_status() {
+  local root="${1:?Usage: migration-state.sh step-status <project-root> <step-id>}"
+  local step_id="${2:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  jq -r --arg s "$step_id" '.runner.steps[$s].status // "unknown"' "$path"
+}
+
+cmd_get_retry_count() {
+  local root="${1:?Usage: migration-state.sh get-retry-count <project-root> <step-id>}"
+  local step_id="${2:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  jq -r --arg s "$step_id" '.runner.steps[$s].retries // 0' "$path"
+}
+
+cmd_increment_retry() {
+  local root="${1:?Usage: migration-state.sh increment-retry <project-root> <step-id>}"
+  local step_id="${2:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local tmp
+  tmp=$(jq --arg t "$now" --arg s "$step_id" \
+    '.runner.steps[$s].retries = ((.runner.steps[$s].retries // 0) + 1) | .updated_at = $t' \
+    "$path")
+  echo "$tmp" > "$path"
+  local count
+  count=$(jq -r --arg s "$step_id" '.runner.steps[$s].retries' "$path")
+  echo "Step $step_id retry count: $count"
+}
+
+cmd_get_current_step() {
+  local root="${1:?Usage: migration-state.sh get-current-step <project-root>}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  jq -r '.runner.current_step // empty' "$path"
+}
+
+cmd_set_current_step() {
+  local root="${1:?Usage: migration-state.sh set-current-step <project-root> <step-id>}"
+  local step_id="${2:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local tmp
+  tmp=$(jq --arg t "$now" --arg s "$step_id" \
+    '.runner.current_step = $s | .updated_at = $t' \
+    "$path")
+  echo "$tmp" > "$path"
+  echo "Current step set to $step_id"
+}
+
+cmd_step_set_error() {
+  local root="${1:?Usage: migration-state.sh step-set-error <project-root> <step-id> <error>}"
+  local step_id="${2:?}"
+  local error="${3:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local tmp
+  tmp=$(jq --arg t "$now" --arg s "$step_id" --arg e "$error" \
+    '.runner.steps[$s].last_error = $e | .updated_at = $t' \
+    "$path")
+  echo "$tmp" > "$path"
+}
+
+cmd_runner_init() {
+  local root="${1:?Usage: migration-state.sh runner-init <project-root> <total-steps>}"
+  local total="${2:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local tmp
+  tmp=$(jq --arg t "$now" --argjson n "$total" \
+    '.runner = {"current_step": null, "total_steps": $n, "completed_steps": 0, "steps": {}} | .updated_at = $t' \
+    "$path")
+  echo "$tmp" > "$path"
+  echo "Runner initialized with $total steps"
+}
+
+cmd_set_total_steps() {
+  local root="${1:?Usage: migration-state.sh set-total-steps <project-root> <total>}"
+  local total="${2:?}"
+  local path
+  path=$(state_path "$root")
+  [[ -f "$path" ]] || die "No state file at $path — run 'init' first"
+
+  local now
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local tmp
+  tmp=$(jq --arg t "$now" --argjson n "$total" \
+    '.runner.total_steps = $n | .updated_at = $t' \
+    "$path")
+  echo "$tmp" > "$path"
+}
+
 # Main dispatch
 ensure_jq
 
 case "${1:-}" in
-  init)       shift; cmd_init "$@" ;;
-  get)        shift; cmd_get "$@" ;;
-  set)        shift; cmd_set "$@" ;;
-  add-product) shift; cmd_add_product "$@" ;;
-  add-file)   shift; cmd_add_file "$@" ;;
-  set-phase)  shift; cmd_set_phase "$@" ;;
-  set-commit) shift; cmd_set_commit "$@" ;;
-  show)       shift; cmd_show "$@" ;;
-  status)     shift; cmd_status "$@" ;;
+  init)             shift; cmd_init "$@" ;;
+  get)              shift; cmd_get "$@" ;;
+  set)              shift; cmd_set "$@" ;;
+  add-product)      shift; cmd_add_product "$@" ;;
+  add-file)         shift; cmd_add_file "$@" ;;
+  set-phase)        shift; cmd_set_phase "$@" ;;
+  set-commit)       shift; cmd_set_commit "$@" ;;
+  show)             shift; cmd_show "$@" ;;
+  status)           shift; cmd_status "$@" ;;
+  step-start)       shift; cmd_step_start "$@" ;;
+  step-done)        shift; cmd_step_done "$@" ;;
+  step-status)      shift; cmd_step_status "$@" ;;
+  get-retry-count)  shift; cmd_get_retry_count "$@" ;;
+  increment-retry)  shift; cmd_increment_retry "$@" ;;
+  get-current-step) shift; cmd_get_current_step "$@" ;;
+  set-current-step) shift; cmd_set_current_step "$@" ;;
+  step-set-error)   shift; cmd_step_set_error "$@" ;;
+  runner-init)      shift; cmd_runner_init "$@" ;;
+  set-total-steps)  shift; cmd_set_total_steps "$@" ;;
   *)
     echo "Usage: migration-state.sh <command> <project-root> [args...]"
     echo ""
     echo "Commands:"
     echo "  init <root>                    Create fresh migration-state.json"
-    echo "  get <root> <key>               Read value (dot-notation: resources.messaging_profile_id)"
+    echo "  get <root> <key>               Read value (dot-notation)"
     echo "  set <root> <key> <value>       Set a value"
     echo "  add-product <root> <product>   Mark product as completed"
     echo "  add-file <root> <product> <file>  Track migrated file"
@@ -224,6 +389,18 @@ case "${1:-}" in
     echo "  set-commit <root> <phase>      Record current HEAD as phase commit"
     echo "  show <root>                    Pretty-print state"
     echo "  status <root>                  One-line summary"
+    echo ""
+    echo "Runner step-tracking:"
+    echo "  runner-init <root> <total>     Initialize runner with total step count"
+    echo "  step-start <root> <step-id>    Record step start"
+    echo "  step-done <root> <step-id> <result>  Record step result (pass/fail/skip)"
+    echo "  step-status <root> <step-id>   Get step status"
+    echo "  get-retry-count <root> <step-id>  Get retry count"
+    echo "  increment-retry <root> <step-id>  Increment retry count"
+    echo "  get-current-step <root>        Get current step ID"
+    echo "  set-current-step <root> <step-id>  Set current step"
+    echo "  step-set-error <root> <step-id> <error>  Record error message"
+    echo "  set-total-steps <root> <total> Update total step count"
     exit 1
     ;;
 esac
