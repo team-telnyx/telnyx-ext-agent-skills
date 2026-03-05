@@ -451,3 +451,151 @@ Telnyx provides 10DLC registration via the Mission Control Portal (**Messaging**
 | Number not provisioned | 21606 | `40004` — Number not associated with messaging profile |
 
 Telnyx error details are included in webhook delivery-status events and in API error responses.
+
+## Async / Background Task Patterns
+
+If the Twilio codebase uses Celery, Sidekiq, or other task queues for messaging, the migration is straightforward — only the API call inside the task changes.
+
+### Celery (Python)
+
+```python
+# Twilio (before):
+# @app.task
+# def send_sms(to, body):
+#     client = Client(TWILIO_SID, TWILIO_TOKEN)
+#     client.messages.create(to=to, body=body, from_=TWILIO_NUMBER)
+
+# Telnyx (after):
+import telnyx
+from celery import shared_task
+
+telnyx.api_key = os.environ['TELNYX_API_KEY']
+
+@shared_task(bind=True, max_retries=3)
+def send_sms(self, to, text):
+    try:
+        result = telnyx.Message.create(
+            from_=os.environ['TELNYX_PHONE_NUMBER'],
+            to=to,
+            text=text,  # 'text' not 'body'
+            messaging_profile_id=os.environ['TELNYX_MESSAGING_PROFILE_ID'],
+        )
+        return {'id': result.id, 'to': to}
+    except telnyx.error.RateLimitError:
+        # Telnyx 429 — retry with exponential backoff
+        raise self.retry(countdown=2 ** self.request.retries)
+    except telnyx.error.APIError as e:
+        # Log and don't retry on 4xx client errors
+        if e.http_status and 400 <= e.http_status < 500:
+            raise
+        raise self.retry(countdown=5)
+```
+
+### Django + Celery Webhook Handler
+
+```python
+# Process inbound messages asynchronously
+@csrf_exempt
+@require_POST
+def telnyx_messaging_webhook(request):
+    data = json.loads(request.body)
+    event_type = data['data']['event_type']
+
+    if event_type == 'message.received':
+        payload = data['data']['payload']
+        # Offload to Celery task
+        process_inbound_message.delay(
+            from_number=payload['from']['phone_number'],
+            text=payload.get('text', ''),
+            media=[m['url'] for m in payload.get('media', [])],
+        )
+
+    return JsonResponse({'status': 'ok'})
+```
+
+**Key migration notes for async patterns:**
+- Replace `body` with `text` in the task function signature and call
+- Add `messaging_profile_id` to send calls
+- Handle `telnyx.error.RateLimitError` (HTTP 429) with retry logic
+- Telnyx rate limit: 1 msg/sec per number for 10DLC — same retry pattern works
+
+## Testing
+
+When migrating tests from Twilio to Telnyx, update mocks, payloads, and assertions.
+
+### Mock Patterns
+
+**Python (pytest/unittest):**
+```python
+# Twilio mock:
+# @patch('twilio.rest.Client')
+# def test_send(mock_client):
+#     mock_client.return_value.messages.create.return_value.sid = 'SM...'
+
+# Telnyx mock:
+@patch('telnyx.Message.create')
+def test_send(mock_create):
+    mock_create.return_value = type('obj', (object,), {
+        'id': '4010000e-1234-5678-abcd-1234567890ab',
+        'to': [{'phone_number': '+15559876543'}],
+        'text': 'Hello',
+        'type': 'SMS',
+    })()
+    result = send_message('+15559876543', 'Hello')
+    mock_create.assert_called_once()
+    assert result.id is not None
+```
+
+**JavaScript (Jest):**
+```javascript
+// Twilio mock:
+// jest.mock('twilio', () => ...)
+
+// Telnyx mock:
+jest.mock('telnyx', () => {
+  return jest.fn().mockImplementation(() => ({
+    messages: {
+      create: jest.fn().mockResolvedValue({
+        data: {
+          id: '4010000e-1234-5678-abcd-1234567890ab',
+          to: [{ phone_number: '+15559876543' }],
+          text: 'Hello',
+          type: 'SMS',
+        }
+      })
+    }
+  }));
+});
+```
+
+### Webhook Mock Payloads
+
+```json
+{
+  "data": {
+    "event_type": "message.received",
+    "id": "evt-uuid",
+    "occurred_at": "2024-01-15T10:30:00Z",
+    "payload": {
+      "id": "msg-uuid",
+      "from": { "phone_number": "+15551234567" },
+      "to": [{ "phone_number": "+15559876543" }],
+      "text": "Test message",
+      "type": "SMS",
+      "media": [],
+      "direction": "inbound"
+    },
+    "record_type": "event"
+  },
+  "meta": { "attempt": 1 }
+}
+```
+
+### Assertion Changes
+
+| Twilio Assertion | Telnyx Assertion |
+|---|---|
+| `assert result.sid.startswith('SM')` | `assert result.id is not None` (UUID format) |
+| `assert result.body == 'Hello'` | `assert result.text == 'Hello'` |
+| `assert result.from_ == '+15551234567'` | `assert result.from_['phone_number'] == '+15551234567'` |
+| `assert result.status == 'queued'` | `assert result.type == 'SMS'` (status via webhook) |

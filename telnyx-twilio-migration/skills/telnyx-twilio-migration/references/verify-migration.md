@@ -328,3 +328,58 @@ Telnyx Verify also primarily uses a request/response pattern (create verificatio
 - `verification.accepted` — code was correctly verified
 - `verification.rejected` — incorrect code submitted
 - `verification.expired` — code expired without verification
+
+## Testing
+
+When migrating verify tests, the key change is the response field names.
+
+### Mock Patterns
+
+**Python (pytest/unittest):**
+```python
+# Twilio mock:
+# @patch('twilio.rest.Client')
+# def test_verify(mock_client):
+#     mock_client.return_value.verify.v2.services('VA...').verification_checks.create.return_value.status = 'approved'
+
+# Telnyx mock:
+@patch('telnyx.Verification.submit')
+def test_verify_code(mock_submit):
+    mock_submit.return_value = type('obj', (object,), {
+        'data': type('obj', (object,), {
+            'phone_number': '+15559876543',
+            'verify_profile_id': 'uuid-here',
+            'response_code': 'accepted',  # NOT 'approved'
+        })()
+    })()
+    result = verify_code('+15559876543', '123456')
+    assert result.data.response_code == 'accepted'
+```
+
+**JavaScript (Jest):**
+```javascript
+jest.mock('telnyx', () => {
+  return jest.fn().mockImplementation(() => ({
+    verifications: {
+      byPhoneNumber: jest.fn().mockReturnValue({
+        submit: jest.fn().mockResolvedValue({
+          data: {
+            phone_number: '+15559876543',
+            verify_profile_id: 'uuid-here',
+            response_code: 'accepted',
+          }
+        })
+      })
+    }
+  }));
+});
+```
+
+### Assertion Changes
+
+| Twilio Assertion | Telnyx Assertion |
+|---|---|
+| `assert result.status == 'approved'` | `assert result.data.response_code == 'accepted'` |
+| `assert result.status == 'pending'` | `assert result.data.status == 'pending'` (on create) |
+| `assert result.sid.startswith('VE')` | `assert result.data.verify_profile_id is not None` |
+| `assert result.channel == 'sms'` | `assert result.data.type == 'sms'` |

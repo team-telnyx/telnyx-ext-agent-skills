@@ -4,12 +4,15 @@
 #
 # Usage:
 #   bash validate-migration.sh <project-root> [--product <name>] [--json]
+#                        [--exclude-dir <dir>] [--scan-json <path>]
 #
 # Options:
 #   <project-root>       Path to the project to validate (required)
 #   --product <name>     Only check patterns for a specific product:
 #                        voice, messaging, verify, webrtc, sip, fax, video, iot, lookup
 #   --json               Output results as machine-readable JSON
+#   --exclude-dir <dir>  Additional directory to exclude (repeatable)
+#   --scan-json <path>   Path to twilio-scan.json for context-aware checks
 #
 # Exit codes:
 #   0 — Fully migrated (all checks pass or warn)
@@ -37,7 +40,9 @@ JSON_MODE=false
 PRODUCT_FILTER="all"
 PROJECT_ROOT=""
 STATE_FILE=""
+SCAN_JSON=""
 KEPT_ON_TWILIO=""
+EXTRA_EXCLUDE_DIRS=""
 
 EXCLUDE_DIRS="node_modules .git vendor __pycache__ venv .venv dist build"
 EXCLUDE_FILES="MIGRATION-PLAN.md MIGRATION-REPORT.md twilio-scan.json twilio-deep-scan.json migration-state.json"
@@ -50,11 +55,14 @@ JSON_CHECKS="[]"
 
 usage() {
   echo "Usage: $(basename "$0") <project-root> [--product <name>] [--json] [--state-file <path>]"
+  echo "       [--exclude-dir <dir>] [--scan-json <path>]"
   echo ""
   echo "Products: voice, messaging, verify, webrtc, sip, fax, video, iot, lookup"
   echo ""
   echo "Options:"
-  echo "  --state-file <path>  Path to migration-state.json for hybrid deployment awareness"
+  echo "  --state-file <path>   Path to migration-state.json for hybrid deployment awareness"
+  echo "  --exclude-dir <dir>   Additional directory to exclude from scanning (repeatable)"
+  echo "  --scan-json <path>    Path to twilio-scan.json for context-aware validation"
   exit 2
 }
 
@@ -137,7 +145,7 @@ section_header() {
 # Build grep exclude arguments
 build_exclude_args() {
   local args=""
-  for d in $EXCLUDE_DIRS; do
+  for d in $EXCLUDE_DIRS $EXTRA_EXCLUDE_DIRS; do
     args="$args --exclude-dir=$d"
   done
   # Exclude lock files (contain dependency version strings, not source code)
@@ -254,6 +262,22 @@ while [ $# -gt 0 ]; do
       STATE_FILE="$2"
       shift 2
       ;;
+    --exclude-dir)
+      if [ $# -lt 2 ]; then
+        echo "Error: --exclude-dir requires a value" >&2
+        usage
+      fi
+      EXTRA_EXCLUDE_DIRS="$EXTRA_EXCLUDE_DIRS $2"
+      shift 2
+      ;;
+    --scan-json)
+      if [ $# -lt 2 ]; then
+        echo "Error: --scan-json requires a value" >&2
+        usage
+      fi
+      SCAN_JSON="$2"
+      shift 2
+      ;;
     -h|--help)
       usage
       ;;
@@ -300,6 +324,23 @@ if [ -n "$STATE_FILE" ] && [ -f "$STATE_FILE" ]; then
 elif [ -n "$STATE_FILE" ] && [ ! -f "$STATE_FILE" ]; then
   echo "Warning: --state-file '$STATE_FILE' not found, ignoring" >&2
 fi
+
+# Load scan context if provided (for context-aware checks like TeXML detection)
+SCAN_PRODUCTS=""
+if [ -n "$SCAN_JSON" ] && [ -f "$SCAN_JSON" ] && command -v jq >/dev/null 2>&1; then
+  SCAN_PRODUCTS=$(jq -r '.products_used // [] | map(ascii_downcase) | join(",")' "$SCAN_JSON" 2>/dev/null || true)
+fi
+
+# Helper: returns 0 if project is TeXML/voice-only (no SDK imports expected)
+is_texml_only() {
+  if [ -z "$SCAN_PRODUCTS" ]; then
+    return 1  # no scan data, can't determine
+  fi
+  # If products are only voice/texml (no messaging, verify, etc.), it's TeXML-only
+  local non_voice
+  non_voice=$(echo "$SCAN_PRODUCTS" | tr ',' '\n' | grep -v -E '^(voice|texml|fax)$' | head -1)
+  [ -z "$non_voice" ]
+}
 
 # Build grep exclude args
 GREP_EXCLUDES=$(build_exclude_args)
@@ -468,6 +509,8 @@ if product_applies "all"; then
   count=$(count_matches "$dep_matches")
   if [ "$count" -gt 0 ]; then
     check_pass "telnyx_sdk_dependency" "Telnyx SDK found in dependency file(s)"
+  elif is_texml_only; then
+    check_pass "telnyx_sdk_dependency" "No Telnyx SDK in dependencies (expected for TeXML/voice-only apps)"
   else
     check_fail "telnyx_sdk_dependency" "Telnyx SDK not found in any dependency file (requirements.txt, package.json, Gemfile, etc.)"
   fi
@@ -507,6 +550,8 @@ if product_applies "all"; then
   count=$(count_matches "$matches")
   if [ "$count" -gt 0 ]; then
     check_pass "telnyx_source_imports" "Telnyx imports found in $count source file(s)"
+  elif is_texml_only; then
+    check_pass "telnyx_source_imports" "No Telnyx imports (expected for TeXML/voice-only apps that return XML directly)"
   else
     check_warn "telnyx_source_imports" "No Telnyx imports found in source code (may use REST API directly)"
   fi
@@ -585,7 +630,7 @@ if product_applies "all"; then
   twilio_dep_matches=$(echo "$twilio_dep_matches" | sed '/^$/d')
   count=$(count_matches "$twilio_dep_matches")
   if [ "$count" -gt 0 ]; then
-    check_fail_or_hybrid_warn "twilio_in_dependencies" "Twilio still in dependency files ($count reference(s)):" "$(matches_to_json "$twilio_dep_matches")"
+    check_warn "twilio_in_dependencies" "Twilio still in dependency files ($count reference(s)) — remove in Phase 6 cleanup:" "$(matches_to_json "$twilio_dep_matches")"
   else
     check_pass "twilio_in_dependencies" "No Twilio references in dependency files"
   fi

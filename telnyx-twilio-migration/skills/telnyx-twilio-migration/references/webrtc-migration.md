@@ -50,15 +50,20 @@ TwiML ENDPOINT DECISION TREE
 Does it ONLY do simple dial?
 (Returns <Dial><Number>{param}</Number></Dial>)
 ├── YES → DELETE endpoint, use client.newCall() instead
-└── NO → Does it use <Gather>, <Record>, <Say>, <Play>, <Conference>, or conditional logic?
-    ├── YES → CONVERT to TeXML (keep server endpoint, XML is compatible)
-    └── NO → Likely DELETE (analyze further)
+└── NO → Does it dial a <Client> identity?
+    (Returns <Dial><Client>agent_name</Client></Dial>)
+    ├── YES → DELETE endpoint, use SIP URI dialing instead
+    │         (see Identity-Based Routing below)
+    └── NO → Does it use <Gather>, <Record>, <Say>, <Play>, <Conference>, or conditional logic?
+        ├── YES → CONVERT to TeXML (keep server endpoint, XML is compatible)
+        └── NO → Likely DELETE (analyze further)
 ```
 
 | TwiML Pattern | Action | Telnyx Replacement |
 |---|---|---|
 | `<Dial><Number>{To}</Number></Dial>` | **DELETE** | `client.newCall({destinationNumber: to})` |
 | `<Dial callerId="+1...">{To}</Dial>` | **DELETE** | `client.newCall({destinationNumber, callerNumber})` |
+| `<Dial><Client>identity</Client></Dial>` | **DELETE** | `client.newCall({destinationNumber: 'sip:identity@subdomain.sip.telnyx.com'})` |
 | `<Gather><Say>Press 1...</Say></Gather>` | **CONVERT** | Same XML, point to TeXML Application |
 | `<Record action="/handle">` | **CONVERT** | Same XML, point to TeXML Application |
 | `<Dial><Conference>room</Conference></Dial>` | **CONVERT** | Same XML, point to TeXML Application |
@@ -91,6 +96,81 @@ Does it ONLY do simple dial?
 ### Telnyx Call States
 
 Telnyx calls pass through these states: `new` → `trying` → `requesting` → `recovering` → `ringing` → `answering` → `early` → `active` → `held` → `hangup` → `destroy` → `purge`
+
+### Call Event Lifecycle Mapping
+
+Twilio emits separate named events per call. Telnyx uses a single `telnyx.notification` event with `callUpdate` type — differentiate by checking `notification.call.state`:
+
+| Twilio Event | Telnyx Equivalent | How to Detect |
+|---|---|---|
+| `device.on('incoming', call)` | `client.on('telnyx.notification', n)` | `n.type === 'callUpdate' && n.call.state === 'ringing' && n.call.direction === 'inbound'` |
+| `call.on('accept')` | `client.on('telnyx.notification', n)` | `n.type === 'callUpdate' && n.call.state === 'active'` |
+| `call.on('ringing')` | `client.on('telnyx.notification', n)` | `n.type === 'callUpdate' && n.call.state === 'ringing'` |
+| `call.on('disconnect')` | `client.on('telnyx.notification', n)` | `n.type === 'callUpdate' && n.call.state === 'hangup'` |
+| `call.on('cancel')` | `client.on('telnyx.notification', n)` | `n.type === 'callUpdate' && n.call.state === 'hangup'` (same event) |
+| `call.on('error')` | `client.on('telnyx.error', e)` | Global error handler |
+| `call.on('reconnecting')` | `client.on('telnyx.notification', n)` | `n.type === 'callUpdate' && n.call.state === 'recovering'` |
+| `call.parameters.From` | `notification.call` object | Access caller info from the call object in the notification |
+
+```javascript
+// Twilio pattern:
+call.on('accept', () => console.log('Connected'));
+call.on('disconnect', () => console.log('Ended'));
+
+// Telnyx pattern:
+client.on('telnyx.notification', (notification) => {
+  if (notification.type === 'callUpdate') {
+    const call = notification.call;
+    switch (call.state) {
+      case 'active':  console.log('Connected'); break;
+      case 'hangup':  console.log('Ended'); break;
+      case 'ringing': console.log('Ringing'); break;
+    }
+  }
+});
+```
+
+### Call Rejection
+
+Twilio has `call.reject()`. Telnyx does not have a separate reject method — call `call.hangup()` on a ringing inbound call to reject it:
+
+```javascript
+// Twilio: call.reject();
+// Telnyx:
+if (call.state === 'ringing') {
+  call.hangup(); // Rejects the incoming call
+}
+```
+
+### Audio Device Management
+
+Telnyx provides built-in audio device management on both the client and call objects. Twilio requires custom implementation or third-party libraries.
+
+| Twilio | Telnyx | Level |
+|---|---|---|
+| `device.audio.availableInputDevices` | `client.getAudioInDevices()` | Client |
+| `device.audio.speakerDevices.get()` | `client.getAudioOutDevices()` | Client |
+| `device.audio.setInputDevice(id)` | `call.setAudioInDevice(deviceId)` | Per-call |
+| `device.audio.speakerDevices.set(id)` | `call.setAudioOutDevice(deviceId)` | Per-call |
+| *(not available)* | `client.getVideoDevices()` | Client |
+| *(not available)* | `call.setVideoDevice(deviceId)` | Per-call |
+| *(custom)* | `client.enableMicrophone()` / `client.disableMicrophone()` | Client |
+| *(custom)* | `client.checkPermissions(audio, video)` | Client |
+
+```javascript
+// Telnyx: enumerate and select audio devices
+const inputs = await client.getAudioInDevices();
+const outputs = await client.getAudioOutDevices();
+
+// Set devices on an active call
+await call.setAudioInDevice(inputs[0].deviceId);
+await call.setAudioOutDevice(outputs[0].deviceId);
+
+// Check browser permissions before connecting
+const hasPermission = await client.checkPermissions();
+```
+
+See `{baseDir}/sdk-reference/webrtc-client/javascript.md` for the complete client and call API reference.
 
 ## Migration Steps
 
@@ -352,23 +432,66 @@ class TelnyxSession {
 }
 ```
 
-**Server-side credential generation (recommended: dynamic credentials):**
+**Server-side credential + JWT generation (recommended: dynamic credentials):**
+
+The pattern is: create a credential → generate a JWT token → return the token to the client.
+
 ```javascript
 // Express.js endpoint
 app.post('/api/telnyx/credential', async (req, res) => {
   const Telnyx = require('telnyx');
   const client = new Telnyx({ apiKey: process.env.TELNYX_API_KEY });
 
-  // Create a dynamic credential for this session
+  // 1. Create a dynamic credential for this session
   const credential = await client.telephonyCredentials.create({
     connection_id: process.env.TELNYX_CONNECTION_ID,
     name: `session-${req.user.id}-${Date.now()}`
   });
 
-  // CRITICAL: return .data, not the raw response
-  res.json({ credential: credential.data });
+  // 2. Generate a JWT login token for the credential
+  const tokenResponse = await client.telephonyCredentials.createToken(
+    credential.data.id
+  );
+
+  // 3. Return the JWT to the client (used with login_token on TelnyxRTC)
+  res.json({ token: tokenResponse });
 });
 ```
+
+```python
+# Flask endpoint (Python)
+import os
+import telnyx
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+telnyx.api_key = os.environ['TELNYX_API_KEY']
+
+@app.route('/api/telnyx/credential', methods=['POST'])
+def create_credential():
+    # 1. Create a credential for this session
+    credential = telnyx.TelephonyCredential.create(
+        connection_id=os.environ['TELNYX_CONNECTION_ID'],
+        name=f"session-{request.user_id}-{int(time.time())}"
+    )
+
+    # 2. Generate a JWT token for the credential
+    #    POST /v2/telephony_credentials/{id}/token
+    token = telnyx.TelephonyCredential.create_token(credential.id)
+
+    # 3. Return JWT to client (used with login_token on TelnyxRTC)
+    return jsonify({'token': token})
+```
+
+> **Note**: If `create_token()` is not available in your SDK version, use the REST API directly:
+> ```python
+> import requests
+> resp = requests.post(
+>     f"https://api.telnyx.com/v2/telephony_credentials/{credential.id}/token",
+>     headers={"Authorization": f"Bearer {os.environ['TELNYX_API_KEY']}"}
+> )
+> token = resp.text  # JWT string returned directly
+> ```
 
 ### Environment Variables Mapping
 
@@ -484,6 +607,57 @@ Settings for `sip_uri_calling_preference`:
 - `disabled` — only PSTN dialing allowed (default)
 - `unrestricted` — dial any SIP URI
 - `internal` — only dial URIs within your Telnyx connections
+
+### Identity-Based Routing (Twilio `<Client>` → Telnyx SIP Identity)
+
+Twilio's `<Client>identity</Client>` pattern routes calls to a specific WebRTC user by their identity string. In Telnyx, this maps to the **SIP credential `name` field** — each credential registers as a SIP identity on your subdomain.
+
+**How it works:**
+
+1. When you create a SIP credential with `name: "agent_jane"`, that credential registers as `sip:agent_jane@your-subdomain.sip.telnyx.com`
+2. Any WebRTC client authenticated with that credential receives calls dialed to that SIP URI
+3. To call a specific identity, use SIP URI dialing (requires `sip_uri_calling_preference: "unrestricted"` or `"internal"` on the connection)
+
+**Twilio pattern (server-side routing required):**
+```python
+# Twilio: server returns TwiML to route to a specific client identity
+@app.route('/voice', methods=['POST'])
+def voice():
+    resp = VoiceResponse()
+    dial = resp.dial(caller_id='+15551234567')
+    dial.client('agent_jane')  # Routes to the WebRTC client with identity "agent_jane"
+    return str(resp)
+```
+
+**Telnyx pattern (direct client-to-client, no server needed):**
+```javascript
+// Create credentials with meaningful names (one per user/agent)
+// POST /v2/telephony_credentials
+// { "connection_id": "...", "name": "agent_jane" }
+// { "connection_id": "...", "name": "agent_bob" }
+
+// Agent Jane's client connects with her credential
+const janeClient = new TelnyxRTC({ login: 'jane_sip_user', password: 'jane_sip_pass' });
+
+// To call Agent Jane from another client — dial her SIP URI directly
+const call = bobClient.newCall({
+  destinationNumber: 'sip:agent_jane@your-subdomain.sip.telnyx.com'
+});
+```
+
+**Key mapping:**
+
+| Twilio | Telnyx |
+|---|---|
+| `token.identity = 'agent_jane'` | Credential `name: 'agent_jane'` |
+| `<Dial><Client>agent_jane</Client></Dial>` | `client.newCall({destinationNumber: 'sip:agent_jane@subdomain.sip.telnyx.com'})` |
+| Server webhook required for routing | Direct SIP URI dialing (no server needed) |
+| Identity set at token creation | Identity set at credential creation |
+
+**Setup requirements:**
+1. Enable URI dialing on your connection: `sip_uri_calling_preference: "unrestricted"` (or `"internal"` for same-connection only)
+2. Set a `sip_subdomain` on the connection (e.g., `"my-app"` → `my-app.sip.telnyx.com`)
+3. Create one credential per user/agent with a unique `name`
 
 ### Call Parking and Outbound Call Handling
 

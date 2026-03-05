@@ -632,3 +632,83 @@ curl -X POST https://api.telnyx.com/v2/credential_connections \
 - `only_my_connections` — only accept calls from your other Telnyx connections
 
 This is important for multi-tenant PBX deployments and inter-connection routing.
+
+## Testing
+
+When migrating voice tests from Twilio to Telnyx, update mocks and webhook payloads.
+
+### Mock Patterns
+
+**Python (pytest/unittest):**
+```python
+# Twilio mock:
+# @patch('twilio.rest.Client')
+# def test_call(mock_client):
+#     mock_client.return_value.calls.create.return_value.sid = 'CA...'
+
+# Telnyx mock:
+@patch('telnyx.Call.create')
+def test_call(mock_create):
+    mock_create.return_value = type('obj', (object,), {
+        'data': type('obj', (object,), {
+            'call_control_id': 'v3:uuid-here',
+            'call_leg_id': 'uuid-here',
+            'call_session_id': 'uuid-here',
+            'is_alive': True,
+        })()
+    })()
+    result = make_call('+15559876543')
+    mock_create.assert_called_once()
+```
+
+**JavaScript (Jest):**
+```javascript
+jest.mock('telnyx', () => {
+  return jest.fn().mockImplementation(() => ({
+    calls: {
+      create: jest.fn().mockResolvedValue({
+        data: {
+          call_control_id: 'v3:uuid-here',
+          call_leg_id: 'uuid-here',
+          call_session_id: 'uuid-here',
+          is_alive: true,
+        }
+      })
+    }
+  }));
+});
+```
+
+### Webhook Mock Payloads
+
+```json
+{
+  "data": {
+    "event_type": "call.initiated",
+    "id": "evt-uuid",
+    "occurred_at": "2024-01-15T10:30:00Z",
+    "payload": {
+      "call_control_id": "v3:uuid-here",
+      "call_leg_id": "uuid-here",
+      "call_session_id": "uuid-here",
+      "connection_id": "conn-uuid",
+      "from": "+15551234567",
+      "to": "+15559876543",
+      "direction": "incoming",
+      "state": "ringing",
+      "client_state": null
+    },
+    "record_type": "event"
+  },
+  "meta": { "attempt": 1 }
+}
+```
+
+### Assertion Changes
+
+| Twilio Assertion | Telnyx Assertion |
+|---|---|
+| `assert result.sid.startswith('CA')` | `assert result.data.call_control_id is not None` |
+| `assert result.status == 'queued'` | `assert result.data.is_alive == True` |
+| `assert result.from_ == '+15551234567'` | `assert result.data.from_ == '+15551234567'` (Call Control) |
+| TwiML response content type `text/xml` | TeXML response content type `text/xml` (same) |

@@ -381,3 +381,57 @@ func main() {
 7. **Recording URLs expire** — Telnyx voice recording URLs expire after 10 minutes. Download or store them immediately in the webhook handler.
 
 8. **Express raw body for signature verification** — Do NOT use `JSON.stringify(req.body)` — re-serialization changes key order/whitespace and breaks signature verification. Capture the raw body via `express.json({ verify: (req, res, buf) => { req.rawBody = buf.toString('utf-8'); } })` and pass `req.rawBody` to the verification function.
+
+## Django Webhook Handler
+
+Django requires `@csrf_exempt` since Telnyx webhooks won't include CSRF tokens.
+
+```python
+# views.py
+import json
+import telnyx
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.conf import settings
+
+@csrf_exempt
+@require_POST
+def telnyx_webhook(request):
+    # Verify signature
+    try:
+        telnyx.Webhook.construct_event(
+            request.body.decode('utf-8'),  # raw body string
+            request.META.get('HTTP_TELNYX_SIGNATURE_ED25519', ''),
+            request.META.get('HTTP_TELNYX_TIMESTAMP', ''),
+            settings.TELNYX_PUBLIC_KEY
+        )
+    except Exception:
+        return JsonResponse({'error': 'Invalid signature'}, status=403)
+
+    data = json.loads(request.body)
+    event_type = data['data']['event_type']
+    payload = data['data']['payload']
+
+    if event_type == 'message.received':
+        from_number = payload['from']['phone_number']
+        text = payload.get('text', '')
+        # Handle inbound message
+    elif event_type == 'call.initiated':
+        call_control_id = payload['call_control_id']
+        # Handle call event
+
+    return JsonResponse({'status': 'ok'})
+```
+
+```python
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('webhooks/telnyx/', views.telnyx_webhook, name='telnyx_webhook'),
+]
+```
+
+**Django note**: Use `request.body` (bytes) for signature verification — not `request.POST` which is form-parsed. Telnyx webhook headers arrive as `HTTP_TELNYX_SIGNATURE_ED25519` in Django's `request.META` (Django uppercases and prefixes `HTTP_`).

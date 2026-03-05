@@ -149,8 +149,8 @@ detect_language() {
 pattern_to_products() {
   local pat="$1"
   local products=""
-  # WebRTC (mobile SDKs) — check before voice to avoid false categorization
-  if echo "$pat" | grep -qiE 'TwilioVoiceSDK|import TwilioVoice|TVOCall|TVOCallInvite|TVOCallDelegate|com\.twilio\.voice|com\.twilio:voice-android|@twilio/voice-react-native|twilio_voice'; then
+  # WebRTC (mobile + browser SDKs) — check before voice to avoid false categorization
+  if echo "$pat" | grep -qiE 'TwilioVoiceSDK|import TwilioVoice|TVOCall|TVOCallInvite|TVOCallDelegate|com\.twilio\.voice|com\.twilio:voice-android|@twilio/voice-react-native|twilio_voice|Twilio\.Device|@twilio/voice-sdk|twilio-client|new Device\('; then
     products="$products webrtc"
   fi
   # Voice (server-side API/SDK — excludes mobile SDK patterns to avoid double-tagging)
@@ -308,6 +308,10 @@ SDK_PATTERNS=(
   '@twilio/voice-react-native'
   # Flutter (Dart)
   'twilio_voice'
+  # Browser WebRTC
+  'Twilio.Device'
+  '@twilio/voice-sdk'
+  'twilio-client'
 )
 
 # Also catch JS/TS `import ... twilio` via regex
@@ -377,6 +381,10 @@ PRODUCT_PATTERNS_FIXED=(
   'TVOCall:webrtc'
   'TVOCallInvite:webrtc'
   'TVOCallDelegate:webrtc'
+  # Browser WebRTC
+  'Twilio.Device:webrtc'
+  '@twilio/voice-sdk:webrtc'
+  'twilio-client:webrtc'
   # SIP trunking
   'TrunkingGrant:sip'
   'SipGrant:sip'
@@ -478,6 +486,11 @@ PRODUCT_PATTERNS_REGEX=(
   '@twilio/voice-react-native:webrtc'
   'twilio_voice:webrtc'
   'import TwilioVoice:webrtc'
+  # Browser WebRTC SDKs
+  'new Device\(:webrtc'
+  'Twilio\.Device:webrtc'
+  '@twilio/voice-sdk:webrtc'
+  'twilio-client:webrtc'
 )
 
 for entry in "${PRODUCT_PATTERNS_REGEX[@]}"; do
@@ -507,6 +520,12 @@ ENV_VAR_NAMES=(
   TWILIO_API_KEY
   TWILIO_API_KEY_SECRET
   TWILIO_API_KEY_SID
+  TWILIO_PHONE_NUMBER
+  TWILIO_FROM_NUMBER
+  TWILIO_NUMBER
+  TWILIO_TWIML_APP_SID
+  TWILIO_MESSAGING_SERVICE_SID
+  TWILIO_VERIFY_SERVICE_SID
 )
 
 for varname in "${ENV_VAR_NAMES[@]}"; do
@@ -583,6 +602,7 @@ CONFIG_FILES=(
   "setup.py:setuptools"
   "setup.cfg:setuptools"
   "pyproject.toml:pyproject"
+  "requirements-to-freeze.txt:pip"
   "Podfile:cocoapods"
   "pubspec.yaml:pub"
 )
@@ -673,6 +693,103 @@ for term in "${WH_TERMS[@]}"; do
       WH_PATTERNS+=("$term")
     fi
   done < <(run_grep -F "$term")
+done
+
+# ---------------------------------------------------------------------------
+# 8. Config/deployment files with TWILIO_ references
+# ---------------------------------------------------------------------------
+
+log "Scanning config and deployment files for TWILIO_ references..."
+
+declare -a DEPLOY_PATHS=()
+declare -a DEPLOY_TYPES=()
+
+DEPLOY_PATTERNS=(
+  ".env:env"
+  ".env.example:env"
+  ".env.local:env"
+  ".env.production:env"
+  ".env.development:env"
+  "docker-compose.yml:docker"
+  "docker-compose.yaml:docker"
+  "Dockerfile:docker"
+  "app.json:heroku"
+  "app.yaml:gae"
+  "serverless.yml:serverless"
+  "serverless.yaml:serverless"
+  "terraform.tfvars:terraform"
+  "variables.tf:terraform"
+  "*.tf:terraform"
+  ".github/workflows/*.yml:ci"
+  ".github/workflows/*.yaml:ci"
+  ".circleci/config.yml:ci"
+  ".gitlab-ci.yml:ci"
+  "Procfile:procfile"
+  "render.yaml:render"
+  "fly.toml:fly"
+  "vercel.json:vercel"
+  "netlify.toml:netlify"
+)
+
+for entry in "${DEPLOY_PATTERNS[@]}"; do
+  filename="${entry%%:*}"
+  dtype="${entry#*:}"
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    filepath="${line%%:*}"
+    rel="${filepath#"$PROJECT_ROOT"/}"
+    # Deduplicate
+    dup=0
+    for existing in "${DEPLOY_PATHS[@]+"${DEPLOY_PATHS[@]}"}"; do
+      if [[ "$existing" == "$rel" ]]; then
+        dup=1
+        break
+      fi
+    done
+    if [[ $dup -eq 0 ]]; then
+      DEPLOY_PATHS+=("$rel")
+      DEPLOY_TYPES+=("$dtype")
+    fi
+  done < <(run_grep -iE "TWILIO_|twilio" --include="$filename")
+done
+
+# ---------------------------------------------------------------------------
+# 9. Test mocks (detect test files mocking Twilio)
+# ---------------------------------------------------------------------------
+
+log "Scanning for test mocks..."
+
+declare -a MOCK_PATHS=()
+
+MOCK_PATTERNS_REGEX=(
+  'mock.*twilio'
+  '@patch.*twilio'
+  'jest\.mock.*twilio'
+  'stub.*twilio'
+  'fake.*twilio'
+  'nock.*twilio'
+  'sinon.*twilio'
+  'WebMock.*twilio'
+  'VCR.*twilio'
+)
+
+for pat in "${MOCK_PATTERNS_REGEX[@]}"; do
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    filepath="${line%%:*}"
+    rel="${filepath#"$PROJECT_ROOT"/}"
+    # Deduplicate
+    dup=0
+    for existing in "${MOCK_PATHS[@]+"${MOCK_PATHS[@]}"}"; do
+      if [[ "$existing" == "$rel" ]]; then
+        dup=1
+        break
+      fi
+    done
+    if [[ $dup -eq 0 ]]; then
+      MOCK_PATHS+=("$rel")
+    fi
+  done < <(run_grep -iE "$pat")
 done
 
 # ---------------------------------------------------------------------------
@@ -812,6 +929,28 @@ has_twiml="false"
 [[ ${TWIML_FILES[@]+x} ]] && [[ ${#TWIML_FILES[@]} -gt 0 ]] && has_twiml="true"
 has_env="false"
 [[ ${ENV_NAMES[@]+x} ]] && [[ ${#ENV_NAMES[@]} -gt 0 ]] && has_env="true"
+has_deploy="false"
+[[ ${DEPLOY_PATHS[@]+x} ]] && [[ ${#DEPLOY_PATHS[@]} -gt 0 ]] && has_deploy="true"
+has_mocks="false"
+[[ ${MOCK_PATHS[@]+x} ]] && [[ ${#MOCK_PATHS[@]} -gt 0 ]] && has_mocks="true"
+
+# --- deploy_files array ---
+deploy_json=""
+for i in "${!DEPLOY_PATHS[@]}"; do
+  [[ -n "$deploy_json" ]] && deploy_json="$deploy_json,"
+  deploy_json="$deploy_json
+    {
+      \"path\": \"$(json_escape "${DEPLOY_PATHS[$i]}")\",
+      \"type\": \"${DEPLOY_TYPES[$i]}\"
+    }"
+done
+
+# --- test_mocks array ---
+mock_json=""
+for mf in "${MOCK_PATHS[@]+"${MOCK_PATHS[@]}"}"; do
+  [[ -n "$mock_json" ]] && mock_json="$mock_json, "
+  mock_json="$mock_json\"$(json_escape "$mf")\""
+done
 
 # ---------------------------------------------------------------------------
 # Print final JSON to stdout
@@ -835,14 +974,22 @@ cat <<ENDJSON
   ],
   "api_urls": [${api_json}
   ],
+  "deploy_files": [${deploy_json}
+  ],
+  "test_mocks": [${mock_json}],
   "summary": {
     "total_files": $total_files,
     "total_products": $total_products,
     "total_languages": $total_languages,
     "has_webhook_validation": $has_webhook,
     "has_twiml": $has_twiml,
-    "has_env_vars": $has_env
-  }
+    "has_env_vars": $has_env,
+    "has_deploy_config": $has_deploy,
+    "has_test_mocks": $has_mocks
+  },
+  "notes": [
+    "Standard TWILIO_* env vars are scanned above. Also search for non-standard names that may contain Twilio SIDs or phone numbers (e.g., ACCOUNT_SID, SMS_FROM, PHONE_NUMBER)."
+  ]
 }
 ENDJSON
 

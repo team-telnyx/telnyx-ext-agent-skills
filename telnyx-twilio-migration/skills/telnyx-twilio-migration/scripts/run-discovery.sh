@@ -2,12 +2,16 @@
 #
 # run-discovery.sh — Phase 1: Full discovery pipeline
 #
-# Runs all Phase 1 steps in order: preflight check, Twilio usage scan,
-# and optionally the deep scanner. Produces structured output for Phase 2.
+# Runs all Phase 1 steps in order: Twilio usage scan (no API key needed),
+# preflight check, and optionally the deep scanner.
+#
+# The scanner runs FIRST so you can inspect Twilio usage even without
+# a Telnyx API key. Preflight failures are reported as warnings — they
+# don't block scan results.
 #
 # Usage: bash run-discovery.sh <project-root>
 #
-# Environment variables (required):
+# Environment variables (optional for scan, required for preflight):
 #   TELNYX_API_KEY   Your Telnyx API key
 #
 # Output:
@@ -16,8 +20,8 @@
 #   stdout: Preflight report + scan summary
 #
 # Exit codes:
-#   0 — Discovery complete, ready for Phase 2
-#   1 — Critical preflight failure (API key invalid, no network, etc.)
+#   0 — Discovery complete (scan succeeded; preflight may have warnings)
+#   2 — Invalid arguments (project root doesn't exist, etc.)
 
 set -uo pipefail
 
@@ -41,8 +45,8 @@ if [ $# -lt 1 ] || [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
   echo "Usage: bash run-discovery.sh <project-root>"
   echo ""
   echo "Runs the full Phase 1 discovery pipeline:"
-  echo "  1. Preflight check (API key, account, tools)"
-  echo "  2. Twilio usage scan (grep-based, all products)"
+  echo "  1. Twilio usage scan (grep-based, no API key needed)"
+  echo "  2. Preflight check (API key, account, tools)"
   echo "  3. Deep scan (AST-based, if Python available)"
   echo ""
   echo "Produces: twilio-scan.json and twilio-deep-scan.json in <project-root>"
@@ -61,35 +65,13 @@ echo -e "${BOLD}  Phase 1: Discovery${NC}"
 echo -e "${BOLD}═══════════════════════════════════${NC}"
 echo ""
 
-# --- Step 1.1: Preflight Check ---
-echo -e "${BOLD}Step 1.1: Preflight Check${NC}"
-echo "─────────────────────────"
-
-if [ -z "${TELNYX_API_KEY:-}" ]; then
-  echo -e "  ${RED}FAIL${NC}  TELNYX_API_KEY is not set"
-  echo ""
-  echo "  Set it with: export TELNYX_API_KEY='KEY...'"
-  echo "  Get one at:  https://portal.telnyx.com/#/app/api-keys"
-  exit 1
-fi
-
-bash "$SCRIPT_DIR/preflight-check.sh" "$PROJECT_ROOT"
-PREFLIGHT_EXIT=$?
-
-if [ "$PREFLIGHT_EXIT" -ne 0 ]; then
-  echo ""
-  echo -e "${RED}${BOLD}Preflight check failed. Fix the issues above before proceeding.${NC}"
-  exit 1
-fi
-
+# --- Step 1.1: Scan for Twilio Usage (no API key needed) ---
+echo -e "${BOLD}Step 1.1: Twilio Usage Scan${NC}"
+echo "─────────────────────────────"
+echo -e "  ${BLUE}INFO${NC}  Scanning source code for Twilio patterns (no API key required)..."
 echo ""
 
-# --- Step 1.2: Scan for Twilio Usage ---
-echo -e "${BOLD}Step 1.2: Twilio Usage Scan${NC}"
-echo "─────────────────────────────"
-
 SCAN_OUTPUT="$PROJECT_ROOT/twilio-scan.json"
-echo -e "  ${BLUE}INFO${NC}  Running scan-twilio-usage.sh..."
 bash "$SCRIPT_DIR/scan-twilio-usage.sh" "$PROJECT_ROOT" > "$SCAN_OUTPUT" 2>/dev/null
 SCAN_EXIT=$?
 
@@ -113,6 +95,30 @@ if [ -f "$SCAN_OUTPUT" ] && [ -s "$SCAN_OUTPUT" ]; then
   fi
 else
   echo -e "  ${YELLOW}WARN${NC}  Scan produced no output — the project may have no Twilio code"
+fi
+
+echo ""
+
+# --- Step 1.2: Preflight Check (API key, account, tools) ---
+echo -e "${BOLD}Step 1.2: Preflight Check${NC}"
+echo "─────────────────────────"
+
+API_KEY_OK=true
+if [ -z "${TELNYX_API_KEY:-}" ]; then
+  echo -e "  ${YELLOW}WARN${NC}  TELNYX_API_KEY is not set"
+  echo "  Set it with: export TELNYX_API_KEY='KEY...'"
+  echo "  Get one at:  https://portal.telnyx.com/#/app/api-keys"
+  echo -e "  ${BLUE}INFO${NC}  Scan results above are still valid — set the key and re-run for full preflight."
+  API_KEY_OK=false
+else
+  bash "$SCRIPT_DIR/preflight-check.sh" "$PROJECT_ROOT"
+  PREFLIGHT_EXIT=$?
+  if [ "$PREFLIGHT_EXIT" -ne 0 ]; then
+    echo ""
+    echo -e "  ${YELLOW}WARN${NC}  Preflight check had failures. Scan results above are still valid."
+    echo "  Fix preflight issues before proceeding to Phase 2."
+    API_KEY_OK=false
+  fi
 fi
 
 echo ""
@@ -152,7 +158,8 @@ if command -v git &>/dev/null && [ -d "$PROJECT_ROOT/.git" ]; then
   if [ "$UNCOMMITTED" -gt 0 ]; then
     echo -e "  ${YELLOW}WARN${NC}  $UNCOMMITTED uncommitted changes detected"
     # Check if any changes contain Telnyx patterns (partial migration)
-    TELNYX_IN_DIFF=$(cd "$PROJECT_ROOT" && git diff 2>/dev/null | grep -c "telnyx\|TELNYX" || echo "0")
+    TELNYX_IN_DIFF=$(cd "$PROJECT_ROOT" && git diff 2>/dev/null | grep -c -i "telnyx" || true)
+    TELNYX_IN_DIFF="${TELNYX_IN_DIFF:-0}"
     if [ "$TELNYX_IN_DIFF" -gt 0 ]; then
       echo -e "  ${YELLOW}WARN${NC}  Telnyx patterns found in uncommitted changes — possible partial migration"
       echo "  Review with: cd $PROJECT_ROOT && git diff --stat"
@@ -176,3 +183,7 @@ if [ -f "$DEEP_SCAN_OUTPUT" ] && [ -s "$DEEP_SCAN_OUTPUT" ]; then
 fi
 echo ""
 echo "  Next: Review scan results, triage matches, then proceed to Phase 2 (Planning)."
+
+if [ "$API_KEY_OK" = false ]; then
+  echo -e "  ${YELLOW}NOTE${NC}  Set TELNYX_API_KEY and re-run preflight before starting Phase 2."
+fi
