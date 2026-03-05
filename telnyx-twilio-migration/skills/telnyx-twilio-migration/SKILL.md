@@ -67,6 +67,8 @@ curl -s -H "Authorization: Bearer $TELNYX_API_KEY" https://api.telnyx.com/v2/bal
 
 If validation fails, ask the user to check their key and try again. This is the only retry that requires user input.
 
+**Phase 0 exit**: `bash {baseDir}/scripts/migration-state.sh set-phase <project-root> 0`
+
 ---
 
 ## Phase 1: Discovery
@@ -332,7 +334,7 @@ If validation fails and you cannot fix the issue, document it and continue to th
 - Verify Service SID → Verify Profile ID
 - `channel` → `type` parameter
 - `to` → `phone_number`
-- Check response status mapping: Twilio `approved` → Telnyx `accepted` (code is correct), Twilio `pending` → Telnyx `pending` (no change needed). For failed/expired: Twilio `denied`/`expired` → Telnyx `rejected`/`expired`
+- Check response status mapping (when verifying a code): Twilio `approved` → Telnyx `accepted` (code correct), Twilio `pending` (code incorrect) → Telnyx `rejected` (code incorrect). Note: both platforms use `pending` when a verification is *created* (OTP sent, waiting for code) — the mapping above applies only to the code *check* response.
 
 **Webhook Receivers (all products):**
 - **You MUST migrate webhook handlers** — this is half the migration for most apps. See `{baseDir}/references/webhook-migration.md` for complete receive + parse + verify examples in Python (Flask, Django), JavaScript (Express), Ruby (Sinatra, **Rails**), and Go (net/http).
