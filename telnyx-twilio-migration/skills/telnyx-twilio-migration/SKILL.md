@@ -181,9 +181,9 @@ cd <project-root> && git checkout -b migrate/twilio-to-telnyx
 Install Telnyx SDK **alongside** Twilio — do NOT remove Twilio from the package manifest yet (removal is Phase 6). Keep `twilio` in `requirements.txt`/`package.json`/`Gemfile`/`go.mod` until Phase 6 so you can revert if validation fails.
 
 **Server SDKs** — use these EXACT commands with version constraints (do NOT use `pip install telnyx` or `npm install telnyx` without a version range):
-- Python: `pip install 'telnyx>=2.0,<3.0'` — and write `telnyx>=2.0,<3.0` in `requirements.txt` (NOT just `telnyx`)
-- Node: `npm install telnyx@^2` — writes `"telnyx": "^2.x.x"` in `package.json` automatically
-- Ruby: `gem 'telnyx', '~> 2.0'` in Gemfile + `bundle install`
+- Python: `pip install 'telnyx>=4.0,<5.0'` — and write `telnyx>=4.0,<5.0` in `requirements.txt` (NOT just `telnyx`). Initialize with `from telnyx import Telnyx; client = Telnyx(api_key=os.environ.get("TELNYX_API_KEY"))`.
+- Node: `npm install telnyx@^6` — writes `"telnyx": "^6.x.x"` in `package.json` automatically. Initialize with `const Telnyx = require('telnyx'); const client = new Telnyx({ apiKey: process.env.TELNYX_API_KEY });` (CJS) or `import Telnyx from 'telnyx'` (ESM).
+- Ruby: `gem 'telnyx', '~> 5.0'` in Gemfile + `bundle install`
 - Go: `go get github.com/team-telnyx/telnyx-go`
 - Java/PHP/C#: No official SDK — use REST API with `{baseDir}/sdk-reference/curl/` for API examples
 
@@ -203,7 +203,9 @@ Install Telnyx SDK **alongside** Twilio — do NOT remove Twilio from the packag
 | `TWILIO_PHONE_NUMBER` | `TELNYX_PHONE_NUMBER` | Your Telnyx number (E.164) |
 | `TWILIO_MESSAGING_SERVICE_SID` | `TELNYX_MESSAGING_PROFILE_ID` | Messaging profile UUID |
 | `TWILIO_VERIFY_SERVICE_SID` | `TELNYX_VERIFY_PROFILE_ID` | Verify profile UUID |
-| *(voice with TeXML)* | `TELNYX_CONNECTION_ID` | TeXML App connection ID (required for outbound calls) |
+| *(voice — TeXML)* | `TELNYX_TEXML_APP_ID` | TeXML Application ID from `POST /v2/texml_applications` — this is the application that owns your webhook URLs and outbound calling config. NOT a SIP connection ID. |
+| *(voice — Call Control)* | `TELNYX_CALL_CONTROL_APP_ID` | Call Control Application ID from `POST /v2/call_control_applications` — routes inbound call events to your webhook. NOT a SIP connection ID. |
+| *(SIP trunking)* | `TELNYX_SIP_CONNECTION_ID` | SIP Connection ID from `POST /v2/credential_connections` or `POST /v2/ip_connections` — used for PBX/SBC trunking. |
 
 Update `.env`, `.env.example`, secrets manager, CI/CD variables, and deployment configs. **Ensure every env var used in the migrated code is present in `.env.example`** — missing env vars are a top cause of runtime failures.
 
@@ -263,13 +265,21 @@ Process each product area in priority order: **messaging → voice → verify �
 
 11. **Env var audit**: Grep all migrated source files for `process.env.TELNYX_` / `os.environ["TELNYX_"]` / `ENV["TELNYX_"]` references. Verify EVERY referenced env var exists in `.env.example` (or equivalent config template). Missing env vars are the #1 cause of "works in dev, fails in prod" bugs.
 
-12. **Update documentation**: Find and update all `README.md`, `README`, `CONTRIBUTING.md`, and other documentation files that reference Twilio. Replace Twilio service names, setup instructions, environment variable names, and URLs with their Telnyx equivalents. This includes:
-    - Project description (e.g., "uses Twilio" → "uses Telnyx")
-    - Setup/install instructions (account creation, API key generation)
-    - Environment variable documentation (`TWILIO_*` → `TELNYX_*`)
-    - API endpoint references
-    - Architecture diagrams or flow descriptions
-    Do NOT skip this — outdated documentation causes confusion for future maintainers.
+### Post-Migration Documentation Update (MANDATORY)
+
+After ALL product areas are migrated and committed, you MUST update documentation. This is NOT optional — agents that skip this step produce incomplete migrations.
+
+1. **Find all docs**: `grep -rl -i "twilio" README.md README CONTRIBUTING.md docs/ *.md 2>/dev/null` (in project root)
+2. **Update each file** — replace ALL of the following:
+   - Project description: "uses Twilio" → "uses Telnyx"
+   - Account setup instructions: Twilio Console → Telnyx Mission Control Portal (portal.telnyx.com)
+   - API key generation: "Twilio Account SID and Auth Token" → "Telnyx API Key v2 from portal.telnyx.com/#/app/api-keys"
+   - Environment variable names: every `TWILIO_*` → its `TELNYX_*` equivalent (see Phase 3 env var table)
+   - API endpoint URLs: `api.twilio.com` → `api.telnyx.com/v2`
+   - SDK install commands: `pip install twilio` → `pip install 'telnyx>=4.0,<5.0'`, `npm install twilio` → `npm install telnyx@^6`, etc.
+   - Webhook setup instructions: update signature verification method
+   - Badge URLs, status page links, support links
+3. **Commit**: `git add <doc-files> && git commit -m "docs: update all documentation from Twilio to Telnyx"`
 
 **Phase 4 exit**: `bash {baseDir}/scripts/migration-state.sh set-phase <project-root> 4 && bash {baseDir}/scripts/migration-state.sh set-commit <project-root> 4`
 
@@ -278,14 +288,15 @@ If validation fails and you cannot fix the issue, document it and continue to th
 ### Product-Specific Transform Guidance
 
 **Voice (TeXML path):**
-- XML files: Usually no changes needed — `<Response>`, `<Say>`, `<Gather>`, etc. are compatible
+- **Static XML files**: Usually no changes needed — `<Response>`, `<Say>`, `<Gather>`, etc. are compatible
+- **Dynamic XML (TwiML builder replacement)**: If the original code uses `VoiceResponse()` (Python) or `new twilio.twiml.VoiceResponse()` (Node) to build XML programmatically, replace with XML string templates. Telnyx has no builder class — return raw XML strings from your webhook endpoints. For dynamic content, use f-strings (Python) or template literals (JavaScript) with proper XML escaping (replace `&` with `&amp;`, `<` with `&lt;`, `>` with `&gt;`, `"` with `&quot;` in user-provided values). See `{baseDir}/references/voice-migration.md` → "TwiML builder classes → raw XML strings" for complete before/after examples in Python and JavaScript. Do NOT install third-party XML builder libraries — raw strings are sufficient and avoid adding dependencies.
 - Validate with: `bash {baseDir}/scripts/validate-texml.sh <file>`
 - API calls: Change base URL from `api.twilio.com/2010-04-01/Accounts/{SID}` to `api.telnyx.com/v2/texml`
 - Auth: Basic Auth → Bearer Token
 - Recording: Set `channels="single"` if expecting mono
 - **`speechModel` does NOT exist in TeXML** — remove it or replace with `transcriptionEngine` (e.g., `transcriptionEngine="Google"`). Using `speechModel` will be silently ignored.
 - **Polly voices**: TeXML supports `voice="Polly.{VoiceId}"` and `voice="Polly.{VoiceId}-Neural"`. Always prefer Neural variants (e.g., `Polly.Amy-Neural` instead of `Polly.Amy`) — non-Neural voices may silently fall back to the default voice. If a specific Polly voice is unavailable, use `voice="woman"` with the appropriate `language` attribute.
-- **Outbound calls**: Use the Telnyx SDK (`client.texml.accounts.calls.calls(connectionId, {...})`) — do NOT use raw `fetch()` to the TeXML API. The SDK handles auth, retries, and response parsing. See `{baseDir}/sdk-reference/{language}/texml.md` for the exact method signature.
+- **Outbound calls**: Use the Telnyx SDK — do NOT use raw `fetch()` to the TeXML API. The SDK handles auth, retries, and response parsing. Pass the **TeXML Application ID** (from `TELNYX_TEXML_APP_ID`, NOT a SIP connection ID) as the `connection_id` parameter. See `{baseDir}/sdk-reference/{language}/texml.md` for the exact method signature.
 
 **Voice (Call Control path):**
 - Replace TwiML response generation with Call Control API commands
@@ -321,7 +332,9 @@ If validation fails and you cannot fix the issue, document it and continue to th
 - Parse JSON body instead of form data: `request.json['data']['payload']` not `request.form`
 - Access fields via `data.payload.*` — `from` is an object (`from.phone_number`), `to` is an array
 - Replace HMAC-SHA1 (`RequestValidator`) with Ed25519 signature verification using `telnyx-signature-ed25519` + `telnyx-timestamp` headers
-- **If the original code used `twilio.webhook()` middleware** (even with `{validate: false}`), you MUST replace it with Telnyx Ed25519 verification — do NOT just delete it. Removing webhook validation without replacement leaves endpoints unprotected in production.
+- **If the original code used `twilio.webhook()` middleware**, check the `validate` option:
+  - If `validate: false` (or `enforce_https=False` in Python) was set, the middleware was a **no-op** — it performed no validation. Remove it entirely. Do NOT add Ed25519 verification (the original app intentionally skipped validation, so adding it would change behavior and risk breaking the app if misconfigured).
+  - If `validate: true` (or no `validate` option, since `true` is the default), replace it with Telnyx Ed25519 verification. Do NOT just delete it — removing real webhook validation leaves endpoints unprotected in production.
 - **Rails `before_action`**: If the original code used a Twilio `before_action` filter (e.g., `before_action :validate_twilio_request`), replace it with a Telnyx Ed25519 `before_action` using `Telnyx::Webhook.construct_event()`. Also add `skip_before_action :verify_authenticity_token` since webhooks don't carry CSRF tokens. See `{baseDir}/references/webhook-migration.md` → "Rails" for the complete pattern.
 - **Use the exact signature verification pattern from `webhook-migration.md`** — do NOT use patterns from your own training data. Do NOT use `new TelnyxWebhook()`.
 

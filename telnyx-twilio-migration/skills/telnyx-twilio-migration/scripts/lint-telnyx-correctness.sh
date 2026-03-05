@@ -234,6 +234,12 @@ fi
 PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
 GREP_EXCLUDES=$(build_exclude_args)
 
+# Load scan context if provided (for context-aware checks like webhook validation)
+ORIGINAL_HAD_WEBHOOK_VALIDATION="unknown"
+if [ -n "$SCAN_JSON" ] && [ -f "$SCAN_JSON" ] && command -v jq >/dev/null 2>&1; then
+  ORIGINAL_HAD_WEBHOOK_VALIDATION=$(jq -r '.has_webhook_validation // false' "$SCAN_JSON" 2>/dev/null || echo "unknown")
+fi
+
 # --- Header ---
 if [ "$JSON_MODE" = false ]; then
   echo -e "${BOLD}Telnyx Correctness Linter${NC}"
@@ -401,10 +407,16 @@ if product_applies "all"; then
     telnyx_webhook_parse=$(search_files "(data\.payload|data\[.payload.\]|data\.event_type|data\[.event_type.\])" "*.py" "*.js" "*.ts" "*.rb" "*.go" "*.java" "*.php")
     telnyx_parse_count=$(count_matches "$telnyx_webhook_parse")
     if [ "$telnyx_parse_count" -gt 0 ] && [ "$ed25519_count" -eq 0 ]; then
-      lint_issue "webhook_ed25519_missing" \
-        "Webhook handlers parse Telnyx payloads but no Ed25519 signature verification found" \
-        "Add Ed25519 verification using telnyx-signature-ed25519 + telnyx-timestamp headers. See webhook-migration.md" \
-        "$(matches_to_json "$telnyx_webhook_parse")"
+      if [ "$ORIGINAL_HAD_WEBHOOK_VALIDATION" = "false" ]; then
+        lint_warn "webhook_ed25519_missing" \
+          "No Ed25519 signature verification found — original code did not validate webhooks either (not a regression)" \
+          "Consider adding Ed25519 for production security, but this matches original behavior"
+      else
+        lint_issue "webhook_ed25519_missing" \
+          "Webhook handlers parse Telnyx payloads but no Ed25519 signature verification found" \
+          "Add Ed25519 verification using telnyx-signature-ed25519 + telnyx-timestamp headers. See webhook-migration.md" \
+          "$(matches_to_json "$telnyx_webhook_parse")"
+      fi
     elif [ "$ed25519_count" -gt 0 ]; then
       lint_pass "webhook_ed25519_missing" "Ed25519 webhook signature verification found"
     fi
@@ -416,7 +428,7 @@ if product_applies "all"; then
   if [ "$twilio_mw_count" -gt 0 ]; then
     lint_issue "twilio_webhook_middleware" \
       "Twilio webhook middleware/validator still present in $twilio_mw_count file(s)" \
-      "Replace twilio.webhook() with Telnyx Ed25519 verification. Do NOT just remove it — replace it." \
+      "Remove if original had validate:false (it was a no-op). Replace with Ed25519 if original actually validated." \
       "$(matches_to_json "$twilio_webhook_mw")"
   else
     lint_pass "twilio_webhook_middleware" "No Twilio webhook middleware found"
@@ -450,6 +462,32 @@ if product_applies "voice"; then
 fi
 
 # ============================================================
+# DOCUMENTATION FRESHNESS
+# ============================================================
+section_header "Documentation Updates"
+
+# Check 15: README and docs still referencing Twilio
+doc_files=""
+for f in README.md README README.rst CONTRIBUTING.md; do
+  if [ -f "$PROJECT_ROOT/$f" ]; then
+    twilio_in_doc=$(grep -in "twilio" "$PROJECT_ROOT/$f" 2>/dev/null | grep -v -iE '(migrat|port|formerly|previously|was twilio|from twilio to)' || true)
+    if [ -n "$twilio_in_doc" ]; then
+      doc_files+="$PROJECT_ROOT/$f"$'\n'
+    fi
+  fi
+done
+doc_files=$(echo "$doc_files" | sed '/^$/d')
+doc_count=$(echo "$doc_files" | sed '/^$/d' | wc -l | tr -d ' ')
+if [ "$doc_count" -gt 0 ]; then
+  lint_issue "docs_still_twilio" \
+    "Documentation files still reference Twilio (not migration-related references) in $doc_count file(s)" \
+    "Update README/docs: replace Twilio service names, env vars, setup instructions, and URLs with Telnyx equivalents" \
+    "$(echo "$doc_files" | sed '/^$/d' | head -10 | jq -R -s 'split("\n") | map(select(length > 0))' 2>/dev/null || echo "[]")"
+else
+  lint_pass "docs_still_twilio" "No Twilio references in documentation files (README, CONTRIBUTING)"
+fi
+
+# ============================================================
 # RESIDUAL TWILIO CODE
 # ============================================================
 section_header "Residual Twilio Patterns"
@@ -472,7 +510,7 @@ count=$(count_matches "$matches")
 if [ "$count" -gt 0 ]; then
   lint_issue "twilio_client_instantiation" \
     "Twilio client instantiation found in $count file(s)" \
-    "Replace with Telnyx client: telnyx.api_key = TELNYX_API_KEY (Python) or new Telnyx(apiKey) (JS)" \
+    "Replace with Telnyx client: from telnyx import Telnyx; client = Telnyx(api_key=...) (Python) or new Telnyx({ apiKey: ... }) (JS)" \
     "$(matches_to_json "$matches")"
 else
   lint_pass "twilio_client_instantiation" "No Twilio client instantiation found"

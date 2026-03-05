@@ -31,10 +31,10 @@ Telnyx Messaging is a new SDK integration, not a drop-in replacement. The core c
 
 ```bash
 # Python
-pip install telnyx
+pip install 'telnyx>=4.0,<5.0'
 
 # Node.js
-npm install telnyx
+npm install telnyx@^6
 
 # Ruby
 gem install telnyx

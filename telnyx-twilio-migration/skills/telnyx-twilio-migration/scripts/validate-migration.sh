@@ -327,8 +327,10 @@ fi
 
 # Load scan context if provided (for context-aware checks like TeXML detection)
 SCAN_PRODUCTS=""
+ORIGINAL_HAD_WEBHOOK_VALIDATION="unknown"
 if [ -n "$SCAN_JSON" ] && [ -f "$SCAN_JSON" ] && command -v jq >/dev/null 2>&1; then
   SCAN_PRODUCTS=$(jq -r '.products_used // [] | map(ascii_downcase) | join(",")' "$SCAN_JSON" 2>/dev/null || true)
+  ORIGINAL_HAD_WEBHOOK_VALIDATION=$(jq -r '.has_webhook_validation // false' "$SCAN_JSON" 2>/dev/null || echo "unknown")
 fi
 
 # Helper: returns 0 if project is TeXML/voice-only (no SDK imports expected)
@@ -538,7 +540,7 @@ if product_applies "all"; then
     if [ "$version_pinned" = true ]; then
       check_pass "telnyx_sdk_version_pinned" "Telnyx SDK version is pinned in dependency file"
     else
-      check_warn "telnyx_sdk_version_pinned" "Telnyx SDK has no version constraint — pin to a major version (e.g., telnyx>=2.0,<3.0 for Python, telnyx@^2 for Node, ~> 2.0 for Ruby) to prevent breaking changes on upgrade"
+      check_warn "telnyx_sdk_version_pinned" "Telnyx SDK has no version constraint — pin to a major version (e.g., telnyx>=4.0,<5.0 for Python, telnyx@^6 for Node, ~> 5.0 for Ruby) to prevent breaking changes on upgrade"
     fi
   fi
 fi
@@ -630,9 +632,17 @@ if product_applies "voice,messaging,verify,sip,fax"; then
     telnyx_webhook_parse=$(search_files "(data\.payload|data\[.payload.\]|event_type|data\.event_type)" "*.py" "*.js" "*.ts" "*.rb" "*.go")
     telnyx_parse_count=$(count_matches "$telnyx_webhook_parse")
     if [ "$telnyx_parse_count" -gt 0 ]; then
-      check_fail "ed25519_validation" "Webhook handlers parse Telnyx payloads but NO Ed25519 signature validation found — production webhooks are vulnerable to spoofing. Add verification using the pattern in references/webhook-migration.md"
+      if [ "$ORIGINAL_HAD_WEBHOOK_VALIDATION" = "false" ]; then
+        check_warn "ed25519_validation" "No Ed25519 webhook signature validation found — original code did not validate webhooks either (no RequestValidator/X-Twilio-Signature detected in scan). Consider adding Ed25519 for production security, but this is not a regression."
+      else
+        check_fail "ed25519_validation" "Webhook handlers parse Telnyx payloads but NO Ed25519 signature validation found — production webhooks are vulnerable to spoofing. Add verification using the pattern in references/webhook-migration.md"
+      fi
     elif [ "$webhook_count" -gt 0 ]; then
-      check_warn "ed25519_validation" "No Ed25519 webhook signature validation found — add verification for production security (see references/webhook-migration.md)"
+      if [ "$ORIGINAL_HAD_WEBHOOK_VALIDATION" = "false" ]; then
+        check_pass "ed25519_validation" "No Ed25519 webhook signature validation found — original code did not validate webhooks either (not a regression)"
+      else
+        check_warn "ed25519_validation" "No Ed25519 webhook signature validation found — add verification for production security (see references/webhook-migration.md)"
+      fi
     else
       check_pass "ed25519_validation" "No webhook handlers detected — Ed25519 validation not applicable"
     fi
