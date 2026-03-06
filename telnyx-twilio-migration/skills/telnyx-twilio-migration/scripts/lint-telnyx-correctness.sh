@@ -236,9 +236,20 @@ GREP_EXCLUDES=$(build_exclude_args)
 
 # Load scan context if provided (for context-aware checks like webhook validation)
 ORIGINAL_HAD_WEBHOOK_VALIDATION="unknown"
+SCAN_PRODUCTS=""
 if [ -n "$SCAN_JSON" ] && [ -f "$SCAN_JSON" ] && command -v jq >/dev/null 2>&1; then
   ORIGINAL_HAD_WEBHOOK_VALIDATION=$(jq -r '.has_webhook_validation // false' "$SCAN_JSON" 2>/dev/null || echo "unknown")
+  SCAN_PRODUCTS=$(jq -r '.products_used // [] | map(ascii_downcase) | join(",")' "$SCAN_JSON" 2>/dev/null || true)
 fi
+
+# Helper: returns 0 if a product was detected in the scan (or if no scan data)
+scan_has_product() {
+  local product="$1"
+  if [ -z "$SCAN_PRODUCTS" ]; then
+    return 0  # no scan data — be conservative, run the check
+  fi
+  echo "$SCAN_PRODUCTS" | tr ',' '\n' | grep -qx "$product"
+}
 
 # --- Header ---
 if [ "$JSON_MODE" = false ]; then
@@ -287,18 +298,20 @@ if product_applies "messaging"; then
     lint_pass "body_not_text" "No 'body' parameter in message send calls"
   fi
 
-  # Check 3: messaging_profile_id missing in send calls
-  telnyx_send=$(search_files '(telnyx.*message|message.*send|messages\.create)' "*.py" "*.js" "*.ts" "*.rb" "*.go")
-  send_count=$(count_matches "$telnyx_send")
-  if [ "$send_count" -gt 0 ]; then
-    profile_refs=$(search_files 'messaging_profile_id' "*.py" "*.js" "*.ts" "*.rb" "*.go")
-    profile_count=$(count_matches "$profile_refs")
-    if [ "$profile_count" -eq 0 ]; then
-      lint_warn "missing_messaging_profile_id" \
-        "Telnyx messaging calls found but no messaging_profile_id reference" \
-        "Include messaging_profile_id in send calls or set a default on the messaging profile"
-    else
-      lint_pass "missing_messaging_profile_id" "messaging_profile_id referenced in code"
+  # Check 3: messaging_profile_id missing in send calls (skip if messaging not detected in scan)
+  if scan_has_product "messaging"; then
+    telnyx_send=$(search_files '(telnyx.*message|message.*send|messages\.create)' "*.py" "*.js" "*.ts" "*.rb" "*.go")
+    send_count=$(count_matches "$telnyx_send")
+    if [ "$send_count" -gt 0 ]; then
+      profile_refs=$(search_files 'messaging_profile_id' "*.py" "*.js" "*.ts" "*.rb" "*.go")
+      profile_count=$(count_matches "$profile_refs")
+      if [ "$profile_count" -eq 0 ]; then
+        lint_warn "missing_messaging_profile_id" \
+          "Telnyx messaging calls found but no messaging_profile_id reference" \
+          "Include messaging_profile_id in send calls or set a default on the messaging profile"
+      else
+        lint_pass "missing_messaging_profile_id" "messaging_profile_id referenced in code"
+      fi
     fi
   fi
 
@@ -346,15 +359,18 @@ if product_applies "voice"; then
   fi
 
   # Check 7: Recording URL stored without download logic (10-min expiry)
-  matches=$(search_files '(recording.*url|RecordingUrl|recording_url)' "*.py" "*.js" "*.ts" "*.rb" "*.go" "*.java")
-  count=$(count_matches "$matches")
-  if [ "$count" -gt 0 ]; then
-    lint_warn "recording_url_expiry" \
-      "Recording URL references found in $count file(s)" \
-      "Telnyx recording URLs expire after 10 minutes — download immediately upon receipt" \
-      "$(matches_to_json "$matches")"
-  else
-    lint_pass "recording_url_expiry" "No recording URL references found"
+  # Skip if voice/recording not detected in scan
+  if scan_has_product "voice"; then
+    matches=$(search_files '(recording.*url|RecordingUrl|recording_url)' "*.py" "*.js" "*.ts" "*.rb" "*.go" "*.java")
+    count=$(count_matches "$matches")
+    if [ "$count" -gt 0 ]; then
+      lint_warn "recording_url_expiry" \
+        "Recording URL references found in $count file(s)" \
+        "Telnyx recording URLs expire after 10 minutes — download immediately upon receipt" \
+        "$(matches_to_json "$matches")"
+    else
+      lint_pass "recording_url_expiry" "No recording URL references found"
+    fi
   fi
 fi
 
@@ -376,18 +392,20 @@ if product_applies "verify"; then
     lint_pass "verify_status_approved" "No Twilio Verify 'approved' status check found"
   fi
 
-  # Check 9: verify_profile_id missing
-  telnyx_verify=$(search_files '(telnyx.*verif|verif.*telnyx|verify_profile|verification)' "*.py" "*.js" "*.ts" "*.rb" "*.go")
-  verify_count=$(count_matches "$telnyx_verify")
-  if [ "$verify_count" -gt 0 ]; then
-    profile_refs=$(search_files 'verify_profile_id' "*.py" "*.js" "*.ts" "*.rb" "*.go")
-    profile_count=$(count_matches "$profile_refs")
-    if [ "$profile_count" -eq 0 ]; then
-      lint_warn "missing_verify_profile_id" \
-        "Telnyx verify calls found but no verify_profile_id reference" \
-        "Include verify_profile_id in verification requests"
-    else
-      lint_pass "missing_verify_profile_id" "verify_profile_id referenced in code"
+  # Check 9: verify_profile_id missing (skip if verify not detected in scan)
+  if scan_has_product "verify"; then
+    telnyx_verify=$(search_files '(telnyx.*verif|verif.*telnyx|verify_profile|verification)' "*.py" "*.js" "*.ts" "*.rb" "*.go")
+    verify_count=$(count_matches "$telnyx_verify")
+    if [ "$verify_count" -gt 0 ]; then
+      profile_refs=$(search_files 'verify_profile_id' "*.py" "*.js" "*.ts" "*.rb" "*.go")
+      profile_count=$(count_matches "$profile_refs")
+      if [ "$profile_count" -eq 0 ]; then
+        lint_warn "missing_verify_profile_id" \
+          "Telnyx verify calls found but no verify_profile_id reference" \
+          "Include verify_profile_id in verification requests"
+      else
+        lint_pass "missing_verify_profile_id" "verify_profile_id referenced in code"
+      fi
     fi
   fi
 fi
@@ -423,7 +441,8 @@ if product_applies "all"; then
   fi
 
   # Check 13: twilio.webhook() middleware still present (must be replaced, not just removed)
-  twilio_webhook_mw=$(search_files "(twilio\.webhook\(|@validate_twilio_request|RequestValidator|validateRequest)" "*.py" "*.js" "*.ts" "*.rb")
+  # Use specific Twilio patterns to avoid false positives from generic validateRequest functions
+  twilio_webhook_mw=$(search_files "(twilio\.webhook\(|@validate_twilio_request|RequestValidator\(|twilio.*validateRequest|validateExpressRequest)" "*.py" "*.js" "*.ts" "*.rb")
   twilio_mw_count=$(count_matches "$twilio_webhook_mw")
   if [ "$twilio_mw_count" -gt 0 ]; then
     lint_issue "twilio_webhook_middleware" \

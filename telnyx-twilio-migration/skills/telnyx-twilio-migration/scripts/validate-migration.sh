@@ -492,20 +492,26 @@ section_header "Telnyx SDK Present"
 # --- Check 6: Telnyx SDK in dependency files ---
 if product_applies "all"; then
   dep_matches=""
-  # Python
-  dep_matches+=$(grep -rn $GREP_EXCLUDES -l "telnyx" "$PROJECT_ROOT"/{requirements.txt,setup.py,setup.cfg,pyproject.toml,Pipfile} 2>/dev/null || true)
-  # Node
-  dep_matches+=$(grep -rn $GREP_EXCLUDES -l '"telnyx"' "$PROJECT_ROOT"/package.json 2>/dev/null || true)
+  # Python (root + subdirectories)
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 \( -name requirements.txt -o -name setup.py -o -name setup.cfg -o -name pyproject.toml -o -name Pipfile \) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/vendor/*" -exec grep -l "telnyx" {} \; 2>/dev/null || true)
+  # Node (root + subdirectories)
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name package.json -not -path "*/node_modules/*" -not -path "*/.git/*" -exec grep -l '"telnyx"\|"@telnyx/' {} \; 2>/dev/null || true)
   # Ruby
-  dep_matches+=$(grep -rn $GREP_EXCLUDES -l "telnyx" "$PROJECT_ROOT"/Gemfile 2>/dev/null || true)
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name Gemfile -not -path "*/vendor/*" -exec grep -l "telnyx" {} \; 2>/dev/null || true)
   # Go
   dep_matches+=$(grep -rn $GREP_EXCLUDES -l "telnyx" "$PROJECT_ROOT"/go.mod 2>/dev/null || true)
-  # Java
-  dep_matches+=$(grep -rn $GREP_EXCLUDES -l "telnyx" "$PROJECT_ROOT"/{pom.xml,build.gradle,build.gradle.kts} 2>/dev/null || true)
+  # Java/Kotlin (build.gradle, build.gradle.kts, pom.xml, libs.versions.toml)
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 4 \( -name pom.xml -o -name build.gradle -o -name build.gradle.kts -o -name "libs.versions.toml" \) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/build/*" -exec grep -l "telnyx" {} \; 2>/dev/null || true)
+  # iOS (Swift Package Manager — project.pbxproj, Package.swift)
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 4 \( -name "project.pbxproj" -o -name "Package.swift" \) -not -path "*/.git/*" -exec grep -l -i "telnyx" {} \; 2>/dev/null || true)
   # PHP
   dep_matches+=$(grep -rn $GREP_EXCLUDES -l "telnyx" "$PROJECT_ROOT"/composer.json 2>/dev/null || true)
   # C#
-  dep_matches+=$(grep -rn $GREP_EXCLUDES -l "Telnyx" "$PROJECT_ROOT"/*.csproj 2>/dev/null || true)
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name "*.csproj" -exec grep -l "Telnyx" {} \; 2>/dev/null || true)
+  # Flutter
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name pubspec.yaml -exec grep -l "telnyx" {} \; 2>/dev/null || true)
+  # CocoaPods
+  dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name Podfile -exec grep -l -i "telnyx" {} \; 2>/dev/null || true)
 
   dep_matches=$(echo "$dep_matches" | sed '/^$/d')
   count=$(count_matches "$dep_matches")
@@ -514,7 +520,15 @@ if product_applies "all"; then
   elif is_texml_only; then
     check_pass "telnyx_sdk_dependency" "No Telnyx SDK in dependencies (expected for TeXML/voice-only apps)"
   else
-    check_fail "telnyx_sdk_dependency" "Telnyx SDK not found in any dependency file (requirements.txt, package.json, Gemfile, etc.)"
+    # Before failing, check if Telnyx imports exist in source — if so, SDK is present
+    # but in a dependency file we don't recognize (e.g., monorepo, custom build system)
+    source_imports=$(search_files "(import telnyx|from telnyx|require.*telnyx|use Telnyx|using Telnyx|github\.com/telnyx|@telnyx/|com\.telnyx\.|TelnyxRTC|TelnyxClient)")
+    source_count=$(count_matches "$source_imports")
+    if [ "$source_count" -gt 0 ]; then
+      check_warn "telnyx_sdk_dependency" "Telnyx SDK not found in standard dependency files, but Telnyx imports found in $source_count source file(s) — likely using a non-standard dependency manager"
+    else
+      check_fail "telnyx_sdk_dependency" "Telnyx SDK not found in any dependency file (requirements.txt, package.json, Gemfile, build.gradle, project.pbxproj, etc.)"
+    fi
   fi
 
   # --- Check 6a: Telnyx SDK version pinning ---
@@ -548,16 +562,16 @@ fi
 # --- Check 6b: Telnyx mobile SDK in dependency files ---
 if product_applies "webrtc"; then
   mobile_dep_matches=""
-  # iOS (Swift/CocoaPods)
-  mobile_dep_matches+=$(grep -rn "TelnyxRTC\|TelnyxVideo\|telnyx" "$PROJECT_ROOT"/Podfile 2>/dev/null || true)
-  # iOS (Swift Package Manager)
-  mobile_dep_matches+=$(grep -rn "telnyx" "$PROJECT_ROOT"/Package.swift 2>/dev/null || true)
-  # Android (Kotlin/Java)
-  mobile_dep_matches+=$(grep -rn "com\.telnyx\.\|telnyx" "$PROJECT_ROOT"/{build.gradle,build.gradle.kts,app/build.gradle,app/build.gradle.kts} 2>/dev/null || true)
+  # iOS (CocoaPods)
+  mobile_dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name Podfile -exec grep -l -i "TelnyxRTC\|TelnyxVideo\|telnyx" {} \; 2>/dev/null || true)
+  # iOS (Swift Package Manager — Package.swift and project.pbxproj)
+  mobile_dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 4 \( -name "Package.swift" -o -name "project.pbxproj" \) -not -path "*/.git/*" -exec grep -l -i "telnyx" {} \; 2>/dev/null || true)
+  # Android (Kotlin/Java — build.gradle, build.gradle.kts, libs.versions.toml)
+  mobile_dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 4 \( -name "build.gradle" -o -name "build.gradle.kts" -o -name "libs.versions.toml" \) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/build/*" -exec grep -l -i "telnyx" {} \; 2>/dev/null || true)
   # React Native
-  mobile_dep_matches+=$(grep -rn "@telnyx/react-native\|@telnyx/webrtc" "$PROJECT_ROOT"/package.json 2>/dev/null || true)
+  mobile_dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name package.json -not -path "*/node_modules/*" -exec grep -l "@telnyx/react-native\|@telnyx/webrtc" {} \; 2>/dev/null || true)
   # Flutter (Dart)
-  mobile_dep_matches+=$(grep -rn "telnyx_webrtc\|telnyx" "$PROJECT_ROOT"/pubspec.yaml 2>/dev/null || true)
+  mobile_dep_matches+=$(find "$PROJECT_ROOT" -maxdepth 3 -name pubspec.yaml -exec grep -l "telnyx" {} \; 2>/dev/null || true)
 
   mobile_dep_matches=$(echo "$mobile_dep_matches" | sed '/^$/d')
   count=$(count_matches "$mobile_dep_matches")
