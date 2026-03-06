@@ -263,70 +263,100 @@ fi
 echo ""
 echo -e "${BOLD}8. Agent behavior signals${NC}"
 
-DEFERRED_ITEMS="" COMPACTION_COUNT=0 MANUAL_STEPS=""
+TOTAL_MESSAGES=0 TOTAL_TOOL_CALLS=0 DEFERRED_COUNT=0
 
-# Auto-detect Claude Code JSONL transcript if no agent output specified
+# List available transcripts if none specified
 if [ -z "$AGENT_OUTPUT" ]; then
   CLAUDE_PROJECT_DIR="$HOME/.claude/projects"
   if [ -d "$CLAUDE_PROJECT_DIR" ]; then
-    # Find the most recent JSONL transcript
-    LATEST_JSONL=$(find "$CLAUDE_PROJECT_DIR" -name "*.jsonl" -type f -newer "$PROJECT_ROOT" 2>/dev/null | head -1 || true)
-    if [ -z "$LATEST_JSONL" ]; then
-      LATEST_JSONL=$(find "$CLAUDE_PROJECT_DIR" -name "*.jsonl" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -1 || true)
-    fi
-    if [ -n "$LATEST_JSONL" ]; then
-      echo "  Auto-detected Claude Code transcript: $(basename "$LATEST_JSONL")"
-      AGENT_OUTPUT="$LATEST_JSONL"
+    RECENT_JSONLS=$(find "$CLAUDE_PROJECT_DIR" -maxdepth 2 -name "*.jsonl" -not -path "*/subagents/*" -type f 2>/dev/null | xargs ls -t 2>/dev/null | head -5 || true)
+    if [ -n "$RECENT_JSONLS" ]; then
+      echo "  No --agent-output specified. Recent transcripts:"
+      echo "$RECENT_JSONLS" | while IFS= read -r f; do
+        SIZE=$(wc -l < "$f" 2>/dev/null | tr -d ' ')
+        MOD=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" "$f" 2>/dev/null || stat -c "%y" "$f" 2>/dev/null | cut -d. -f1 || echo "?")
+        echo "    $f  ($SIZE lines, $MOD)"
+      done
+      echo ""
+      echo "  Re-run with: --agent-output <path-to-jsonl>"
     fi
   fi
 fi
 
+AGENT_ANALYSIS_FILE=$(mktemp)
 if [ -n "$AGENT_OUTPUT" ] && [ -f "$AGENT_OUTPUT" ]; then
   echo "  Analyzing: $(basename "$AGENT_OUTPUT")"
 
-  # Handle JSONL (Claude Code transcripts) — extract text content
-  AGENT_TEXT=""
-  if echo "$AGENT_OUTPUT" | grep -q '\.jsonl$'; then
-    AGENT_TEXT=$(python3 -c "
-import json, sys
-for line in open('$AGENT_OUTPUT'):
-    try:
-        msg = json.loads(line)
-        # Extract assistant message text
-        if msg.get('type') == 'assistant':
-            for block in msg.get('message', {}).get('content', []):
-                if isinstance(block, dict) and block.get('type') == 'text':
-                    print(block['text'])
-                elif isinstance(block, str):
-                    print(block)
-    except: pass
-" 2>/dev/null || echo "")
-  else
-    AGENT_TEXT=$(cat "$AGENT_OUTPUT" 2>/dev/null || echo "")
-  fi
+  python3 - "$AGENT_OUTPUT" "$AGENT_ANALYSIS_FILE" << 'PYEOF'
+import json, sys, re, os
 
-  if [ -n "$AGENT_TEXT" ]; then
-    # Count compaction events
-    COMPACTION_COUNT=$(echo "$AGENT_TEXT" | grep -c -i "compacting\|conversation was compressed\|context.*compact\|context recovery" 2>/dev/null || echo "0")
-    echo "  Compaction events: $COMPACTION_COUNT"
+transcript_path = sys.argv[1]
+output_file = sys.argv[2]
 
-    # Find deferred/skipped items
-    DEFERRED_ITEMS=$(echo "$AGENT_TEXT" | grep -i "manual.*step\|remaining.*step\|defer\|skip\|TODO.*manual\|left as.*exercise\|out of scope" 2>/dev/null | head -20 || true)
-    DEFERRED_COUNT=$(echo "$DEFERRED_ITEMS" | sed '/^$/d' | wc -l | tr -d ' ')
+total_messages = 0
+total_tool_calls = 0
+deferred_lines = []
+texts = []
+
+if transcript_path.endswith('.jsonl'):
+    for line in open(transcript_path):
+        try:
+            msg = json.loads(line)
+            if msg.get('type') == 'assistant':
+                total_messages += 1
+                for block in msg.get('message', {}).get('content', []):
+                    if isinstance(block, dict):
+                        if block.get('type') == 'text':
+                            texts.append(block['text'])
+                        elif block.get('type') == 'tool_use':
+                            total_tool_calls += 1
+        except:
+            pass
+else:
+    texts = [open(transcript_path).read()]
+
+defer_pattern = re.compile(
+    r'.*(manual.{0,20}step|remaining.{0,20}step|defer(?:red|ring)|TODO.{0,10}manual|left as.{0,20}exercise|out of scope).*',
+    re.IGNORECASE
+)
+for text in texts:
+    for line in text.split('\n'):
+        stripped = line.strip()
+        if stripped and defer_pattern.match(stripped):
+            if not stripped.startswith(('#', '//', '```', '*', '-')):
+                deferred_lines.append(stripped)
+
+result = {
+    'total_messages': total_messages,
+    'total_tool_calls': total_tool_calls,
+    'deferred_count': len(deferred_lines),
+    'deferred_items': deferred_lines[:20],
+}
+
+with open(output_file, 'w') as f:
+    json.dump(result, f)
+PYEOF
+
+  if [ -f "$AGENT_ANALYSIS_FILE" ]; then
+    TOTAL_MESSAGES=$(python3 -c "import json; print(json.load(open('$AGENT_ANALYSIS_FILE')).get('total_messages',0))" 2>/dev/null || echo "0")
+    TOTAL_TOOL_CALLS=$(python3 -c "import json; print(json.load(open('$AGENT_ANALYSIS_FILE')).get('total_tool_calls',0))" 2>/dev/null || echo "0")
+    DEFERRED_COUNT=$(python3 -c "import json; print(json.load(open('$AGENT_ANALYSIS_FILE')).get('deferred_count',0))" 2>/dev/null || echo "0")
+
+    echo "  Agent messages: $TOTAL_MESSAGES"
+    echo "  Tool calls: $TOTAL_TOOL_CALLS"
+
     if [ "$DEFERRED_COUNT" -gt 0 ]; then
-      echo -e "  ${YELLOW}WARN${NC}  Agent deferred $DEFERRED_COUNT item(s) — check if these should have been migrated"
+      echo -e "  ${YELLOW}WARN${NC}  Agent deferred $DEFERRED_COUNT item(s) — check if these should have been migrated:"
+      python3 -c "
+import json
+for item in json.load(open('$AGENT_ANALYSIS_FILE')).get('deferred_items',[])[:5]:
+    print(f'    {item}')
+" 2>/dev/null || true
     else
       echo -e "  ${GREEN}PASS${NC}  No deferred items detected"
     fi
-
-    # Find errors/failures
-    ERROR_LINES=$(echo "$AGENT_TEXT" | grep -i "error\|fail\|exception\|could not\|unable to" 2>/dev/null | grep -v "test.*pass\|PASS\|success\|SKILL-DIAGNOSTIC\|exit code" | head -10 || true)
-    ERROR_COUNT=$(echo "$ERROR_LINES" | sed '/^$/d' | wc -l | tr -d ' ')
-    if [ "$ERROR_COUNT" -gt 0 ]; then
-      echo -e "  ${YELLOW}WARN${NC}  $ERROR_COUNT potential error(s) in agent output"
-    fi
   else
-    echo "  (could not extract text from agent output)"
+    echo "  (could not analyze transcript)"
   fi
 else
   echo "  No agent output found"
@@ -356,55 +386,107 @@ echo -e "${BOLD}Writing diagnostic report...${NC}"
 
 OUTPUT_FILE="$PROJECT_ROOT/SKILL-DIAGNOSTIC.json"
 
-python3 -c "
+# Write all data to temp files, then let python assemble the JSON safely
+SRC_TWILIO_FILE=$(mktemp)
+TEST_TWILIO_FILE=$(mktemp)
+TWILIO_DIRS_FILE=$(mktemp)
+LINT_FILE=$(mktemp)
+VALIDATE_FILE=$(mktemp)
+
+echo "$SRC_TWILIO" | sed '/^$/d' > "$SRC_TWILIO_FILE"
+echo "$TEST_TWILIO" | sed '/^$/d' > "$TEST_TWILIO_FILE"
+echo "$TWILIO_DIRS" | sed '/^$/d' | sed "s|$PROJECT_ROOT/||g" > "$TWILIO_DIRS_FILE"
+echo "$LINT_JSON" > "$LINT_FILE"
+echo "$VALIDATE_JSON" > "$VALIDATE_FILE"
+
+python3 - "$OUTPUT_FILE" "$PROJECT_ROOT" "$LANGUAGES" \
+  "$TOTAL_FILES" "$TWILIO_FILE_COUNT" "$SRC_COUNT" "$TEST_COUNT" "$DOC_COUNT" "$CONFIG_COUNT" \
+  "$TWILIO_DIR_COUNT" "$TELNYX_FILE_COUNT" \
+  "$TOTAL_MESSAGES" "$TOTAL_TOOL_CALLS" "$DEFERRED_COUNT" \
+  "$SRC_TWILIO_FILE" "$TEST_TWILIO_FILE" "$TWILIO_DIRS_FILE" \
+  "$LINT_FILE" "$VALIDATE_FILE" "$AGENT_ANALYSIS_FILE" << 'PYEOF'
 import json, sys
+
+args = sys.argv[1:]
+output_file = args[0]
+project_root = args[1]
+
+def read_lines(path):
+    try:
+        return [l.strip() for l in open(path) if l.strip()]
+    except:
+        return []
+
+def read_json(path):
+    try:
+        content = open(path).read().strip()
+        if content:
+            return json.loads(content)
+    except:
+        pass
+    return None
+
+def safe_int(val):
+    try:
+        return int(val)
+    except:
+        return 0
 
 report = {
     'version': '1.0',
-    'project_root': '$PROJECT_ROOT',
-    'languages': '${LANGUAGES}'.split(),
-    'total_files': $TOTAL_FILES,
+    'project_root': project_root,
+    'languages': args[2].split(),
+    'total_files': safe_int(args[3]),
     'residual_twilio': {
-        'total': $TWILIO_FILE_COUNT,
-        'source': $SRC_COUNT,
-        'test': $TEST_COUNT,
-        'docs': $DOC_COUNT,
-        'config': $CONFIG_COUNT,
-        'source_files': [f for f in '''$(echo "$SRC_TWILIO")'''.strip().split('\n') if f],
-        'test_files': [f for f in '''$(echo "$TEST_TWILIO")'''.strip().split('\n') if f],
+        'total': safe_int(args[4]),
+        'source': safe_int(args[5]),
+        'test': safe_int(args[6]),
+        'docs': safe_int(args[7]),
+        'config': safe_int(args[8]),
+        'source_files': read_lines(args[14]),
+        'test_files': read_lines(args[15]),
     },
     'twilio_directories': {
-        'count': $TWILIO_DIR_COUNT,
-        'paths': [d.replace('$PROJECT_ROOT/', '') for d in '''$(echo "$TWILIO_DIRS")'''.strip().split('\n') if d],
+        'count': safe_int(args[9]),
+        'paths': read_lines(args[16]),
     },
     'telnyx_adoption': {
-        'files_with_telnyx': $TELNYX_FILE_COUNT,
+        'files_with_telnyx': safe_int(args[10]),
     },
-    'compaction_events': $COMPACTION_COUNT,
-    'agent_deferred_items': [d for d in '''$(echo "$DEFERRED_ITEMS")'''.strip().split('\n') if d],
+    'agent': {
+        'messages': safe_int(args[11]),
+        'tool_calls': safe_int(args[12]),
+        'deferred_count': safe_int(args[13]),
+    },
 }
 
-# Add lint results if available
-lint_json = '''$(echo "$LINT_JSON" | sed "s/'/\\\\'/g")'''
-if lint_json.strip():
-    try:
-        report['lint'] = json.loads(lint_json)
-    except:
-        pass
+# Add agent deferred items
+agent_data = read_json(args[19])
+if agent_data:
+    report['agent']['deferred_items'] = agent_data.get('deferred_items', [])
 
-# Add validate results if available
-validate_json = '''$(echo "$VALIDATE_JSON" | sed "s/'/\\\\'/g")'''
-if validate_json.strip():
-    try:
-        report['validate'] = json.loads(validate_json)
-    except:
-        pass
+# Add lint results
+lint_data = read_json(args[17])
+if lint_data:
+    report['lint'] = lint_data
 
-with open('$OUTPUT_FILE', 'w') as f:
+# Add validate results
+validate_data = read_json(args[18])
+if validate_data:
+    report['validate'] = validate_data
+
+with open(output_file, 'w') as f:
     json.dump(report, f, indent=2)
 
-print(f'  Written to: $OUTPUT_FILE')
-" 2>/dev/null || echo "  (failed to write JSON — check python3)"
+print(f'  Written to: {output_file}')
+PYEOF
+
+WRITE_OK=$?
+rm -f "$SRC_TWILIO_FILE" "$TEST_TWILIO_FILE" "$TWILIO_DIRS_FILE" "$LINT_FILE" "$VALIDATE_FILE" "$AGENT_ANALYSIS_FILE" 2>/dev/null
+
+if [ "$WRITE_OK" -ne 0 ]; then
+  echo "  (failed to write JSON — check python3)"
+fi
 
 # --- Summary ---
 echo ""
@@ -415,7 +497,7 @@ TOTAL_ISSUES=0
 [ "$TEST_COUNT" -gt 0 ] && echo -e "  ${RED}!!${NC}  $TEST_COUNT test files still reference Twilio" && TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
 [ "$TWILIO_DIR_COUNT" -gt 0 ] && echo -e "  ${RED}!!${NC}  $TWILIO_DIR_COUNT directories still named with 'twilio'" && TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
 [ "$TELNYX_FILE_COUNT" -eq 0 ] && echo -e "  ${RED}!!${NC}  No Telnyx references found at all" && TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
-[ "$COMPACTION_COUNT" -gt 0 ] && echo -e "  ${YELLOW}!!${NC}  $COMPACTION_COUNT compaction event(s) — agent may have lost context" && TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
+[ "$DEFERRED_COUNT" -gt 0 ] && echo -e "  ${YELLOW}!!${NC}  Agent deferred $DEFERRED_COUNT item(s)" && TOTAL_ISSUES=$((TOTAL_ISSUES + 1))
 
 if [ "$TOTAL_ISSUES" -eq 0 ]; then
   echo -e "  ${GREEN}All clear${NC} — no obvious skill issues detected"
