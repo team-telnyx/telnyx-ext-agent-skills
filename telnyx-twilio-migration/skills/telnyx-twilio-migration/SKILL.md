@@ -266,7 +266,7 @@ Process each product area in priority order: **messaging → voice → verify �
 
 **After all source files in the product area:**
 
-7. **Migrate tests**: If the project has unit/integration tests referencing Twilio for this product, migrate them now (update imports, mock payloads, assertions). Run the test suite to confirm.
+7. **Migrate tests**: Find ALL test files for this product — `grep -rl -i "twilio\|TwilioVoice\|TwilioClient\|twilio_" *test* *Test* *spec* *Spec* 2>/dev/null`. Migrate every one: update imports, mock objects, mock payloads, assertions, and type references. Do NOT defer test files as "remaining manual steps" — they are part of the migration. Run the test suite to confirm.
 8. **Lint**: `bash {baseDir}/scripts/lint-telnyx-correctness.sh <project-root> --product {product}` — catches common anti-patterns (wrong method names, wrong parameter names, missing profile IDs). Fix all ISSUE items before proceeding.
 9. **Validate**: `bash {baseDir}/scripts/validate-migration.sh <project-root> --product {product} --scan-json <project-root>/twilio-scan.json`
 10. **Fix** any validation failures or lint issues, re-run until both exit code 0
