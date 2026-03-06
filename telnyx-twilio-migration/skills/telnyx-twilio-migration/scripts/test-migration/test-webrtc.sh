@@ -176,15 +176,22 @@ for conn in data.get('data', []):
   else
     echo -e "  ${BLUE}INFO${NC}  No WebRTC-enabled credential connection found — creating one..."
 
+    # Generate a random username/password for the credential connection
+    RAND_SUFFIX=$(date +%s | tail -c 6)
+    CONN_USER="migtest${RAND_SUFFIX}"
+    CONN_PASS="MigTest_${RAND_SUFFIX}_$(head -c 8 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+
     CREATE_RESPONSE=$(curl -s -X POST \
       -H "Authorization: Bearer ${TELNYX_API_KEY}" \
       -H "Content-Type: application/json" \
-      -d '{
-        "connection_name": "migration-test-webrtc",
-        "active": true,
-        "webrtc_enabled": true,
-        "anchorsite_override": "Latency"
-      }' \
+      -d "{
+        \"connection_name\": \"migration-test-webrtc\",
+        \"user_name\": \"${CONN_USER}\",
+        \"password\": \"${CONN_PASS}\",
+        \"active\": true,
+        \"webrtc_enabled\": true,
+        \"anchorsite_override\": \"Latency\"
+      }" \
       "https://api.telnyx.com/v2/credential_connections" 2>/dev/null || echo "")
 
     if [ -z "$CREATE_RESPONSE" ]; then
