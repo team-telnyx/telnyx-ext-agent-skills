@@ -817,29 +817,13 @@ Generate and fetch speech to text usage report synchronously. This endpoint will
 
 Returns: `data` (object)
 
-## Speech to text over WebSocket
-
-Open a WebSocket connection to stream audio and receive transcriptions in real-time. Authentication is provided via the standard `Authorization: Bearer <API_KEY>` header. Supported engines: `Azure`, `Deepgram`, `Google`, `Telnyx`.
-
-`GET /speech-to-text/transcription`
-
-```go
-	err := client.SpeechToText.Transcribe(context.TODO(), telnyx.SpeechToTextTranscribeParams{
-		InputFormat:         telnyx.SpeechToTextTranscribeParamsInputFormatMP3,
-		TranscriptionEngine: telnyx.SpeechToTextTranscribeParamsTranscriptionEngineAzure,
-	})
-	if err != nil {
-		panic(err.Error())
-	}
-```
-
 ## Generate speech from text
 
 Generate synthesized speech audio from text input. Returns audio in the requested format (binary audio stream, base64-encoded JSON, or an audio URL for later retrieval). Authentication is provided via the standard `Authorization: Bearer <API_KEY>` header.
 
 `POST /text-to-speech/speech`
 
-Optional: `aws` (object), `azure` (object), `disable_cache` (boolean), `elevenlabs` (object), `language` (string), `minimax` (object), `output_type` (enum: binary_output, base64_output), `provider` (enum: aws, telnyx, azure, elevenlabs, minimax, rime, resemble), `resemble` (object), `rime` (object), `telnyx` (object), `text` (string), `text_type` (enum: text, ssml), `voice` (string), `voice_settings` (object)
+Optional: `aws` (object), `azure` (object), `disable_cache` (boolean), `elevenlabs` (object), `inworld` (object), `language` (string), `minimax` (object), `output_type` (enum: binary_output, base64_output), `provider` (enum: aws, telnyx, azure, elevenlabs, minimax, rime, resemble, inworld), `resemble` (object), `rime` (object), `telnyx` (object), `text` (string), `text_type` (enum: text, ssml), `voice` (string), `voice_settings` (object)
 
 ```go
 	response, err := client.TextToSpeech.Generate(context.TODO(), telnyx.TextToSpeechGenerateParams{})

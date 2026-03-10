@@ -50,7 +50,7 @@ curl \
   "https://api.telnyx.com/v2/messages/rcs"
 ```
 
-Returns: `body` (object), `direction` (string), `encoding` (string), `from` (object), `id` (string), `messaging_profile_id` (string), `organization_id` (string), `received_at` (date-time), `record_type` (string), `to` (array[object]), `type` (string)
+Returns: `body` (object), `direction` (string), `encoding` (string), `from` (object), `id` (string), `messaging_profile_id` (string), `organization_id` (string), `received_at` (date-time), `record_type` (string), `to` (array[object]), `type` (string), `wait_seconds` (float)
 
 ## Generate RCS deeplink
 
@@ -277,7 +277,7 @@ curl \
   "https://api.telnyx.com/v2/messaging_hosted_number_orders/{id}/verification_codes"
 ```
 
-Returns: `error` (string), `phone_number` (string), `type` (enum: sms, call, flashcall), `verification_code_id` (uuid)
+Returns: `error` (string), `phone_number` (string), `type` (enum: sms, call), `verification_code_id` (uuid)
 
 ## Delete a messaging hosted number
 

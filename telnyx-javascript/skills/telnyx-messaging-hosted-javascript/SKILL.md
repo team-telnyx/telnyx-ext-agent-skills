@@ -50,7 +50,7 @@ const response = await client.messages.rcs.send({
 console.log(response.data);
 ```
 
-Returns: `body` (object), `direction` (string), `encoding` (string), `from` (object), `id` (string), `messaging_profile_id` (string), `organization_id` (string), `received_at` (date-time), `record_type` (string), `to` (array[object]), `type` (string)
+Returns: `body` (object), `direction` (string), `encoding` (string), `from` (object), `id` (string), `messaging_profile_id` (string), `organization_id` (string), `received_at` (date-time), `record_type` (string), `to` (array[object]), `type` (string), `wait_seconds` (float)
 
 ## Generate RCS deeplink
 
@@ -258,7 +258,7 @@ const response = await client.messagingHostedNumberOrders.createVerificationCode
 console.log(response.data);
 ```
 
-Returns: `error` (string), `phone_number` (string), `type` (enum: sms, call, flashcall), `verification_code_id` (uuid)
+Returns: `error` (string), `phone_number` (string), `type` (enum: sms, call), `verification_code_id` (uuid)
 
 ## Delete a messaging hosted number
 
