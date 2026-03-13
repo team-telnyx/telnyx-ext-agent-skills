@@ -86,7 +86,7 @@
 | `p2p` | boolean |
 | `phone_number_type` | array[string] |
 | `quickship` | boolean |
-| `region` | string | null |
+| `region` | string \| null |
 | `reservable` | boolean |
 | `shared_cost` | object |
 | `toll_free` | object |
@@ -96,11 +96,11 @@
 | Field | Type |
 |-------|------|
 | `created_at` | date-time |
-| `error_message` | string | null |
+| `error_message` | string \| null |
 | `id` | uuid |
 | `phone_number` | string |
 | `record_type` | string |
-| `result` | object | null |
+| `result` | object \| null |
 | `status` | enum: pending, completed, failed |
 | `updated_at` | date-time |
 | `webhook_url` | string |

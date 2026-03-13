@@ -204,7 +204,7 @@ These webhook payload fields are inline because they are part of the primary int
 | `data.payload.text` | string | Message body (i.e., content) as a non-empty string. |
 | `data.payload.sent_at` | date-time | ISO 8601 formatted date indicating when the message was sent. |
 | `data.payload.completed_at` | date-time | ISO 8601 formatted date indicating when the message was finalized. |
-| `data.payload.cost` | object | null |  |
+| `data.payload.cost` | object \| null |  |
 | `data.payload.errors` | array[object] | These errors may point at addressees when referring to unsuccessful/unconfirm... |
 
 ### Inbound Message

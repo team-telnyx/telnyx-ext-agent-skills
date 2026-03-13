@@ -27,8 +27,8 @@
 |-------|------|
 | `cc` | array[object] |
 | `completed_at` | date-time |
-| `cost` | object | null |
-| `cost_breakdown` | object | null |
+| `cost` | object \| null |
+| `cost_breakdown` | object \| null |
 | `direction` | enum: outbound |
 | `encoding` | string |
 | `errors` | array[object] |
@@ -42,11 +42,11 @@
 | `record_type` | enum: message |
 | `sent_at` | date-time |
 | `smart_encoding_applied` | boolean |
-| `subject` | string | null |
+| `subject` | string \| null |
 | `tags` | array[string] |
 | `tcr_campaign_billable` | boolean |
-| `tcr_campaign_id` | string | null |
-| `tcr_campaign_registered` | string | null |
+| `tcr_campaign_id` | string \| null |
+| `tcr_campaign_registered` | string \| null |
 | `text` | string |
 | `to` | array[object] |
 | `type` | enum: SMS, MMS |
@@ -84,8 +84,8 @@
 |-------|------|
 | `cc` | array[object] |
 | `completed_at` | date-time |
-| `cost` | object | null |
-| `cost_breakdown` | object | null |
+| `cost` | object \| null |
+| `cost_breakdown` | object \| null |
 | `direction` | enum: outbound |
 | `encoding` | string |
 | `errors` | array[object] |
@@ -99,11 +99,11 @@
 | `record_type` | enum: message |
 | `sent_at` | date-time |
 | `smart_encoding_applied` | boolean |
-| `subject` | string | null |
+| `subject` | string \| null |
 | `tags` | array[string] |
 | `tcr_campaign_billable` | boolean |
-| `tcr_campaign_id` | string | null |
-| `tcr_campaign_registered` | string | null |
+| `tcr_campaign_id` | string \| null |
+| `tcr_campaign_registered` | string \| null |
 | `text` | string |
 | `to` | array[object] |
 | `type` | enum: SMS, MMS |
@@ -122,7 +122,7 @@
 | `health` | object |
 | `id` | string |
 | `messaging_product` | string |
-| `messaging_profile_id` | string | null |
+| `messaging_profile_id` | string \| null |
 | `organization_id` | string |
 | `phone_number` | string |
 | `record_type` | enum: messaging_phone_number, messaging_settings |
@@ -137,8 +137,8 @@
 |-------|------|
 | `created_at` | date-time |
 | `from` | string |
-| `keyword` | string | null |
-| `messaging_profile_id` | string | null |
+| `keyword` | string \| null |
+| `messaging_profile_id` | string \| null |
 | `to` | string |
 
 **Returned by:** List high-level messaging profile metrics
@@ -152,8 +152,8 @@
 
 | Field | Type |
 |-------|------|
-| `ai_assistant_id` | string | null |
-| `alpha_sender` | string | null |
+| `ai_assistant_id` | string \| null |
+| `alpha_sender` | string \| null |
 | `created_at` | date-time |
 | `daily_spend_limit` | string |
 | `daily_spend_limit_enabled` | boolean |
@@ -164,15 +164,15 @@
 | `mms_transcoding` | boolean |
 | `mobile_only` | boolean |
 | `name` | string |
-| `number_pool_settings` | object | null |
+| `number_pool_settings` | object \| null |
 | `organization_id` | string |
 | `record_type` | enum: messaging_profile |
 | `redaction_enabled` | boolean |
 | `redaction_level` | integer |
-| `resource_group_id` | string | null |
+| `resource_group_id` | string \| null |
 | `smart_encoding` | boolean |
 | `updated_at` | date-time |
-| `url_shortener_settings` | object | null |
+| `url_shortener_settings` | object \| null |
 | `v1_secret` | string |
 | `webhook_api_version` | enum: 1, 2, 2010-04-01 |
 | `webhook_failover_url` | url |
@@ -343,18 +343,18 @@
 | `data.payload.to` | array[object] |  |
 | `data.payload.cc` | array[object] |  |
 | `data.payload.text` | string | Message body (i.e., content) as a non-empty string. |
-| `data.payload.subject` | string | null | Subject of multimedia message |
+| `data.payload.subject` | string \| null | Subject of multimedia message |
 | `data.payload.media` | array[object] |  |
 | `data.payload.webhook_url` | url | The URL where webhooks related to this message will be sent. |
 | `data.payload.webhook_failover_url` | url | The failover URL where webhooks related to this message will be sent if sending to the primary URL fails. |
 | `data.payload.encoding` | string | Encoding scheme used for the message body. |
 | `data.payload.parts` | integer | Number of parts into which the message's body must be split. |
 | `data.payload.tags` | array[string] | Tags associated with the resource. |
-| `data.payload.cost` | object | null |  |
-| `data.payload.cost_breakdown` | object | null | Detailed breakdown of the message cost components. |
-| `data.payload.tcr_campaign_id` | string | null | The Campaign Registry (TCR) campaign ID associated with the message. |
+| `data.payload.cost` | object \| null |  |
+| `data.payload.cost_breakdown` | object \| null | Detailed breakdown of the message cost components. |
+| `data.payload.tcr_campaign_id` | string \| null | The Campaign Registry (TCR) campaign ID associated with the message. |
 | `data.payload.tcr_campaign_billable` | boolean | Indicates whether the TCR campaign is billable. |
-| `data.payload.tcr_campaign_registered` | string | null | The registration status of the TCR campaign. |
+| `data.payload.tcr_campaign_registered` | string \| null | The registration status of the TCR campaign. |
 | `data.payload.received_at` | date-time | ISO 8601 formatted date indicating when the message request was received. |
 | `data.payload.sent_at` | date-time | ISO 8601 formatted date indicating when the message was sent. |
 | `data.payload.completed_at` | date-time | ISO 8601 formatted date indicating when the message was finalized. |
@@ -382,18 +382,18 @@
 | `data.payload.to` | array[object] |  |
 | `data.payload.cc` | array[object] |  |
 | `data.payload.text` | string | Message body (i.e., content) as a non-empty string. |
-| `data.payload.subject` | string | null | Message subject. |
+| `data.payload.subject` | string \| null | Message subject. |
 | `data.payload.media` | array[object] |  |
 | `data.payload.webhook_url` | url | The URL where webhooks related to this message will be sent. |
 | `data.payload.webhook_failover_url` | url | The failover URL where webhooks related to this message will be sent if sending to the primary URL fails. |
 | `data.payload.encoding` | string | Encoding scheme used for the message body. |
 | `data.payload.parts` | integer | Number of parts into which the message's body must be split. |
 | `data.payload.tags` | array[string] | Tags associated with the resource. |
-| `data.payload.cost` | object | null |  |
-| `data.payload.cost_breakdown` | object | null | Detailed breakdown of the message cost components. |
-| `data.payload.tcr_campaign_id` | string | null | The Campaign Registry (TCR) campaign ID associated with the message. |
+| `data.payload.cost` | object \| null |  |
+| `data.payload.cost_breakdown` | object \| null | Detailed breakdown of the message cost components. |
+| `data.payload.tcr_campaign_id` | string \| null | The Campaign Registry (TCR) campaign ID associated with the message. |
 | `data.payload.tcr_campaign_billable` | boolean | Indicates whether the TCR campaign is billable. |
-| `data.payload.tcr_campaign_registered` | string | null | The registration status of the TCR campaign. |
+| `data.payload.tcr_campaign_registered` | string \| null | The registration status of the TCR campaign. |
 | `data.payload.received_at` | date-time | ISO 8601 formatted date indicating when the message request was received. |
 | `data.payload.sent_at` | date-time | Not used for inbound messages. |
 | `data.payload.completed_at` | date-time | Not used for inbound messages. |

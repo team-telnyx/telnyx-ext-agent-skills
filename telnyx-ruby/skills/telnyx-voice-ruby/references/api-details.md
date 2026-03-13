@@ -32,7 +32,7 @@
 | `webhook_api_version` | enum: 1, 2 |
 | `webhook_event_failover_url` | url |
 | `webhook_event_url` | url |
-| `webhook_timeout_secs` | integer | null |
+| `webhook_timeout_secs` | integer \| null |
 
 **Returned by:** Dial
 
@@ -374,7 +374,7 @@
 | `data.payload.hangup_cause` | enum: call_rejected, normal_clearing, originator_cancel, timeout, time_limit, user_busy, not_found, no_answer, unspecified | The reason the call was ended (`call_rejected`, `normal_clearing`, `originator_cancel`, `timeout`, `time_limit`, `use... |
 | `data.payload.hangup_source` | enum: caller, callee, unknown | The party who ended the call (`callee`, `caller`, `unknown`). |
 | `data.payload.sip_hangup_cause` | string | The reason the call was ended (SIP response code). |
-| `data.payload.call_quality_stats` | object | null | Call quality statistics aggregated from the CHANNEL_HANGUP_COMPLETE event. |
+| `data.payload.call_quality_stats` | object \| null | Call quality statistics aggregated from the CHANNEL_HANGUP_COMPLETE event. |
 
 ### `callInitiated`
 

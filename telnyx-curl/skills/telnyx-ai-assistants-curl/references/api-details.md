@@ -128,8 +128,8 @@
 
 | Field | Type |
 |-------|------|
-| `allowed_tools` | array | null |
-| `api_key_ref` | string | null |
+| `allowed_tools` | array \| null |
+| `api_key_ref` | string \| null |
 | `created_at` | date-time |
 | `id` | string |
 | `name` | string |

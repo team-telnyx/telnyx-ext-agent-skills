@@ -41,19 +41,15 @@ Verified manual install locations from current tool docs:
 
 Other agents vary by tool and version. Use the tool's own skills documentation for the exact manual path.
 
-For Git-based/manual workflows, you can also copy or symlink specific skills:
+For Git-based/manual workflows, you can also clone this repo and copy a specific skill folder:
 
 ```bash
-# Clone and copy one skill into a project-local skills directory
+# Example: copy one skill into the directory your tool documents for skills
 git clone https://github.com/team-telnyx/telnyx-skills.git
-cp -r telnyx-skills/telnyx-python/skills/telnyx-messaging-python your-project/.agents/skills/
-
-# Or symlink a shared skills directory into agent-specific locations
-ln -s ../.agents/skills .claude/skills
-ln -s ../.agents/skills .opencode/skills
+cp -r telnyx-skills/telnyx-python/skills/telnyx-messaging-python /path/to/your-tool-skills-dir/
 ```
 
-Use this approach when you want one checked-in or shared skills directory across multiple local agent setups, after confirming the destination path your tools expect.
+Use this approach only after confirming the destination path your tool expects from that tool's own documentation.
 
 > [!IMPORTANT]
 > Install only the skills your project actually needs. Loading too many skills at once dilutes context and makes it easier for an agent to mix unrelated API patterns.
