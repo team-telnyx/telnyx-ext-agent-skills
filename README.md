@@ -7,9 +7,6 @@ These skills follow the [Agent Skills specification](https://agentskills.io/spec
 > [!NOTE]
 > This repository is under active development. Skills are being expanded, updated to reflect current SDK patterns, and reviewed to reduce incorrect or hallucinated API usage by coding agents.
 
-> [!IMPORTANT]
-> Install only the skills your project actually needs. Loading too many skills at once dilutes context and makes it easier for an agent to mix unrelated API patterns.
-
 ## Quick Start
 
 ### Any Agent
@@ -47,6 +44,23 @@ Manual install locations:
 | Windsurf | `.windsurf/skills/` | `~/.codeium/windsurf/skills/` |
 
 If your tool does not support folder-based skills, paste the contents of `SKILL.md` into the tool's instructions or rules file and keep the linked references available alongside it.
+
+For Git-based/manual workflows, you can also copy or symlink specific skills:
+
+```bash
+# Clone and copy one skill into a project-local skills directory
+git clone https://github.com/team-telnyx/telnyx-skills.git
+cp -r telnyx-skills/telnyx-python/skills/telnyx-messaging-python your-project/.agents/skills/
+
+# Or symlink a shared skills directory into agent-specific locations
+ln -s ../.agents/skills .claude/skills
+ln -s ../.agents/skills .opencode/skills
+```
+
+Use this approach when you want one checked-in or shared skills directory across multiple local agent setups.
+
+> [!IMPORTANT]
+> Install only the skills your project actually needs. Loading too many skills at once dilutes context and makes it easier for an agent to mix unrelated API patterns.
 
 ### Claude Code
 
