@@ -37,6 +37,6 @@ curl -X GET "https://api.telnyx.com/v2/example" \
 
 ## Usage Guidance
 
-- Use this wrapper as the discovery entrypoint.
-- For production code, install and use the specific product skill that matches your task.
-- If you already know the exact product area, install that specific skill directly instead of this wrapper.
+- Use this skill to start a Telnyx REST integration with the standard auth pattern and a map of the main product areas.
+- For implementation details, install the product skill that matches the workflow you are building.
+- Keep this skill focused on choosing the right Telnyx area; use the linked product skills for endpoint- and workflow-level guidance.

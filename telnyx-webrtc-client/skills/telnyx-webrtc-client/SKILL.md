@@ -26,4 +26,4 @@ Use this wrapper when you need to choose the right Telnyx client-side WebRTC ski
 
 - Client SDK skills cover the device-side calling UI and media behavior.
 - Most apps also need a server-side Telnyx skill in your backend language to create credentials, generate login tokens, and manage call-control workflows.
-- Install the specific platform skill that matches your app for implementation details.
+- Use this skill to choose the right client platform and then install the matching platform skill for implementation details.
