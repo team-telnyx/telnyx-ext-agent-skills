@@ -32,12 +32,12 @@ Choose your setup:
 Install a skill for your agent:
 
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent <AGENT>
+npx skills add team-telnyx/skills --skill <SKILL> --agent <AGENT>
 ```
 
 **Example:**
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill telnyx-voice-python --agent codex
+npx skills add team-telnyx/skills --skill telnyx-voice-python --agent codex
 ```
 
 A comprehensive list of available skills **(values for `<SKILL>`)** can be found in the [Available Skills](#available-skills) section.
@@ -46,37 +46,37 @@ A comprehensive list of supported agents **(values for `<AGENT>`)** can be found
 
 #### Codex
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent codex
+npx skills add team-telnyx/skills --skill <SKILL> --agent codex
 ```
 
 #### Claude Code
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent claude-code
+npx skills add team-telnyx/skills --skill <SKILL> --agent claude-code
 ```
 
 #### Cursor
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent cursor
+npx skills add team-telnyx/skills --skill <SKILL> --agent cursor
 ```
 
 #### OpenClaw
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent openclaw
+npx skills add team-telnyx/skills --skill <SKILL> --agent openclaw
 ```
 
 #### Gemini CLI
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent gemini-cli
+npx skills add team-telnyx/skills --skill <SKILL> --agent gemini-cli
 ```
 
 #### GitHub Copilot
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent github-copilot
+npx skills add team-telnyx/skills --skill <SKILL> --agent github-copilot
 ```
 
 #### OpenCode
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent opencode
+npx skills add team-telnyx/skills --skill <SKILL> --agent opencode
 ```
 
 ### Other supported agents
@@ -97,12 +97,12 @@ Skills are organized by product and language. Each product skill is available in
 **(Values in the "Skill" column in the tables below can be used for `<SKILL>`)** in the install command. Append the language suffix to replace * , e.g. `telnyx-voice-go` : 
 
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill <SKILL> --agent <AGENT>
+npx skills add team-telnyx/skills --skill <SKILL> --agent <AGENT>
 ```
 
 Example:
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill telnyx-messaging-python --agent cursor
+npx skills add team-telnyx/skills --skill telnyx-messaging-python --agent cursor
 ```
 
 <!-- BEGIN GENERATED SKILLS_TABLE -->
@@ -202,7 +202,7 @@ A comprehensive 6-phase orchestrated agent workflow for moving apps from Twilio 
 
 #### Install command:
 ```bash
-npx skills add team-telnyx/telnyx-skills --skill telnyx-twilio-migration --agent <AGENT>
+npx skills add team-telnyx/skills --skill telnyx-twilio-migration --agent <AGENT>
 ```
 
 **What's covered:**
@@ -240,20 +240,20 @@ Plugins are installable packages containing curated bundles of related Telnyx Ag
 **Step 1.** Add the Telnyx skills marketplace (one-time setup):
 
 ```bash
-/plugin marketplace add team-telnyx/telnyx-skills
+/plugin marketplace add team-telnyx/skills
 ```
 
 **Step 2.** Install a plugin — pick a plugin from table below:
 
 ```bash
-/plugin install <PLUGIN>@telnyx-skills
+/plugin install <PLUGIN>@skills
 ```
 Replace `<PLUGIN>` with the plugin from the table below:
 
 **Examples:**
 ```bash
-/plugin install telnyx-python@telnyx-skills
-/plugin install telnyx-twilio-migration@telnyx-skills
+/plugin install telnyx-python@skills
+/plugin install telnyx-twilio-migration@skills
 ```
 
 <!-- BEGIN GENERATED PLUGIN_TABLE -->
@@ -291,7 +291,7 @@ The canonical artifact format is:
 
 ```bash
 
-git clone https://github.com/team-telnyx/telnyx-skills.git
+git clone https://github.com/team-telnyx/skills.git
 
 # Copy the skill into your agent's skills directory
 mkdir -p .github/skills
@@ -306,7 +306,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## Support
 
-For issues with these skills, please [open an issue](https://github.com/team-telnyx/telnyx-skills/issues) in this repository.
+For issues with these skills, please [open an issue](https://github.com/team-telnyx/skills/issues) in this repository.
 
 For Telnyx API support, visit [support.telnyx.com](https://support.telnyx.com).
 
