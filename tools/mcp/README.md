@@ -21,6 +21,4 @@ npx -y @telnyx/mcp
 
 ## How it works
 
-This package proxies MCP requests to the remote Telnyx MCP server over HTTP. The remote server provides the tools — API endpoint discovery, schema inspection, and endpoint invocation.
-
-The full MCP server implementation lives in [`team-telnyx/telnyx-node/packages/mcp-server`](https://github.com/team-telnyx/telnyx-node/tree/master/packages/mcp-server).
+This package proxies MCP requests to the remote Telnyx MCP server over HTTP.
