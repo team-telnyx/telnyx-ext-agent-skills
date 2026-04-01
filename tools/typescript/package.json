@@ -47,12 +47,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/team-telnyx/telnyx-agent-portal.git",
-    "directory": "packages/typescript"
+    "url": "https://github.com/team-telnyx/skills.git",
+    "directory": "tools/typescript"
   },
-  "homepage": "https://github.com/team-telnyx/telnyx-agent-portal#readme",
+  "homepage": "https://github.com/team-telnyx/skills#readme",
   "bugs": {
-    "url": "https://github.com/team-telnyx/telnyx-agent-portal/issues"
+    "url": "https://github.com/team-telnyx/skills/issues"
   },
   "peerDependencies": {
     "openai": ">=4.0.0",

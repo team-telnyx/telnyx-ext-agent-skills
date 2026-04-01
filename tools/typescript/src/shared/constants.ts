@@ -2197,6 +2197,1781 @@ export const TOOL_DEFINITIONS: Record<string, ToolDefinition> = {
     path: "/messages/{id}",
     category: "messaging",
   },
+  // ─── AI Missions ─────────────────────────────────────────────
+  create_mission: {
+    name: "create_mission",
+    description: "Create a new AI mission.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "Name of the mission.",
+        },
+        instructions: {
+          type: "string",
+          description: "Instructions for the mission.",
+        },
+      },
+      required: ["name", "instructions"],
+    },
+    method: "POST",
+    path: "/ai/missions",
+    category: "missions",
+  },
+  get_mission: {
+    name: "get_mission",
+    description: "Get details of a specific AI mission.",
+    parameters: {
+      type: "object",
+      properties: {
+        mission_id: {
+          type: "string",
+          description: "The ID of the mission to retrieve.",
+        },
+      },
+      required: ["mission_id"],
+    },
+    method: "GET",
+    path: "/ai/missions/{mission_id}",
+    category: "missions",
+  },
+  list_missions: {
+    name: "list_missions",
+    description: "List AI missions on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/ai/missions",
+    category: "missions",
+  },
+  create_mission_run: {
+    name: "create_mission_run",
+    description: "Create a new run for an AI mission.",
+    parameters: {
+      type: "object",
+      properties: {
+        mission_id: {
+          type: "string",
+          description: "The ID of the mission to create a run for.",
+        },
+        input: {
+          type: "string",
+          description: "Input data for the mission run.",
+        },
+      },
+      required: ["mission_id", "input"],
+    },
+    method: "POST",
+    path: "/ai/missions/{mission_id}/runs",
+    category: "missions",
+  },
+  get_mission_run: {
+    name: "get_mission_run",
+    description: "Get details of a specific mission run.",
+    parameters: {
+      type: "object",
+      properties: {
+        mission_id: {
+          type: "string",
+          description: "The ID of the mission.",
+        },
+        run_id: {
+          type: "string",
+          description: "The ID of the run to retrieve.",
+        },
+      },
+      required: ["mission_id", "run_id"],
+    },
+    method: "GET",
+    path: "/ai/missions/{mission_id}/runs/{run_id}",
+    category: "missions",
+  },
+  update_mission_run: {
+    name: "update_mission_run",
+    description: "Update an existing mission run (e.g. status, result).",
+    parameters: {
+      type: "object",
+      properties: {
+        mission_id: {
+          type: "string",
+          description: "The ID of the mission.",
+        },
+        run_id: {
+          type: "string",
+          description: "The ID of the run to update.",
+        },
+        status: {
+          type: "string",
+          description: "New status for the run.",
+        },
+        result_summary: {
+          type: "string",
+          description: "Summary of the run result.",
+        },
+        result_payload: {
+          type: "string",
+          description: "Structured result payload (JSON string).",
+        },
+      },
+      required: ["mission_id", "run_id"],
+    },
+    method: "PATCH",
+    path: "/ai/missions/{mission_id}/runs/{run_id}",
+    category: "missions",
+  },
+  create_mission_plan: {
+    name: "create_mission_plan",
+    description: "Create a plan with steps for a mission run.",
+    parameters: {
+      type: "object",
+      properties: {
+        mission_id: {
+          type: "string",
+          description: "The ID of the mission.",
+        },
+        run_id: {
+          type: "string",
+          description: "The ID of the run to create a plan for.",
+        },
+        steps: {
+          type: "array",
+          description: "List of plan steps.",
+        },
+      },
+      required: ["mission_id", "run_id", "steps"],
+    },
+    method: "POST",
+    path: "/ai/missions/{mission_id}/runs/{run_id}/plan",
+    category: "missions",
+  },
+  update_mission_step: {
+    name: "update_mission_step",
+    description: "Update the status of a step in a mission run plan.",
+    parameters: {
+      type: "object",
+      properties: {
+        mission_id: {
+          type: "string",
+          description: "The ID of the mission.",
+        },
+        run_id: {
+          type: "string",
+          description: "The ID of the run.",
+        },
+        step_id: {
+          type: "string",
+          description: "The ID of the step to update.",
+        },
+        status: {
+          type: "string",
+          description: "New status for the step.",
+        },
+      },
+      required: ["mission_id", "run_id", "step_id", "status"],
+    },
+    method: "PUT",
+    path: "/ai/missions/{mission_id}/runs/{run_id}/plan/steps/{step_id}",
+    category: "missions",
+  },
+  log_mission_event: {
+    name: "log_mission_event",
+    description: "Log an event for a mission run.",
+    parameters: {
+      type: "object",
+      properties: {
+        mission_id: {
+          type: "string",
+          description: "The ID of the mission.",
+        },
+        run_id: {
+          type: "string",
+          description: "The ID of the run.",
+        },
+        type: {
+          type: "string",
+          description: "Type of event.",
+        },
+        summary: {
+          type: "string",
+          description: "Summary of the event.",
+        },
+        step_id: {
+          type: "string",
+          description: "Optional step ID this event relates to.",
+        },
+        payload: {
+          type: "string",
+          description: "Optional structured event payload (JSON string).",
+        },
+      },
+      required: ["mission_id", "run_id", "type", "summary"],
+    },
+    method: "POST",
+    path: "/ai/missions/{mission_id}/runs/{run_id}/events",
+    category: "missions",
+  },
+  // ─── AI Insights ─────────────────────────────────────────────
+  create_insight: {
+    name: "create_insight",
+    description: "Create a new conversation insight definition.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "Name of the insight.",
+        },
+        instructions: {
+          type: "string",
+          description: "Instructions for extracting the insight.",
+        },
+        json_schema: {
+          type: "string",
+          description: "JSON schema for the insight output (JSON string).",
+        },
+      },
+      required: ["name", "instructions"],
+    },
+    method: "POST",
+    path: "/ai/conversations/insights",
+    category: "insights",
+  },
+  get_insight: {
+    name: "get_insight",
+    description: "Get details of a specific conversation insight.",
+    parameters: {
+      type: "object",
+      properties: {
+        insight_id: {
+          type: "string",
+          description: "The ID of the insight to retrieve.",
+        },
+      },
+      required: ["insight_id"],
+    },
+    method: "GET",
+    path: "/ai/conversations/insights/{insight_id}",
+    category: "insights",
+  },
+  list_insights: {
+    name: "list_insights",
+    description: "List conversation insight definitions.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/ai/conversations/insights",
+    category: "insights",
+  },
+  update_insight: {
+    name: "update_insight",
+    description: "Update an existing conversation insight definition.",
+    parameters: {
+      type: "object",
+      properties: {
+        insight_id: {
+          type: "string",
+          description: "The ID of the insight to update.",
+        },
+        name: {
+          type: "string",
+          description: "New name for the insight.",
+        },
+        instructions: {
+          type: "string",
+          description: "New instructions for the insight.",
+        },
+      },
+      required: ["insight_id"],
+    },
+    method: "PUT",
+    path: "/ai/conversations/insights/{insight_id}",
+    category: "insights",
+  },
+  create_insight_group: {
+    name: "create_insight_group",
+    description: "Create a new insight group.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "Name of the insight group.",
+        },
+        description: {
+          type: "string",
+          description: "Description of the insight group.",
+        },
+      },
+      required: ["name"],
+    },
+    method: "POST",
+    path: "/ai/conversations/insight-groups",
+    category: "insights",
+  },
+  get_insight_group: {
+    name: "get_insight_group",
+    description: "Get details of a specific insight group.",
+    parameters: {
+      type: "object",
+      properties: {
+        group_id: {
+          type: "string",
+          description: "The ID of the insight group to retrieve.",
+        },
+      },
+      required: ["group_id"],
+    },
+    method: "GET",
+    path: "/ai/conversations/insight-groups/{group_id}",
+    category: "insights",
+  },
+  assign_insight_to_group: {
+    name: "assign_insight_to_group",
+    description: "Assign an insight to an insight group.",
+    parameters: {
+      type: "object",
+      properties: {
+        group_id: {
+          type: "string",
+          description: "The ID of the insight group.",
+        },
+        insight_id: {
+          type: "string",
+          description: "The ID of the insight to assign.",
+        },
+      },
+      required: ["group_id", "insight_id"],
+    },
+    method: "POST",
+    path: "/ai/conversations/insight-groups/{group_id}/insights/{insight_id}/assign",
+    category: "insights",
+  },
+  // ─── Scheduled Events ────────────────────────────────────────
+  schedule_call: {
+    name: "schedule_call",
+    description: "Schedule an outbound call via an AI assistant.",
+    parameters: {
+      type: "object",
+      properties: {
+        assistant_id: {
+          type: "string",
+          description: "The AI assistant ID to use for the call.",
+        },
+        to: {
+          type: "string",
+          description: "Destination phone number (E.164 format).",
+        },
+        from_: {
+          type: "string",
+          description: "Caller ID phone number (E.164 format).",
+        },
+        scheduled_at_fixed_datetime: {
+          type: "string",
+          description: "ISO 8601 datetime to schedule the call.",
+        },
+        mission_id: {
+          type: "string",
+          description: "Optional mission ID to associate.",
+        },
+        mission_run_id: {
+          type: "string",
+          description: "Optional mission run ID to associate.",
+        },
+        step_id: {
+          type: "string",
+          description: "Optional step ID to associate.",
+        },
+        dynamic_variables: {
+          type: "string",
+          description: "Dynamic variables to pass to the assistant (JSON string).",
+        },
+      },
+      required: ["assistant_id", "to", "from_", "scheduled_at_fixed_datetime"],
+    },
+    method: "POST",
+    path: "/ai/assistants/{assistant_id}/scheduled_events",
+    category: "scheduled_events",
+  },
+  schedule_sms: {
+    name: "schedule_sms",
+    description: "Schedule an outbound SMS via an AI assistant.",
+    parameters: {
+      type: "object",
+      properties: {
+        assistant_id: {
+          type: "string",
+          description: "The AI assistant ID to use.",
+        },
+        to: {
+          type: "string",
+          description: "Destination phone number (E.164 format).",
+        },
+        from_: {
+          type: "string",
+          description: "Sender phone number (E.164 format).",
+        },
+        scheduled_at_fixed_datetime: {
+          type: "string",
+          description: "ISO 8601 datetime to schedule the SMS.",
+        },
+        first_message_content: {
+          type: "string",
+          description: "The initial SMS message content.",
+        },
+        mission_id: {
+          type: "string",
+          description: "Optional mission ID to associate.",
+        },
+        mission_run_id: {
+          type: "string",
+          description: "Optional mission run ID to associate.",
+        },
+        step_id: {
+          type: "string",
+          description: "Optional step ID to associate.",
+        },
+      },
+      required: [
+        "assistant_id",
+        "to",
+        "from_",
+        "scheduled_at_fixed_datetime",
+        "first_message_content",
+      ],
+    },
+    method: "POST",
+    path: "/ai/assistants/{assistant_id}/scheduled_events",
+    category: "scheduled_events",
+  },
+  get_scheduled_event: {
+    name: "get_scheduled_event",
+    description: "Get details of a specific scheduled event.",
+    parameters: {
+      type: "object",
+      properties: {
+        assistant_id: {
+          type: "string",
+          description: "The AI assistant ID.",
+        },
+        event_id: {
+          type: "string",
+          description: "The ID of the scheduled event to retrieve.",
+        },
+      },
+      required: ["assistant_id", "event_id"],
+    },
+    method: "GET",
+    path: "/ai/assistants/{assistant_id}/scheduled_events/{event_id}",
+    category: "scheduled_events",
+  },
+  cancel_scheduled_event: {
+    name: "cancel_scheduled_event",
+    description: "Cancel a scheduled event.",
+    parameters: {
+      type: "object",
+      properties: {
+        assistant_id: {
+          type: "string",
+          description: "The AI assistant ID.",
+        },
+        event_id: {
+          type: "string",
+          description: "The ID of the scheduled event to cancel.",
+        },
+      },
+      required: ["assistant_id", "event_id"],
+    },
+    method: "DELETE",
+    path: "/ai/assistants/{assistant_id}/scheduled_events/{event_id}",
+    category: "scheduled_events",
+  },
+  // ─── Conversations ───────────────────────────────────────────
+  list_conversations: {
+    name: "list_conversations",
+    description: "List AI conversations on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/ai/conversations",
+    category: "conversations",
+  },
+  get_conversation: {
+    name: "get_conversation",
+    description: "Get details of a specific AI conversation.",
+    parameters: {
+      type: "object",
+      properties: {
+        conversation_id: {
+          type: "string",
+          description: "The ID of the conversation to retrieve.",
+        },
+      },
+      required: ["conversation_id"],
+    },
+    method: "GET",
+    path: "/ai/conversations/{conversation_id}",
+    category: "conversations",
+  },
+  get_conversation_messages: {
+    name: "get_conversation_messages",
+    description: "Get messages from a specific AI conversation.",
+    parameters: {
+      type: "object",
+      properties: {
+        conversation_id: {
+          type: "string",
+          description: "The ID of the conversation.",
+        },
+      },
+      required: ["conversation_id"],
+    },
+    method: "GET",
+    path: "/ai/conversations/{conversation_id}/messages",
+    category: "conversations",
+  },
+  get_conversation_insights: {
+    name: "get_conversation_insights",
+    description: "Get insights extracted from a specific AI conversation.",
+    parameters: {
+      type: "object",
+      properties: {
+        conversation_id: {
+          type: "string",
+          description: "The ID of the conversation.",
+        },
+      },
+      required: ["conversation_id"],
+    },
+    method: "GET",
+    path: "/ai/conversations/{conversation_id}/conversations-insights",
+    category: "conversations",
+  },
+  // ─── STT / TTS / Embeddings ──────────────────────────────────
+  transcribe_audio: {
+    name: "transcribe_audio",
+    description:
+      "Transcribe audio to text using Telnyx AI speech-to-text. Note: file_url is used for URL-based transcription; direct file upload requires multipart/form-data handling.",
+    parameters: {
+      type: "object",
+      properties: {
+        file_url: {
+          type: "string",
+          description: "URL of the audio file to transcribe.",
+        },
+        language: {
+          type: "string",
+          description: "Language code for transcription (e.g. 'en').",
+        },
+      },
+      required: ["file_url"],
+    },
+    method: "POST",
+    path: "/ai/audio/transcriptions",
+    category: "stt",
+  },
+  text_to_speech: {
+    name: "text_to_speech",
+    description:
+      "Generate speech audio from text using Telnyx AI. Note: the primary TTS interface may be WebSocket-based; this REST endpoint is provided for simple use cases.",
+    parameters: {
+      type: "object",
+      properties: {
+        text: {
+          type: "string",
+          description: "Text to convert to speech.",
+        },
+        voice: {
+          type: "string",
+          description: "Voice ID to use for speech generation.",
+        },
+        model: {
+          type: "string",
+          description: "TTS model to use.",
+        },
+      },
+      required: ["text"],
+    },
+    method: "POST",
+    path: "/ai/generate",
+    category: "tts",
+  },
+  generate_embeddings: {
+    name: "generate_embeddings",
+    description: "Generate embeddings using the OpenAI-compatible endpoint.",
+    parameters: {
+      type: "object",
+      properties: {
+        input: {
+          type: ["string", "array"],
+          description: "Text or list of texts to embed.",
+        },
+        model: {
+          type: "string",
+          description: "Embedding model ID.",
+        },
+      },
+      required: ["input", "model"],
+    },
+    method: "POST",
+    path: "/ai/openai/embeddings",
+    category: "embeddings",
+  },
+  // ─── IoT / Wireless (expanded) ───────────────────────────────
+  get_sim_card_group: {
+    name: "get_sim_card_group",
+    description: "Get details of a specific SIM card group.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the SIM card group to retrieve.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/sim_card_groups/{id}",
+    category: "iot",
+  },
+  get_sim_card_data_usage: {
+    name: "get_sim_card_data_usage",
+    description: "Get daily network data usage for a SIM card.",
+    parameters: {
+      type: "object",
+      properties: {
+        sim_card_id: {
+          type: "string",
+          description: "The ID of the SIM card.",
+        },
+      },
+      required: ["sim_card_id"],
+    },
+    method: "GET",
+    path: "/network_daily_data_usage",
+    category: "iot",
+  },
+  // ─── Billing (expanded) ──────────────────────────────────────
+  list_invoices: {
+    name: "list_invoices",
+    description: "List invoices on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/invoices",
+    category: "billing",
+  },
+  get_invoice: {
+    name: "get_invoice",
+    description: "Get details of a specific invoice.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the invoice to retrieve.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/invoices/{id}",
+    category: "billing",
+  },
+  // ─── TeXML Applications ─────────────────────────────────────
+  list_texml_applications: {
+    name: "list_texml_applications",
+    description: "List TeXML applications on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/texml_applications",
+    category: "texml",
+  },
+  create_texml_application: {
+    name: "create_texml_application",
+    description: "Create a new TeXML application.",
+    parameters: {
+      type: "object",
+      properties: {
+        friendly_name: {
+          type: "string",
+          description: "A friendly name for the TeXML application.",
+        },
+        voice_url: {
+          type: "string",
+          description: "The URL to request when a call is received.",
+        },
+        voice_method: {
+          type: "string",
+          description: "HTTP method for voice_url requests.",
+          default: "POST",
+        },
+        status_callback: {
+          type: "string",
+          description: "URL for status callback events.",
+        },
+        status_callback_method: {
+          type: "string",
+          description: "HTTP method for status callback requests.",
+        },
+        active: {
+          type: "boolean",
+          description: "Whether the application is active.",
+          default: true,
+        },
+      },
+      required: ["friendly_name", "voice_url"],
+    },
+    method: "POST",
+    path: "/texml_applications",
+    category: "texml",
+  },
+  get_texml_application: {
+    name: "get_texml_application",
+    description: "Get details of a specific TeXML application.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the TeXML application.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/texml_applications/{id}",
+    category: "texml",
+  },
+  update_texml_application: {
+    name: "update_texml_application",
+    description: "Update a TeXML application.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the TeXML application to update.",
+        },
+        friendly_name: {
+          type: "string",
+          description: "A friendly name for the TeXML application.",
+        },
+        voice_url: {
+          type: "string",
+          description: "The URL to request when a call is received.",
+        },
+        active: {
+          type: "boolean",
+          description: "Whether the application is active.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "PATCH",
+    path: "/texml_applications/{id}",
+    category: "texml",
+  },
+  delete_texml_application: {
+    name: "delete_texml_application",
+    description: "Delete a TeXML application.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the TeXML application to delete.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "DELETE",
+    path: "/texml_applications/{id}",
+    category: "texml",
+  },
+  // ─── Push Credentials ───────────────────────────────────────
+  list_push_credentials: {
+    name: "list_push_credentials",
+    description: "List mobile push credentials on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        type: {
+          type: "string",
+          description: "Filter by credential type.",
+          enum: ["ios", "android"],
+        },
+        alias: {
+          type: "string",
+          description: "Filter by alias.",
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/mobile_push_credentials",
+    category: "push_credentials",
+  },
+  create_push_credential: {
+    name: "create_push_credential",
+    description: "Create a new mobile push credential.",
+    parameters: {
+      type: "object",
+      properties: {
+        type: {
+          type: "string",
+          description: "The credential type (ios or android).",
+          enum: ["ios", "android"],
+        },
+        alias: {
+          type: "string",
+          description: "An alias for the credential.",
+        },
+        certificate: {
+          type: "string",
+          description: "The APNs certificate (iOS only).",
+        },
+        private_key: {
+          type: "string",
+          description: "The APNs private key (iOS only).",
+        },
+        server_key: {
+          type: "string",
+          description: "The FCM server key (Android only).",
+        },
+        sandbox: {
+          type: "boolean",
+          description: "Whether to use the APNs sandbox environment (iOS only).",
+        },
+      },
+      required: ["type"],
+    },
+    method: "POST",
+    path: "/mobile_push_credentials",
+    category: "push_credentials",
+  },
+  get_push_credential: {
+    name: "get_push_credential",
+    description: "Get details of a specific push credential.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the push credential.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/mobile_push_credentials/{id}",
+    category: "push_credentials",
+  },
+  delete_push_credential: {
+    name: "delete_push_credential",
+    description: "Delete a push credential.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the push credential to delete.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "DELETE",
+    path: "/mobile_push_credentials/{id}",
+    category: "push_credentials",
+  },
+  // ─── MCP Servers ────────────────────────────────────────────
+  list_mcp_servers: {
+    name: "list_mcp_servers",
+    description: "List MCP servers on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        type: {
+          type: "string",
+          description: "Filter by server type.",
+        },
+        url: {
+          type: "string",
+          description: "Filter by server URL.",
+        },
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/ai/mcp_servers",
+    category: "mcp_servers",
+  },
+  create_mcp_server: {
+    name: "create_mcp_server",
+    description: "Create a new MCP server.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "The name of the MCP server.",
+        },
+        url: {
+          type: "string",
+          description: "The URL of the MCP server.",
+        },
+        type: {
+          type: "string",
+          description: "The type of the MCP server.",
+        },
+        description: {
+          type: "string",
+          description: "A description of the MCP server.",
+        },
+      },
+      required: ["name", "url"],
+    },
+    method: "POST",
+    path: "/ai/mcp_servers",
+    category: "mcp_servers",
+  },
+  get_mcp_server: {
+    name: "get_mcp_server",
+    description: "Get details of a specific MCP server.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the MCP server.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/ai/mcp_servers/{id}",
+    category: "mcp_servers",
+  },
+  update_mcp_server: {
+    name: "update_mcp_server",
+    description: "Update an MCP server.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the MCP server to update.",
+        },
+        name: {
+          type: "string",
+          description: "The name of the MCP server.",
+        },
+        url: {
+          type: "string",
+          description: "The URL of the MCP server.",
+        },
+        type: {
+          type: "string",
+          description: "The type of the MCP server.",
+        },
+        description: {
+          type: "string",
+          description: "A description of the MCP server.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "PUT",
+    path: "/ai/mcp_servers/{id}",
+    category: "mcp_servers",
+  },
+  delete_mcp_server: {
+    name: "delete_mcp_server",
+    description: "Delete an MCP server.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the MCP server to delete.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "DELETE",
+    path: "/ai/mcp_servers/{id}",
+    category: "mcp_servers",
+  },
+  // ─── Call Control Applications ──────────────────────────────
+  list_call_control_applications: {
+    name: "list_call_control_applications",
+    description: "List call control applications on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/call_control_applications",
+    category: "call_control",
+  },
+  create_call_control_application: {
+    name: "create_call_control_application",
+    description: "Create a new call control application.",
+    parameters: {
+      type: "object",
+      properties: {
+        application_name: {
+          type: "string",
+          description: "The name of the call control application.",
+        },
+        webhook_event_url: {
+          type: "string",
+          description: "The URL to send webhook events to.",
+        },
+        webhook_event_failover_url: {
+          type: "string",
+          description: "Failover URL for webhook events.",
+        },
+        active: {
+          type: "boolean",
+          description: "Whether the application is active.",
+          default: true,
+        },
+      },
+      required: ["application_name", "webhook_event_url"],
+    },
+    method: "POST",
+    path: "/call_control_applications",
+    category: "call_control",
+  },
+  get_call_control_application: {
+    name: "get_call_control_application",
+    description: "Get details of a specific call control application.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the call control application.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/call_control_applications/{id}",
+    category: "call_control",
+  },
+  delete_call_control_application: {
+    name: "delete_call_control_application",
+    description: "Delete a call control application.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the call control application to delete.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "DELETE",
+    path: "/call_control_applications/{id}",
+    category: "call_control",
+  },
+  // ─── Call Recordings ────────────────────────────────────────
+  list_recordings: {
+    name: "list_recordings",
+    description: "List call recordings on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/recordings",
+    category: "recordings",
+  },
+  get_recording: {
+    name: "get_recording",
+    description: "Get details of a specific call recording.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the recording.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/recordings/{id}",
+    category: "recordings",
+  },
+  // ─── Usage Reports ──────────────────────────────────────────
+  create_usage_report: {
+    name: "create_usage_report",
+    description: "Create a batch MDR (Message Detail Record) usage report.",
+    parameters: {
+      type: "object",
+      properties: {
+        start_date: {
+          type: "string",
+          description: "Start date for the report (ISO 8601 format).",
+        },
+        end_date: {
+          type: "string",
+          description: "End date for the report (ISO 8601 format).",
+        },
+        directions: {
+          type: "string",
+          description: "Filter by direction.",
+          enum: ["inbound", "outbound"],
+        },
+        record_types: {
+          type: "string",
+          description: "Filter by record type.",
+          enum: ["incomplete", "completed", "errors"],
+        },
+      },
+      required: ["start_date", "end_date"],
+    },
+    method: "POST",
+    path: "/reports/batch_mdr_reports",
+    category: "reporting",
+  },
+  get_usage_report: {
+    name: "get_usage_report",
+    description: "Get status and details of a usage report.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the usage report.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/reports/batch_mdr_reports/{id}",
+    category: "reporting",
+  },
+  // ─── Global IPs ─────────────────────────────────────────────
+  list_global_ips: {
+    name: "list_global_ips",
+    description: "List global IPs on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/global_ips",
+    category: "global_ips",
+  },
+  create_global_ip: {
+    name: "create_global_ip",
+    description: "Create a new global IP.",
+    parameters: {
+      type: "object",
+      properties: {},
+      required: [],
+    },
+    method: "POST",
+    path: "/global_ips",
+    category: "global_ips",
+  },
+  delete_global_ip: {
+    name: "delete_global_ip",
+    description: "Delete a global IP.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the global IP to delete.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "DELETE",
+    path: "/global_ips/{id}",
+    category: "global_ips",
+  },
+  // ─── SIM Card Orders ────────────────────────────────────────
+  list_sim_card_orders: {
+    name: "list_sim_card_orders",
+    description: "List SIM card orders on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/sim_card_orders",
+    category: "iot",
+  },
+  create_sim_card_order: {
+    name: "create_sim_card_order",
+    description: "Create a new SIM card order.",
+    parameters: {
+      type: "object",
+      properties: {
+        sim_card_group_id: {
+          type: "string",
+          description: "The SIM card group ID to associate with the order.",
+        },
+        quantity: {
+          type: "integer",
+          description: "The number of SIM cards to order.",
+        },
+        address_id: {
+          type: "string",
+          description: "The address ID for shipping.",
+        },
+      },
+      required: ["sim_card_group_id", "quantity"],
+    },
+    method: "POST",
+    path: "/sim_card_orders",
+    category: "iot",
+  },
+  // ─── Private Wireless Gateways ──────────────────────────────
+  list_private_wireless_gateways: {
+    name: "list_private_wireless_gateways",
+    description: "List private wireless gateways on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/private_wireless_gateways",
+    category: "iot",
+  },
+  create_private_wireless_gateway: {
+    name: "create_private_wireless_gateway",
+    description: "Create a new private wireless gateway.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "The name of the private wireless gateway.",
+        },
+        network_id: {
+          type: "string",
+          description: "The network ID to associate with the gateway.",
+        },
+        region_code: {
+          type: "string",
+          description: "The region code for the gateway.",
+        },
+      },
+      required: ["name", "network_id"],
+    },
+    method: "POST",
+    path: "/private_wireless_gateways",
+    category: "iot",
+  },
+  delete_private_wireless_gateway: {
+    name: "delete_private_wireless_gateway",
+    description: "Delete a private wireless gateway.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the private wireless gateway to delete.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "DELETE",
+    path: "/private_wireless_gateways/{id}",
+    category: "iot",
+  },
+  // ─── External Connections ───────────────────────────────────
+  list_external_connections: {
+    name: "list_external_connections",
+    description: "List external connections (BYOC) on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/external_connections",
+    category: "external_connections",
+  },
+  create_external_connection: {
+    name: "create_external_connection",
+    description: "Create a new external connection (BYOC).",
+    parameters: {
+      type: "object",
+      properties: {
+        active: {
+          type: "boolean",
+          description: "Whether the connection is active.",
+          default: true,
+        },
+        external_sip_connection: {
+          type: "string",
+          description: "The external SIP connection URI.",
+        },
+      },
+      required: ["external_sip_connection"],
+    },
+    method: "POST",
+    path: "/external_connections",
+    category: "external_connections",
+  },
+  delete_external_connection: {
+    name: "delete_external_connection",
+    description: "Delete an external connection.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the external connection to delete.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "DELETE",
+    path: "/external_connections/{id}",
+    category: "external_connections",
+  },
+  // ─── Voice Clones ──────────────────────────────────────────
+  list_voice_clones: {
+    name: "list_voice_clones",
+    description: "List AI voice clones on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/ai/voice_clones",
+    category: "voice",
+  },
+  create_voice_clone: {
+    name: "create_voice_clone",
+    description: "Create a new AI voice clone.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "The name of the voice clone.",
+        },
+        description: {
+          type: "string",
+          description: "A description of the voice clone.",
+        },
+      },
+      required: ["name"],
+    },
+    method: "POST",
+    path: "/ai/voice_clones",
+    category: "voice",
+  },
+  get_voice_clone: {
+    name: "get_voice_clone",
+    description: "Get details of a specific AI voice clone.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the voice clone.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/ai/voice_clones/{id}",
+    category: "voice",
+  },
+  // ─── Voice Designs ─────────────────────────────────────────
+  list_voice_designs: {
+    name: "list_voice_designs",
+    description: "List AI voice designs on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/ai/voice_designs",
+    category: "voice",
+  },
+  create_voice_design: {
+    name: "create_voice_design",
+    description: "Create a new AI voice design.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "The name of the voice design.",
+        },
+        description: {
+          type: "string",
+          description: "A description of the voice design.",
+        },
+        gender: {
+          type: "string",
+          description: "The gender of the voice.",
+        },
+        age: {
+          type: "string",
+          description: "The age range of the voice.",
+        },
+        accent: {
+          type: "string",
+          description: "The accent of the voice.",
+        },
+      },
+      required: ["name"],
+    },
+    method: "POST",
+    path: "/ai/voice_designs",
+    category: "voice",
+  },
+  get_voice_design: {
+    name: "get_voice_design",
+    description: "Get details of a specific AI voice design.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the voice design.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/ai/voice_designs/{id}",
+    category: "voice",
+  },
+  // ─── Fine Tuning ───────────────────────────────────────────
+  list_fine_tuning_jobs: {
+    name: "list_fine_tuning_jobs",
+    description: "List AI fine-tuning jobs on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/ai/fine_tuning/jobs",
+    category: "ai",
+  },
+  create_fine_tuning_job: {
+    name: "create_fine_tuning_job",
+    description: "Create a new AI fine-tuning job.",
+    parameters: {
+      type: "object",
+      properties: {
+        model: {
+          type: "string",
+          description: "The base model to fine-tune.",
+        },
+        training_file: {
+          type: "string",
+          description: "The ID or URL of the training file.",
+        },
+      },
+      required: ["model", "training_file"],
+    },
+    method: "POST",
+    path: "/ai/fine_tuning/jobs",
+    category: "ai",
+  },
+  get_fine_tuning_job: {
+    name: "get_fine_tuning_job",
+    description: "Get details of a specific fine-tuning job.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "string",
+          description: "The ID of the fine-tuning job.",
+        },
+      },
+      required: ["id"],
+    },
+    method: "GET",
+    path: "/ai/fine_tuning/jobs/{id}",
+    category: "ai",
+  },
+  // ─── Toll-Free Verification ─────────────────────────────────
+  list_toll_free_verifications: {
+    name: "list_toll_free_verifications",
+    description: "List toll-free verification requests on the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/toll_free_verification_requests",
+    category: "messaging",
+  },
+  create_toll_free_verification: {
+    name: "create_toll_free_verification",
+    description: "Create a new toll-free verification request.",
+    parameters: {
+      type: "object",
+      properties: {
+        phone_number_id: {
+          type: "string",
+          description: "The ID of the toll-free phone number to verify.",
+        },
+        business_name: {
+          type: "string",
+          description: "The business name for verification.",
+        },
+        corporate_url: {
+          type: "string",
+          description: "The corporate website URL.",
+        },
+        use_case: {
+          type: "string",
+          description: "The intended use case for the toll-free number.",
+        },
+      },
+      required: ["phone_number_id", "business_name", "use_case"],
+    },
+    method: "POST",
+    path: "/toll_free_verification_requests",
+    category: "messaging",
+  },
+  // ─── Detail Records ─────────────────────────────────────────
+  list_detail_records: {
+    name: "list_detail_records",
+    description: "List CDR (Call Detail Record) report requests.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/reports/cdr_requests",
+    category: "reporting",
+  },
+  // ─── Audit Logs ─────────────────────────────────────────────
+  list_audit_events: {
+    name: "list_audit_events",
+    description: "List audit events for the account.",
+    parameters: {
+      type: "object",
+      properties: {
+        page_size: {
+          type: "integer",
+          description: "Number of results per page.",
+          default: 20,
+        },
+        page_number: {
+          type: "integer",
+          description: "Page number to retrieve.",
+          default: 1,
+        },
+      },
+      required: [],
+    },
+    method: "GET",
+    path: "/audit_events",
+    category: "account",
+  },
 };
 
 /**
@@ -2303,4 +4078,101 @@ export const PERMISSION_MAP: Record<string, string> = {
   "lookup.bulk_lookup_numbers": "bulk_lookup_numbers",
   // Messages (get single)
   "messaging.get_message": "get_message",
+  // Missions
+  "missions.create_mission": "create_mission",
+  "missions.get_mission": "get_mission",
+  "missions.list_missions": "list_missions",
+  "missions.create_mission_run": "create_mission_run",
+  "missions.get_mission_run": "get_mission_run",
+  "missions.update_mission_run": "update_mission_run",
+  "missions.create_mission_plan": "create_mission_plan",
+  "missions.update_mission_step": "update_mission_step",
+  "missions.log_mission_event": "log_mission_event",
+  // Insights
+  "insights.create_insight": "create_insight",
+  "insights.get_insight": "get_insight",
+  "insights.list_insights": "list_insights",
+  "insights.update_insight": "update_insight",
+  "insights.create_insight_group": "create_insight_group",
+  "insights.get_insight_group": "get_insight_group",
+  "insights.assign_insight_to_group": "assign_insight_to_group",
+  // Scheduled Events
+  "scheduled_events.schedule_call": "schedule_call",
+  "scheduled_events.schedule_sms": "schedule_sms",
+  "scheduled_events.get_scheduled_event": "get_scheduled_event",
+  "scheduled_events.cancel_scheduled_event": "cancel_scheduled_event",
+  // Conversations
+  "conversations.list_conversations": "list_conversations",
+  "conversations.get_conversation": "get_conversation",
+  "conversations.get_conversation_messages": "get_conversation_messages",
+  "conversations.get_conversation_insights": "get_conversation_insights",
+  // STT / TTS / Embeddings
+  "stt.transcribe_audio": "transcribe_audio",
+  "tts.text_to_speech": "text_to_speech",
+  "embeddings.generate_embeddings": "generate_embeddings",
+  // IoT (expanded)
+  "iot.get_sim_card_group": "get_sim_card_group",
+  "iot.get_sim_card_data_usage": "get_sim_card_data_usage",
+  // Billing (expanded)
+  "billing.list_invoices": "list_invoices",
+  "billing.get_invoice": "get_invoice",
+  // TeXML Applications
+  "texml.list_texml_applications": "list_texml_applications",
+  "texml.create_texml_application": "create_texml_application",
+  "texml.get_texml_application": "get_texml_application",
+  "texml.update_texml_application": "update_texml_application",
+  "texml.delete_texml_application": "delete_texml_application",
+  // Push Credentials
+  "push_credentials.list_push_credentials": "list_push_credentials",
+  "push_credentials.create_push_credential": "create_push_credential",
+  "push_credentials.get_push_credential": "get_push_credential",
+  "push_credentials.delete_push_credential": "delete_push_credential",
+  // MCP Servers
+  "mcp_servers.list_mcp_servers": "list_mcp_servers",
+  "mcp_servers.create_mcp_server": "create_mcp_server",
+  "mcp_servers.get_mcp_server": "get_mcp_server",
+  "mcp_servers.update_mcp_server": "update_mcp_server",
+  "mcp_servers.delete_mcp_server": "delete_mcp_server",
+  // Call Control
+  "call_control.list_call_control_applications": "list_call_control_applications",
+  "call_control.create_call_control_application": "create_call_control_application",
+  "call_control.get_call_control_application": "get_call_control_application",
+  "call_control.delete_call_control_application": "delete_call_control_application",
+  // Recordings
+  "recordings.list_recordings": "list_recordings",
+  "recordings.get_recording": "get_recording",
+  // Reporting
+  "reporting.create_usage_report": "create_usage_report",
+  "reporting.get_usage_report": "get_usage_report",
+  "reporting.list_detail_records": "list_detail_records",
+  // Global IPs
+  "global_ips.list_global_ips": "list_global_ips",
+  "global_ips.create_global_ip": "create_global_ip",
+  "global_ips.delete_global_ip": "delete_global_ip",
+  // IoT (SIM orders, PWG)
+  "iot.list_sim_card_orders": "list_sim_card_orders",
+  "iot.create_sim_card_order": "create_sim_card_order",
+  "iot.list_private_wireless_gateways": "list_private_wireless_gateways",
+  "iot.create_private_wireless_gateway": "create_private_wireless_gateway",
+  "iot.delete_private_wireless_gateway": "delete_private_wireless_gateway",
+  // External Connections
+  "external_connections.list_external_connections": "list_external_connections",
+  "external_connections.create_external_connection": "create_external_connection",
+  "external_connections.delete_external_connection": "delete_external_connection",
+  // Voice (clones, designs)
+  "voice.list_voice_clones": "list_voice_clones",
+  "voice.create_voice_clone": "create_voice_clone",
+  "voice.get_voice_clone": "get_voice_clone",
+  "voice.list_voice_designs": "list_voice_designs",
+  "voice.create_voice_design": "create_voice_design",
+  "voice.get_voice_design": "get_voice_design",
+  // AI (fine tuning)
+  "ai.list_fine_tuning_jobs": "list_fine_tuning_jobs",
+  "ai.create_fine_tuning_job": "create_fine_tuning_job",
+  "ai.get_fine_tuning_job": "get_fine_tuning_job",
+  // Toll-Free Verification
+  "messaging.list_toll_free_verifications": "list_toll_free_verifications",
+  "messaging.create_toll_free_verification": "create_toll_free_verification",
+  // Audit Logs
+  "account.list_audit_events": "list_audit_events",
 };

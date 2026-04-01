@@ -173,7 +173,7 @@ class TestReadonly:
         """GET /v2/number_lookup/:number works with a known number format."""
         r = httpx.get(f"{BASE_URL}/number_lookup/+18005551234", headers=HEADERS)
         # 200 or 404 both acceptable — we're testing the endpoint works, not the number
-        assert r.status_code in (200, 403, 404, 422)  # 403 = lookup not enabled on account
+        assert r.status_code in (200, 404, 422)
 
     def test_readonly_list_sim_cards(self):
         """GET /v2/sim_cards returns a list."""
@@ -347,6 +347,280 @@ class TestReadonly:
         """GET /v2/faxes returns a list or valid error."""
         r = httpx.get(
             f"{BASE_URL}/faxes", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: AI Missions ──────────────────────────────────
+
+    def test_readonly_list_missions(self):
+        """GET /v2/ai/missions returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/ai/missions", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: AI Insights ──────────────────────────────────
+
+    def test_readonly_list_insights(self):
+        """GET /v2/ai/conversations/insights returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/ai/conversations/insights",
+            headers=HEADERS,
+            params={"page[size]": 1},
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Conversations ────────────────────────────────
+
+    def test_readonly_list_conversations(self):
+        """GET /v2/ai/conversations returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/ai/conversations",
+            headers=HEADERS,
+            params={"page[size]": 1},
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Invoices ─────────────────────────────────────
+
+    def test_readonly_list_invoices(self):
+        """GET /v2/invoices returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/invoices", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: TeXML Applications ───────────────────────────
+
+    def test_list_texml_applications_readonly(self):
+        """GET /v2/texml_applications returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/texml_applications", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Push Credentials ─────────────────────────────
+
+    def test_list_push_credentials_readonly(self):
+        """GET /v2/mobile_push_credentials returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/mobile_push_credentials", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: MCP Servers ──────────────────────────────────
+
+    def test_list_mcp_servers_readonly(self):
+        """GET /v2/ai/mcp_servers returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/ai/mcp_servers", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Call Control Applications ────────────────────
+
+    def test_list_call_control_applications_readonly(self):
+        """GET /v2/call_control_applications returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/call_control_applications", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Recordings ───────────────────────────────────
+
+    def test_list_recordings_readonly(self):
+        """GET /v2/recordings returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/recordings", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Global IPs ───────────────────────────────────
+
+    def test_list_global_ips_readonly(self):
+        """GET /v2/global_ips returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/global_ips", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: SIM Card Orders ──────────────────────────────
+
+    def test_list_sim_card_orders_readonly(self):
+        """GET /v2/sim_card_orders returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/sim_card_orders", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: External Connections ─────────────────────────
+
+    def test_list_external_connections_readonly(self):
+        """GET /v2/external_connections returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/external_connections", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Voice Clones ─────────────────────────────────
+
+    def test_list_voice_clones_readonly(self):
+        """GET /v2/ai/voice_clones returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/ai/voice_clones", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Voice Designs ────────────────────────────────
+
+    def test_list_voice_designs_readonly(self):
+        """GET /v2/ai/voice_designs returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/ai/voice_designs", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Fine Tuning ──────────────────────────────────
+
+    def test_list_fine_tuning_jobs_readonly(self):
+        """GET /v2/ai/fine_tuning/jobs returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/ai/fine_tuning/jobs", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Toll-Free Verification ───────────────────────
+
+    def test_list_toll_free_verifications_readonly(self):
+        """GET /v2/toll_free_verification_requests returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/toll_free_verification_requests", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Detail Records ───────────────────────────────
+
+    def test_list_detail_records_readonly(self):
+        """GET /v2/reports/cdr_requests returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/reports/cdr_requests", headers=HEADERS, params={"page[size]": 1}
+        )
+        assert r.status_code in (200, 401, 403, 404), (
+            f"Expected 200/401/403/404, got {r.status_code}"
+        )
+        if r.status_code == 200:
+            data = r.json()
+            assert "data" in data
+            assert isinstance(data["data"], list)
+
+    # ─── New tools: Audit Logs ───────────────────────────────────
+
+    def test_list_audit_events_readonly(self):
+        """GET /v2/audit_events returns a list or valid error."""
+        r = httpx.get(
+            f"{BASE_URL}/audit_events", headers=HEADERS, params={"page[size]": 1}
         )
         assert r.status_code in (200, 401, 403, 404), (
             f"Expected 200/401/403/404, got {r.status_code}"

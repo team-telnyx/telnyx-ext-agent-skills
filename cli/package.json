@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "tsx bin/telnyx-agent.ts",
+    "build": "echo 'CLI ships TypeScript source — no build needed'",
     "test": "tsx --test tests/integration.test.ts",
     "typecheck": "tsc --noEmit"
   },
@@ -44,12 +45,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/team-telnyx/telnyx-agent-portal.git",
-    "directory": "packages/cli"
+    "url": "https://github.com/team-telnyx/skills.git",
+    "directory": "cli"
   },
-  "homepage": "https://github.com/team-telnyx/telnyx-agent-portal#readme",
+  "homepage": "https://github.com/team-telnyx/skills#readme",
   "bugs": {
-    "url": "https://github.com/team-telnyx/telnyx-agent-portal/issues"
+    "url": "https://github.com/team-telnyx/skills/issues"
   },
   "files": [
     "bin",
