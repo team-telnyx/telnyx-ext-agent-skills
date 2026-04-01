@@ -14,7 +14,7 @@ const __dirname = typeof import.meta.dirname === "string"
   ? import.meta.dirname
   : dirname(fileURLToPath(import.meta.url));
 const API_KEY = process.env.TELNYX_API_KEY;
-const GUIDES_DIR = join(__dirname, "..", "docs", "guides");
+const GUIDES_DIR = join(__dirname, "..", "guides");
 
 // Skip all tests if no API key
 if (!API_KEY) {
