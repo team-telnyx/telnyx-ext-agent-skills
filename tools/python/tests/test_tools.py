@@ -28,12 +28,12 @@ class TestToolDefinitions:
             assert "category" in tool_def, f"{name} missing 'category'"
             assert tool_def["name"] == name
 
-    def test_84_tools_defined(self) -> None:
-        assert len(TOOL_DEFINITIONS) == 84
+    def test_161_tools_defined(self) -> None:
+        assert len(TOOL_DEFINITIONS) == 161
 
     def test_tool_categories(self) -> None:
         categories = {t["category"] for t in TOOL_DEFINITIONS.values()}
-        assert categories == {"messaging", "numbers", "account", "voice", "ai", "fax", "lookup", "iot", "verify", "payments", "connections", "voice_profiles", "storage", "10dlc", "porting", "e911", "billing", "webhooks", "networking"}
+        assert categories == {"messaging", "numbers", "account", "voice", "ai", "fax", "lookup", "iot", "verify", "payments", "connections", "voice_profiles", "storage", "10dlc", "porting", "e911", "billing", "webhooks", "networking", "missions", "insights", "scheduled_events", "conversations", "stt", "tts", "embeddings", "texml", "push_credentials", "mcp_servers", "call_control", "recordings", "reporting", "global_ips", "external_connections"}
 
     def test_new_connection_tools(self) -> None:
         for name in ["create_credential_connection", "get_connection", "delete_connection", "update_connection"]:
@@ -145,6 +145,88 @@ class TestToolDefinitions:
         assert TOOL_DEFINITIONS["get_message"]["method"] == "GET"
         assert TOOL_DEFINITIONS["get_message"]["path"] == "/messages/{id}"
         assert TOOL_DEFINITIONS["get_message"]["category"] == "messaging"
+
+    def test_mission_tools(self) -> None:
+        for name in ["create_mission", "get_mission", "list_missions", "create_mission_run", "get_mission_run", "update_mission_run", "create_mission_plan", "update_mission_step", "log_mission_event"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "missions"
+
+    def test_insight_tools(self) -> None:
+        for name in ["create_insight", "get_insight", "list_insights", "update_insight", "create_insight_group", "get_insight_group", "assign_insight_to_group"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "insights"
+
+    def test_scheduled_event_tools(self) -> None:
+        for name in ["schedule_call", "schedule_sms", "get_scheduled_event", "cancel_scheduled_event"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "scheduled_events"
+
+    def test_conversation_tools(self) -> None:
+        for name in ["list_conversations", "get_conversation", "get_conversation_messages", "get_conversation_insights"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "conversations"
+
+    def test_stt_tools(self) -> None:
+        assert "transcribe_audio" in TOOL_DEFINITIONS
+        assert TOOL_DEFINITIONS["transcribe_audio"]["category"] == "stt"
+
+    def test_tts_tools(self) -> None:
+        assert "text_to_speech" in TOOL_DEFINITIONS
+        assert TOOL_DEFINITIONS["text_to_speech"]["category"] == "tts"
+
+    def test_embeddings_tools(self) -> None:
+        assert "generate_embeddings" in TOOL_DEFINITIONS
+        assert TOOL_DEFINITIONS["generate_embeddings"]["category"] == "embeddings"
+
+    def test_iot_expanded_tools(self) -> None:
+        for name in ["get_sim_card_group", "get_sim_card_data_usage"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "iot"
+
+    def test_billing_expanded_tools(self) -> None:
+        for name in ["list_invoices", "get_invoice"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "billing"
+
+    def test_texml_tools(self) -> None:
+        for name in ["list_texml_applications", "create_texml_application", "get_texml_application", "update_texml_application", "delete_texml_application"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "texml"
+
+    def test_push_credentials_tools(self) -> None:
+        for name in ["list_push_credentials", "create_push_credential", "get_push_credential", "delete_push_credential"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "push_credentials"
+
+    def test_mcp_servers_tools(self) -> None:
+        for name in ["list_mcp_servers", "create_mcp_server", "get_mcp_server", "update_mcp_server", "delete_mcp_server"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "mcp_servers"
+
+    def test_call_control_tools(self) -> None:
+        for name in ["list_call_control_applications", "create_call_control_application", "get_call_control_application", "delete_call_control_application"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "call_control"
+
+    def test_recordings_tools(self) -> None:
+        for name in ["list_recordings", "get_recording"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "recordings"
+
+    def test_reporting_tools(self) -> None:
+        for name in ["create_usage_report", "get_usage_report", "list_detail_records"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "reporting"
+
+    def test_global_ips_tools(self) -> None:
+        for name in ["list_global_ips", "create_global_ip", "delete_global_ip"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "global_ips"
+
+    def test_external_connections_tools(self) -> None:
+        for name in ["list_external_connections", "create_external_connection", "delete_external_connection"]:
+            assert name in TOOL_DEFINITIONS, f"Missing tool: {name}"
+            assert TOOL_DEFINITIONS[name]["category"] == "external_connections"
 
 
 class TestToolkitCore:

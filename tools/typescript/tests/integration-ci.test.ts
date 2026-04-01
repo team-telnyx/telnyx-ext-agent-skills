@@ -256,6 +256,204 @@ describe("TypeScript SDK — Read-Only API", () => {
       assert.ok(Array.isArray(body.data));
     }
   });
+
+  // ─── New tools: AI Missions ──────────────────────────────────
+
+  it("list_missions returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/ai/missions?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: AI Insights ──────────────────────────────────
+
+  it("list_insights returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/ai/conversations/insights?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Conversations ────────────────────────────────
+
+  it("list_conversations returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/ai/conversations?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Invoices ─────────────────────────────────────
+
+  it("list_invoices returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/invoices?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: TeXML Applications ───────────────────────────
+
+  it("list_texml_applications returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/texml_applications?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Push Credentials ─────────────────────────────
+
+  it("list_push_credentials returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/mobile_push_credentials?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: MCP Servers ──────────────────────────────────
+
+  it("list_mcp_servers returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/ai/mcp_servers?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Call Control Applications ────────────────────
+
+  it("list_call_control_applications returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/call_control_applications?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Recordings ───────────────────────────────────
+
+  it("list_recordings returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/recordings?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Global IPs ───────────────────────────────────
+
+  it("list_global_ips returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/global_ips?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: SIM Card Orders ──────────────────────────────
+
+  it("list_sim_card_orders returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/sim_card_orders?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: External Connections ─────────────────────────
+
+  it("list_external_connections returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/external_connections?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Voice Clones ─────────────────────────────────
+
+  it("list_voice_clones returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/ai/voice_clones?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Voice Designs ────────────────────────────────
+
+  it("list_voice_designs returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/ai/voice_designs?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Fine Tuning ──────────────────────────────────
+
+  it("list_fine_tuning_jobs returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/ai/fine_tuning/jobs?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Toll-Free Verification ───────────────────────
+
+  it("list_toll_free_verifications returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/toll_free_verification_requests?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Detail Records ───────────────────────────────
+
+  it("list_detail_records returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/reports/cdr_requests?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
+
+  // ─── New tools: Audit Logs ───────────────────────────────────
+
+  it("list_audit_events returns array or valid error", async () => {
+    const r = await fetch(`${BASE}/audit_events?page[size]=1`, { headers });
+    assert.ok([200, 401, 403, 404].includes(r.status), `Expected 200/401/403/404, got ${r.status}`);
+    if (r.status === 200) {
+      const body = (await r.json()) as any;
+      assert.ok(Array.isArray(body.data));
+    }
+  });
 });
 
 describe("TypeScript SDK — Toolkit Classes", () => {
@@ -288,7 +486,7 @@ describe("TypeScript SDK — Toolkit Classes", () => {
       "../src/shared/constants.js"
     );
     const count = Object.keys(TOOL_DEFINITIONS).length;
-    assert.equal(count, 84, `Expected 84 tools, got ${count}`);
+    assert.equal(count, 161, `Expected 161 tools, got ${count}`);
   });
 
   it("all tool definitions have required fields", async () => {
@@ -386,14 +584,14 @@ describe("TypeScript SDK — Toolkit with Configuration", () => {
     });
     const tools = toolkit.getOpenAITools();
     assert.ok(tools.length > 0, "Should have at least one tool");
-    assert.ok(tools.length < 84, `Should have fewer than 84 tools, got ${tools.length}`);
+    assert.ok(tools.length < 161, `Should have fewer than 161 tools, got ${tools.length}`);
   });
 
   it("empty configuration returns all tools", async () => {
     const { TelnyxAgentToolkit } = await import("../src/index.js");
     const toolkit = new TelnyxAgentToolkit(API_KEY!);
     const tools = toolkit.getOpenAITools();
-    assert.equal(tools.length, 84, `Expected 84 tools, got ${tools.length}`);
+    assert.equal(tools.length, 161, `Expected 161 tools, got ${tools.length}`);
   });
 });
 

@@ -48,10 +48,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/team-telnyx/telnyx-agent-portal"
+Homepage = "https://github.com/team-telnyx/skills"
 Documentation = "https://developers.telnyx.com"
-Repository = "https://github.com/team-telnyx/telnyx-agent-portal"
-Issues = "https://github.com/team-telnyx/telnyx-agent-portal/issues"
+Repository = "https://github.com/team-telnyx/skills"
+Issues = "https://github.com/team-telnyx/skills/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["telnyx_agent_toolkit"]
