@@ -37,12 +37,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/team-telnyx/skills.git",
+    "url": "https://github.com/team-telnyx/ai.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/team-telnyx/skills#readme",
+  "homepage": "https://github.com/team-telnyx/ai#readme",
   "bugs": {
-    "url": "https://github.com/team-telnyx/skills/issues"
+    "url": "https://github.com/team-telnyx/ai/issues"
   },
   "files": [
     "bin",

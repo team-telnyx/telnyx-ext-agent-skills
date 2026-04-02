@@ -47,12 +47,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/team-telnyx/skills.git",
+    "url": "https://github.com/team-telnyx/ai.git",
     "directory": "tools/typescript"
   },
-  "homepage": "https://github.com/team-telnyx/skills#readme",
+  "homepage": "https://github.com/team-telnyx/ai#readme",
   "bugs": {
-    "url": "https://github.com/team-telnyx/skills/issues"
+    "url": "https://github.com/team-telnyx/ai/issues"
   },
   "peerDependencies": {
     "openai": ">=4.0.0",

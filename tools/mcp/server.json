@@ -3,7 +3,7 @@
   "name": "io.github.team-telnyx/telnyx-mcp",
   "description": "Telnyx MCP proxy — connects your IDE to the remote Telnyx MCP server for AI-powered telecom tools",
   "repository": {
-    "url": "https://github.com/team-telnyx/skills",
+    "url": "https://github.com/team-telnyx/ai",
     "source": "github"
   },
   "packages": [
