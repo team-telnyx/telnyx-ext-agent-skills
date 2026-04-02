@@ -67,6 +67,21 @@ const tools = toolkit.getLangChainTools();
 
 Works with LangChain and Vercel's AI SDK. See [TypeScript docs](/tools/typescript) for full usage.
 
+## Agent CLI
+
+Composite commands that reduce multi-step Telnyx workflows to a single command. Built for AI agents and developers who want to provision infrastructure without orchestrating multiple API calls.
+
+```sh
+telnyx-agent setup-sms        # Buy number + create messaging profile + assign
+telnyx-agent setup-voice       # Create SIP connection + buy number + assign
+telnyx-agent setup-ai          # Create AI assistant + buy number + wire together
+telnyx-agent status            # Account health overview
+```
+
+Every command supports `--json` for machine-readable output.
+
+See [Agent CLI](/cli) for the full list of commands and options.
+
 ## Agent Skills
 
 Install individual skills for your coding assistant via the [Skills CLI](https://github.com/vercel-labs/skills):
