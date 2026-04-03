@@ -49,7 +49,7 @@ jobs:
         run: npm ci
 
       - name: Publish @telnyx/agent-toolkit
-        run: bash ./bin/publish-npm tools/typescript
+        run: bash ./.github/bin/publish-npm tools/typescript
 
   publish-cli:
     name: publish @telnyx/agent-cli
@@ -73,7 +73,7 @@ jobs:
         run: npm ci
 
       - name: Publish @telnyx/agent-cli
-        run: bash ./bin/publish-npm cli
+        run: bash ./.github/bin/publish-npm cli
 
   publish-mcp:
     name: publish @telnyx/mcp
@@ -97,7 +97,7 @@ jobs:
         run: npm ci
 
       - name: Publish @telnyx/mcp
-        run: bash ./bin/publish-npm tools/mcp
+        run: bash ./.github/bin/publish-npm tools/mcp
 
   publish-mcp-registry:
     name: publish to MCP Registry
