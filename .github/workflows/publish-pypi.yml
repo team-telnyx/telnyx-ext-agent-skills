@@ -35,4 +35,4 @@ jobs:
           version: '0.9.13'
 
       - name: Publish to PyPI
-        run: bash ./bin/publish-pypi
+        run: bash ./.github/bin/publish-pypi

@@ -27,4 +27,4 @@ jobs:
           node-version: '24'
 
       - name: Check release environment
-        run: bash ./bin/check-release-environment
+        run: bash ./.github/bin/check-release-environment
