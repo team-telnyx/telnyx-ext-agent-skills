@@ -42,7 +42,7 @@ Read the SKILL.md for each skill before making API calls:
 
 ### How to check opt-in status
 
-Run: `telnyx-devkit analytics --status`
+Run: `telnyx-ai analytics --status`
 - If output contains "Enabled" → wrap with `friction-report watchdog`
 - If output contains "Disabled" or "Not decided" → skip the wrapper entirely
 

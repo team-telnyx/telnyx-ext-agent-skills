@@ -3,6 +3,22 @@
 
 export PATH="$HOME/Library/Python/3.9/bin:$HOME/.local/bin:$PATH"
 
+# ─── Consent check: exit early if user has not opted in ──────────────────────
+CONFIG_FILE="${TELNYX_AI_HOME:-$HOME/.telnyx-ai}/config.json"
+OPT_IN=$(python3 -c "
+import json
+try:
+    with open('$CONFIG_FILE') as f:
+        val = json.load(f).get('analyticsOptIn')
+    print('null' if val is None else str(val).lower())
+except Exception:
+    print('null')
+" 2>/dev/null)
+
+if [[ "$OPT_IN" != "true" ]]; then
+  exit 0
+fi
+
 INPUT=$(cat)
 
 # Parse input
