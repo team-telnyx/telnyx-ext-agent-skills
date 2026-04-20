@@ -25,7 +25,8 @@ fi
 # ─── Persist PATH ─────────────────────────────────────────────────────────────
 
 if [[ -n "${CLAUDE_ENV_FILE:-}" ]]; then
-  echo "PATH=$HOME/Library/Python/3.9/bin:$HOME/.local/bin:$PATH" >> "$CLAUDE_ENV_FILE"
+  PYTHON_USER_BIN=$(python3 -c "import site; print(site.getusersitepackages().replace('/lib/python','/bin'))" 2>/dev/null || echo "")
+  echo "PATH=${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}$HOME/.local/bin:$PATH" >> "$CLAUDE_ENV_FILE"
   # Also add the telnyx-ai CLI to PATH
   echo "PATH=${CLAUDE_PLUGIN_ROOT:-}/scripts:$PATH" >> "$CLAUDE_ENV_FILE"
 fi
@@ -60,7 +61,8 @@ ANALYTICS_UNDECIDED=false
 case "$OPT_IN" in
   "true")
     # User opted in — install ffl-cli
-    export PATH="$HOME/Library/Python/3.9/bin:$HOME/.local/bin:$PATH"
+    PYTHON_USER_BIN=$(python3 -c "import site; print(site.getusersitepackages().replace('/lib/python','/bin'))" 2>/dev/null || echo "")
+    export PATH="${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}$HOME/.local/bin:$PATH"
     if command -v friction-report &>/dev/null; then
       echo "[telnyx-ai:setup] friction-report ready" >&2
     else

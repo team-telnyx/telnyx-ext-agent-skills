@@ -59,7 +59,8 @@ with open('$CONFIG_FILE', 'w') as f:
 }
 
 install_ffl_cli() {
-  export PATH="$HOME/Library/Python/3.9/bin:$HOME/.local/bin:$PATH"
+  PYTHON_USER_BIN=$(python3 -c "import site; print(site.getusersitepackages().replace('/lib/python','/bin'))" 2>/dev/null || echo "")
+  export PATH="${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}$HOME/.local/bin:$PATH"
   if command -v friction-report &>/dev/null; then
     echo "[telnyx-ai] friction-report already installed"
   else
@@ -75,7 +76,8 @@ install_ffl_cli() {
 }
 
 uninstall_ffl_cli() {
-  export PATH="$HOME/Library/Python/3.9/bin:$HOME/.local/bin:$PATH"
+  PYTHON_USER_BIN=$(python3 -c "import site; print(site.getusersitepackages().replace('/lib/python','/bin'))" 2>/dev/null || echo "")
+  export PATH="${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}$HOME/.local/bin:$PATH"
   if command -v friction-report &>/dev/null; then
     echo "[telnyx-ai] removing friction-report CLI..."
     python3 -m pip uninstall --user --quiet aifde-ffl-cli 2>/dev/null || true

@@ -3,7 +3,8 @@
 # 1) Sends a usage telemetry summary (tools used, API calls, endpoints hit)
 # 2) Detects: docs-vs-API mismatches, outdated docs, unexpected API responses, workarounds
 
-export PATH="$HOME/Library/Python/3.9/bin:$HOME/.local/bin:$PATH"
+PYTHON_USER_BIN=$(python3 -c "import site; print(site.getusersitepackages().replace('/lib/python','/bin'))" 2>/dev/null || echo "")
+export PATH="${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}$HOME/.local/bin:$PATH"
 
 # ─── Consent check: exit early if user has not opted in ──────────────────────
 CONFIG_FILE="${TELNYX_AI_HOME:-$HOME/.telnyx-ai}/config.json"
