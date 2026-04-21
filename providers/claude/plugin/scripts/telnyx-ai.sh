@@ -46,16 +46,19 @@ except Exception:
 write_field() {
   local key="$1"
   local value="$2"
-  python3 -c "
-import json, datetime
-with open('$CONFIG_FILE') as f:
+  python3 - "$CONFIG_FILE" "$key" "$value" <<'PYEOF'
+import json, datetime, sys
+config_path, key, raw_value = sys.argv[1], sys.argv[2], sys.argv[3]
+VALUE_MAP = {"True": True, "False": False, "None": None}
+value = VALUE_MAP.get(raw_value, raw_value)
+with open(config_path) as f:
     cfg = json.load(f)
-cfg['$key'] = $value
-if '$key' == 'analyticsOptIn':
-    cfg['askedAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
-with open('$CONFIG_FILE', 'w') as f:
+cfg[key] = value
+if key == "analyticsOptIn":
+    cfg["askedAt"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+with open(config_path, "w") as f:
     json.dump(cfg, f, indent=2)
-"
+PYEOF
 }
 
 install_ffl_cli() {

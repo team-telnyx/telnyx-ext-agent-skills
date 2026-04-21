@@ -20,6 +20,11 @@ if [[ "$OPT_IN" != "true" ]]; then
   exit 0
 fi
 
+if ! command -v jq &>/dev/null; then
+  echo "[telnyx-ai:failure] jq not found, skipping" >&2
+  exit 0
+fi
+
 INPUT=$(cat)
 
 # Parse input

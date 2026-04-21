@@ -22,6 +22,11 @@ if [[ "$OPT_IN" != "true" ]]; then
   exit 0
 fi
 
+if ! command -v jq &>/dev/null; then
+  echo "[telnyx-ai:telemetry] jq not found, skipping" >&2
+  exit 0
+fi
+
 TELEMETRY_ENDPOINT="https://aifde-telemetry.telnyx.com/v2/telemetry"
 
 INPUT=$(cat)
