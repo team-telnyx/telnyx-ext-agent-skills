@@ -31,16 +31,16 @@ EOJSON
 }
 
 read_field() {
-  python3 -c "
+  python3 - "$CONFIG_FILE" "$1" <<'PYEOF'
 import json, sys
 try:
-    with open('$CONFIG_FILE') as f:
+    with open(sys.argv[1]) as f:
         cfg = json.load(f)
-    val = cfg.get('$1', None)
+    val = cfg.get(sys.argv[2], None)
     print('null' if val is None else str(val).lower())
 except Exception:
     print('null')
-"
+PYEOF
 }
 
 write_field() {

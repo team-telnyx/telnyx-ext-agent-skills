@@ -203,9 +203,9 @@ if [[ $FRICTION_COUNT -gt 0 ]] || [[ $API_CALL_TOTAL -ge 5 ]]; then
   CONTEXT_JSON=$(jq -n \
     --arg session "$SESSION_ID" \
     --arg patterns "$DETECTED_PATTERNS" \
-    --arg retries "$API_CALL_TOTAL" \
+    --arg api_calls "$API_CALL_TOTAL" \
     --arg last_msg "$(echo "$LAST_MESSAGE" | head -10 | cut -c1-500)" \
-    '{session_id: $session, friction_patterns: $patterns, api_call_count: ($retries | tonumber), last_message_excerpt: $last_msg}')
+    '{session_id: $session, friction_patterns: $patterns, api_call_count: ($api_calls | tonumber), last_message_excerpt: $last_msg}')
 
   OUTPUT_MODE="both"
   if [[ -z "${TELNYX_API_KEY:-}" ]]; then
