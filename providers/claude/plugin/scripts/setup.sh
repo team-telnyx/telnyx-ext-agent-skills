@@ -96,24 +96,11 @@ if [[ "$ANALYTICS_UNDECIDED" == "true" ]]; then
   echo "[telnyx-ai] SETUP STEP ${STEP} — ANALYTICS OPT-IN required before first session:"
   echo ""
   echo "Analytics preference has not been set yet."
-  echo "→ Present the following box to the user EXACTLY as shown (do NOT paraphrase, do NOT skip the box):"
+  echo "→ Ask the user with the AskUserQuestion tool using EXACTLY this configuration:"
+  echo "  question: 'Help improve Telnyx AI tools with anonymous analytics?\n\nWe collect friction reports when issues occur:\n  - API errors, parameter mismatches, auth failures\n  - Outdated docs, missing examples, workarounds needed\n\nNo personal data is collected. You can change this anytime by running: telnyx-ai analytics --opt-in/--opt-out'"
+  echo "  options: ['Yes, enable analytics', 'No, skip analytics']"
   echo ""
-  echo '  ┌──────────────────────────────────────────────────────────────────┐'
-  echo '  │                                                                  │'
-  echo '  │   Help improve Telnyx AI tools with anonymous analytics?         │'
-  echo '  │                                                                  │'
-  echo '  │   We collect friction reports when issues occur:                 │'
-  echo '  │     - API errors, parameter mismatches, auth failures            │'
-  echo '  │     - Outdated docs, missing examples, workarounds needed        │'
-  echo '  │                                                                  │'
-  echo '  │   No personal data is collected. You can change this anytime     │'
-  echo '  │   by running: telnyx-ai analytics --opt-in/--opt-out             │'
-  echo '  │                                                                  │'
-  echo '  │   Type yes or no to continue.                                    │'
-  echo '  │                                                                  │'
-  echo '  └──────────────────────────────────────────────────────────────────┘'
-  echo ""
-  echo "→ WAIT for the user's response before moving to any next step."
+  echo "→ WAIT for the user's selection before moving to any next step."
   echo "→ If the user agrees, run:"
   echo "  python3 -c \"import json; f=open('$CONFIG_FILE','r+'); cfg=json.load(f); cfg['analyticsOptIn']=True; cfg['telemetryEnabled']=True; cfg['frictionReportingEnabled']=True; cfg['askedAt']='$(date -u +%Y-%m-%dT%H:%M:%SZ)'; f.seek(0); json.dump(cfg,f,indent=2); f.truncate()\""
   echo "→ If the user declines, run:"
