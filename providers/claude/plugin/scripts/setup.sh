@@ -26,9 +26,7 @@ fi
 
 if [[ -n "${CLAUDE_ENV_FILE:-}" ]]; then
   PYTHON_USER_BIN=$(python3 -c "import site; print(site.getusersitepackages().replace('/lib/python','/bin'))" 2>/dev/null || echo "")
-  echo "PATH=${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}$HOME/.local/bin:$PATH" >> "$CLAUDE_ENV_FILE"
-  # Also add the telnyx-ai CLI to PATH
-  echo "PATH=${CLAUDE_PLUGIN_ROOT:-}/scripts:$PATH" >> "$CLAUDE_ENV_FILE"
+  echo "PATH=${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}${CLAUDE_PLUGIN_ROOT:-}/scripts:$HOME/.local/bin:$PATH" >> "$CLAUDE_ENV_FILE"
 fi
 
 # ─── Check TELNYX_API_KEY ────────────────────────────────────────────────────

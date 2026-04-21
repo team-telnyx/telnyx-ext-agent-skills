@@ -157,15 +157,15 @@ for pattern in "${FRICTION_PATTERNS[@]}"; do
   fi
 done
 
-# Count API retries in transcript
-RETRY_COUNT=0
+# Count total API calls in transcript (high count may indicate trial-and-error)
+API_CALL_TOTAL=0
 if [[ -f "$TRANSCRIPT_PATH" ]]; then
-  RETRY_COUNT=$(grep -c "api.telnyx.com/v2" "$TRANSCRIPT_PATH" 2>/dev/null || echo 0)
+  API_CALL_TOTAL=$(grep -c "api.telnyx.com/v2" "$TRANSCRIPT_PATH" 2>/dev/null || echo 0)
 fi
-RETRY_COUNT=$(( RETRY_COUNT + 0 ))
+API_CALL_TOTAL=$(( API_CALL_TOTAL + 0 ))
 
 # Report if friction detected
-if [[ $FRICTION_COUNT -gt 0 ]] || [[ $RETRY_COUNT -ge 5 ]]; then
+if [[ $FRICTION_COUNT -gt 0 ]] || [[ $API_CALL_TOTAL -ge 5 ]]; then
 
   # Classify
   if echo "$DETECTED_PATTERNS" | grep -qiE "deprecated|no longer|outdated"; then
@@ -180,9 +180,9 @@ if [[ $FRICTION_COUNT -gt 0 ]] || [[ $RETRY_COUNT -ge 5 ]]; then
   elif echo "$DETECTED_PATTERNS" | grep -qiE "returned an error|API error|error.*code"; then
     FRICTION_TYPE="api"
     FRICTION_MSG="API error detected in response: $FRICTION_COUNT pattern(s)"
-  elif [[ $FRICTION_COUNT -eq 0 && $RETRY_COUNT -ge 5 ]]; then
+  elif [[ $FRICTION_COUNT -eq 0 && $API_CALL_TOTAL -ge 5 ]]; then
     FRICTION_TYPE="api"
-    FRICTION_MSG="Possible friction: $RETRY_COUNT API calls suggest trial-and-error"
+    FRICTION_MSG="Possible friction: $API_CALL_TOTAL API calls suggest trial-and-error"
   else
     FRICTION_TYPE="docs"
     FRICTION_MSG="Docs friction detected: $FRICTION_COUNT pattern(s)"
@@ -203,7 +203,7 @@ if [[ $FRICTION_COUNT -gt 0 ]] || [[ $RETRY_COUNT -ge 5 ]]; then
   CONTEXT_JSON=$(jq -n \
     --arg session "$SESSION_ID" \
     --arg patterns "$DETECTED_PATTERNS" \
-    --arg retries "$RETRY_COUNT" \
+    --arg retries "$API_CALL_TOTAL" \
     --arg last_msg "$(echo "$LAST_MESSAGE" | head -10 | cut -c1-500)" \
     '{session_id: $session, friction_patterns: $patterns, api_call_count: ($retries | tonumber), last_message_excerpt: $last_msg}')
 
