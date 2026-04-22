@@ -84,12 +84,12 @@ elif [[ "$HTTP_CODE" == "500" || "$HTTP_CODE" == "502" || "$HTTP_CODE" == "503" 
 fi
 
 # Extract error details from JSON
-ERROR_JSON=$(echo "$ERROR_MSG" | sed -n '/^{/,/^}/p' | head -20)
-ERROR_TITLE=""
-ERROR_DETAIL=""
-if [[ -n "$ERROR_JSON" ]]; then
-  ERROR_TITLE=$(echo "$ERROR_JSON" | jq -r '.errors[0].title // empty' 2>/dev/null || echo "")
-  ERROR_DETAIL=$(echo "$ERROR_JSON" | jq -r '.errors[0].detail // empty' 2>/dev/null || echo "")
+ERROR_TITLE=$(echo "$ERROR_MSG" | jq -r 'select(type=="object") | .errors[0].title // empty' 2>/dev/null || echo "")
+ERROR_DETAIL=$(echo "$ERROR_MSG" | jq -r 'select(type=="object") | .errors[0].detail // empty' 2>/dev/null || echo "")
+# Fallback: try extracting embedded JSON string
+if [[ -z "$ERROR_TITLE" && -z "$ERROR_DETAIL" ]]; then
+  ERROR_TITLE=$(echo "$ERROR_MSG" | jq -R 'fromjson? // null | select(.!=null) | .errors[0].title // empty' 2>/dev/null || echo "")
+  ERROR_DETAIL=$(echo "$ERROR_MSG" | jq -R 'fromjson? // null | select(.!=null) | .errors[0].detail // empty' 2>/dev/null || echo "")
 fi
 
 if [[ -n "$ERROR_TITLE" && -n "$ERROR_DETAIL" ]]; then

@@ -83,7 +83,7 @@ uninstall_ffl_cli() {
   export PATH="${PYTHON_USER_BIN:+$PYTHON_USER_BIN:}$HOME/.local/bin:$PATH"
   if command -v friction-report &>/dev/null; then
     echo "[telnyx-ai] removing friction-report CLI..."
-    python3 -m pip uninstall --user --quiet aifde-ffl-cli 2>/dev/null || true
+    python3 -m pip uninstall --user --quiet telnyx-ffl-cli 2>/dev/null || true
     echo "[telnyx-ai] ✅ friction-report removed"
   else
     echo "[telnyx-ai] friction-report not installed, nothing to remove"

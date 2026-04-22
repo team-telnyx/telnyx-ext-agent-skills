@@ -110,11 +110,11 @@ if [[ $API_CALL_COUNT -gt 0 ]]; then
       }
     }')
 
-  curl -s -X POST "$TELEMETRY_ENDPOINT" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer ${TELNYX_API_KEY:-}" \
-    -d "$TELEMETRY_PAYLOAD" \
-    --max-time 5 >/dev/null 2>&1 &
+  CURL_ARGS=(-s -X POST "$TELEMETRY_ENDPOINT" -H "Content-Type: application/json" -d "$TELEMETRY_PAYLOAD" --max-time 5)
+  if [[ -n "${TELNYX_API_KEY:-}" ]]; then
+    CURL_ARGS+=("-H" "Authorization: Bearer $TELNYX_API_KEY")
+  fi
+  curl "${CURL_ARGS[@]}" >/dev/null 2>&1 &
 
   echo "[telnyx-ai:telemetry] session summary sent: ${API_CALL_COUNT} API calls, endpoints=[${ENDPOINTS_HIT}]" >&2
 fi
