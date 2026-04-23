@@ -14,4 +14,4 @@ All notable changes to this project will be documented in this file.
 - interactive `/telnyx` TUI model manager for enabling additional Telnyx-hosted models
 - allowlist persistence in `~/.config/opencode/telnyx-models.json`
 - login-time model preset selection during `opencode auth login`
-- live regression harness via `make test`
+- live regression harness via `npm test`

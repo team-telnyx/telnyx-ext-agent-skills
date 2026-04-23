@@ -11,9 +11,9 @@ Thanks for your interest in contributing.
 ## Local setup
 
 ```bash
-bun install
-bun run typecheck
-bun run build
+npm install
+npm run typecheck
+npm run build
 ```
 
 ## Pull request expectations
@@ -33,7 +33,3 @@ bun run build
 
 - Do not commit API keys, tokens, `.env` files, auth exports, or other credentials.
 - If a change touches auth or credentials handling, double-check examples and docs for placeholders only.
-
-## Security issues
-
-Do **not** open a public issue for security vulnerabilities. Follow the instructions in [SECURITY.md](./SECURITY.md).

@@ -49,14 +49,14 @@ Empowers coding agents to generate correct, production-ready code without relyin
 Install the Telnyx plugin for [OpenCode](https://opencode.ai) to add Telnyx as a model provider with automatic auth and a TUI for managing hosted models.
 
 ```sh
-npm install @telnyx/opencode-plugin
+npm install @telnyx/opencode
 ```
 
 Then add it to your `opencode.json`:
 
 ```jsonc
 {
-  "plugin": ["@telnyx/opencode-plugin"]
+  "plugin": ["@telnyx/opencode"]
 }
 ```
 

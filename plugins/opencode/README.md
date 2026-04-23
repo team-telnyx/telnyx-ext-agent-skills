@@ -1,102 +1,83 @@
-# opencode-telnyx-auth
+# @telnyx/opencode
 
-OpenCode plugin that adds Telnyx as a provider, supports `opencode auth login`, auto-registers supported Telnyx-hosted chat models, provides an interactive `/telnyx` model manager, and works around Telnyx's `max_completion_tokens` + tools incompatibility.
+`@telnyx/opencode` adds Telnyx as an OpenCode provider, integrates with `opencode auth login`, auto-registers supported Telnyx-hosted models, exposes a `/telnyx` model manager in the TUI, and works around Telnyx's `max_completion_tokens` + tools incompatibility.
+
+## Install
+
+```bash
+npm install @telnyx/opencode
+```
+
+Add the package to `~/.config/opencode/opencode.json`:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@telnyx/opencode"]
+}
+```
+
+OpenCode loads the package's server and TUI plugin entrypoints from the same npm package, so a separate `tui.json` entry is not required.
 
 ## What it does
 
 - registers a `telnyx` provider via `@ai-sdk/openai-compatible`
 - adds `telnyx` to `opencode auth login`
-- reads the Telnyx API key from either:
-  - `TELNYX_API_KEY`
-  - `~/.local/share/opencode/auth.json` via `opencode auth login`
+- reads the Telnyx API key from either `TELNYX_API_KEY` or OpenCode's stored `auth.json` credential
 - fetches available models from `https://api.telnyx.com/v2/ai/models` at startup
-- only registers Telnyx-hosted text models from the model list (`owned_by: "Telnyx"`)
-- enables only the 3 recommended models by default:
+- registers only Telnyx-hosted text models from the API response
+- enables these three recommended models by default:
   - `moonshotai/Kimi-K2.6`
   - `zai-org/GLM-5.1-FP8`
   - `MiniMaxAI/MiniMax-M2.7`
-- lets users enable additional Telnyx-hosted models later through the `/telnyx` TUI command
-- persists the enabled Telnyx model allowlist in `~/.config/opencode/telnyx-models.json`
-- excludes passthrough models that require external provider credentials such as OpenAI, Anthropic, Google, xAI, and Groq
+- persists the enabled-model allowlist in `~/.config/opencode/telnyx-models.json`
+- lets users enable additional Telnyx-hosted models through the `/telnyx` TUI command
 - strips `maxOutputTokens` before requests so Telnyx accepts tool-enabled runs
 
-## Setup
+## Authenticate
 
-1. Clone this repo somewhere local.
-2. Install dependencies and build it:
+Log in with your Telnyx API key:
 
-   ```bash
-   bun install
-   bun run build
-   ```
+```bash
+opencode auth login --provider telnyx --method "API Key"
+```
 
-3. Add the plugin to your `~/.config/opencode/opencode.json`:
+During login the plugin also asks which Telnyx model preset to enable:
 
-   ```json
-   {
-     "plugin": [
-       "file:///absolute/path/to/opencode-telnyx-auth"
-     ]
-   }
-   ```
+- **Recommended 3 (default)**
+- **All hosted Telnyx models**
+- **Keep existing config**
 
-4. If you want the interactive Telnyx model manager in the TUI, also add the plugin to `~/.config/opencode/tui.json`:
+You can also supply the key directly with an environment variable:
 
-   ```json
-   {
-     "$schema": "https://opencode.ai/tui.json",
-     "plugin": [
-       "file:///absolute/path/to/opencode-telnyx-auth"
-     ]
-   }
-   ```
+```bash
+export TELNYX_API_KEY="YOUR_KEY"
+```
 
-5. Log in with your Telnyx API key:
+Verify the credential is present:
 
-   ```bash
-   opencode auth login --provider telnyx --method "API Key"
-   ```
+```bash
+opencode auth list
+```
 
-   During login the plugin also asks which Telnyx model preset to enable:
+## Run a model
 
-   - **Recommended 3 (default)**
-   - **All hosted Telnyx models**
-   - **Keep existing config**
-
-   Or set an env var instead:
-
-   ```bash
-   export TELNYX_API_KEY="YOUR_KEY"
-   ```
-
-6. Verify the credential is present:
-
-   ```bash
-   opencode auth list
-   ```
-
-7. Run a model:
-
-   ```bash
-   opencode run --model 'telnyx/moonshotai/Kimi-K2.6' 'Say hello in one sentence.'
-   ```
+```bash
+opencode run --model 'telnyx/moonshotai/Kimi-K2.6' 'Say hello in one sentence.'
+```
 
 ## How auth works
 
 Auth precedence is:
 
 1. `TELNYX_API_KEY`
-2. stored `telnyx` API credential in `~/.local/share/opencode/auth.json`
+2. Stored `telnyx` API credential in `~/.local/share/opencode/auth.json`
 
 `opencode auth login` stores the key in OpenCode's normal auth store, so this behaves like a native provider instead of relying on hardcoded config.
 
 ## Model registration
 
-At startup the plugin calls:
-
-- `GET https://api.telnyx.com/v2/ai/models`
-
-It still fetches the full Telnyx model list from the API, but it only registers Telnyx-hosted text generation models whose IDs are present in the persisted allowlist file.
+At startup the plugin calls `GET https://api.telnyx.com/v2/ai/models` and registers only Telnyx-hosted text-generation models whose IDs are present in the persisted allowlist file.
 
 Default allowlist:
 
@@ -122,11 +103,9 @@ Path:
 - `~/.config/opencode/telnyx-models.json`
 - override with `OPENCODE_TELNYX_MODELS_PATH`
 
-The plugin ships with only the 3 recommended models enabled by default. Users can enable more Telnyx-hosted models later using the `/telnyx` command in the OpenCode TUI, by editing the allowlist file directly, or by re-running `opencode auth login --provider telnyx --method "API Key"`.
-
 ## TUI model manager
 
-If the plugin is also loaded in `tui.json`, it registers a `/telnyx` command (alias: `/telnyx-models`) that opens an interactive model manager.
+The package also registers a `/telnyx` command (alias: `/telnyx-models`) that opens an interactive model manager in the OpenCode TUI.
 
 - the dialog starts from the default 3-model allowlist
 - selecting a model toggles it on or off
@@ -135,33 +114,21 @@ If the plugin is also loaded in `tui.json`, it registers a `/telnyx` command (al
 
 This command manages which Telnyx-hosted models are available under the `telnyx` provider. It does not change OpenCode core model-selection behavior outside this plugin.
 
-This plugin does **not** currently create or manage Telnyx `api_key_ref` integration secrets for external providers such as Groq, OpenAI, Anthropic, Google, or xAI.
+This plugin does not currently create or manage Telnyx `api_key_ref` integration secrets for external providers such as Groq, OpenAI, Anthropic, Google, or xAI.
 
 ## Why the plugin exists
 
-Telnyx rejects requests that include both:
+Telnyx rejects requests that include both function tools and `max_completion_tokens` / `max_tokens`. OpenCode normally sends tools and an output token cap together. This plugin fixes that by unsetting `maxOutputTokens` for the `telnyx` provider before the SDK builds the request.
 
-- function tools
-- `max_completion_tokens` / `max_tokens`
-
-OpenCode normally sends tools and an output token cap together. The plugin fixes that by unsetting `maxOutputTokens` for the `telnyx` provider before the SDK builds the request.
-
-## Build
+## Develop locally
 
 ```bash
-bun run build
-bun run typecheck
+npm install
+npm run typecheck
+npm run build
 ```
 
-## Quick start for contributors
-
-```bash
-bun install
-bun run typecheck
-bun run build
-```
-
-## Testing all Telnyx models
+## Live regression harness
 
 The repo includes a live regression harness that:
 
@@ -171,38 +138,29 @@ The repo includes a live regression harness that:
 - runs a tool-calling prompt against every model using OpenCode's `read` tool
 - reports excluded external-key models separately so you can see which Telnyx-listed models are passthrough-only
 
-Create a `.env` file in the repo root with:
+Create a `.env` file in `plugins/opencode/` or export `TELNYX_API_KEY`, then run:
 
 ```bash
-TELNYX_API_KEY=your_telnyx_key
+npm test
 ```
-
-Then run:
-
-```bash
-make test
-```
-
-This builds the plugin first, then runs the live checks through `opencode run` so the plugin path under test is the one actually exercised.
 
 Useful optional filters:
 
 ```bash
-TELNYX_TEST_MODEL_MATCH=Llama-3.3-70B-Instruct make test
-TELNYX_TEST_LIMIT=1 make test
-TELNYX_TEST_AGENT=sisyphus make test
-TELNYX_TEST_VARIANT=max make test
-TELNYX_TEST_INCLUDE_EXTERNAL=1 make test
+TELNYX_TEST_MODEL_MATCH=Llama-3.3-70B-Instruct npm test
+TELNYX_TEST_LIMIT=1 npm test
+TELNYX_TEST_AGENT=sisyphus npm test
+TELNYX_TEST_VARIANT=max npm test
+TELNYX_TEST_INCLUDE_EXTERNAL=1 npm test
 ```
 
-Artifacts are written to `test/.artifacts/`, including raw per-model outputs and a `results.json` summary.
-External-provider models are reported separately and, if included explicitly, marked as skipped because the plugin intentionally does not register them without provider-specific key support.
+Artifacts are written to `test/.artifacts/`, including raw per-model outputs and a `results.json` summary. External-provider models are reported separately and, if included explicitly, marked as skipped because the plugin intentionally does not register them without provider-specific key support.
 
 ## Troubleshooting
 
 ### `Unknown provider "telnyx"`
 
-The plugin is not loaded. Check the `file:///...` path in `opencode.json` and rebuild the plugin.
+The package is not loaded. Check that `@telnyx/opencode` is listed in `opencode.json`, then restart OpenCode.
 
 ### No Telnyx models show up
 
@@ -220,24 +178,4 @@ Some smaller models cannot fit OpenCode's full tool list and system prompt into 
 
 ### `/telnyx` does not appear
 
-Make sure the plugin is listed in `~/.config/opencode/tui.json`, not only in `opencode.json`.
-
-<details>
-<summary>Agent notes (humans can ignore)</summary>
-
-- local build/install commands assume `bun` is installed
-- package manager is `bun`; use `bun install`, `bun run build`, and `bun run typecheck`
-- runtime dependency is `@opencode-ai/plugin`
-- local build-time dependencies are `typescript` and `@types/node`
-- OpenCode loads the built plugin from `dist/`, so cloning the repo alone is not enough; it must be built first
-- a valid Telnyx API key is required either via `TELNYX_API_KEY` or `opencode auth login`
-- provider id is `telnyx`
-- auth hook method is `API Key`
-- auth precedence is env first, then stored auth.json key
-- model list is dynamic; do not hardcode model ids in downstream automation
-- Telnyx model availability is gated by the allowlist in `~/.config/opencode/telnyx-models.json`
-- default enabled models are `moonshotai/Kimi-K2.6`, `zai-org/GLM-5.1-FP8`, and `MiniMaxAI/MiniMax-M2.7`
-- `/telnyx` in the TUI allows users to opt into more hosted models
-- the Telnyx compatibility fix is in the `chat.params` hook and only unsets `maxOutputTokens`
-
-</details>
+Make sure the package is listed in `opencode.json`, then restart OpenCode so the TUI entrypoint is reloaded.

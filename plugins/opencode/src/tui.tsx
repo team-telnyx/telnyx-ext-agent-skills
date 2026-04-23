@@ -1,27 +1,17 @@
 /** @jsxImportSource @opentui/solid */
-/** @jsxRuntime automatic */
-import { readFileSync, renameSync, writeFileSync, mkdirSync } from "node:fs"
+import { readFileSync } from "node:fs"
 import { homedir } from "node:os"
-import { dirname, join } from "node:path"
+import { join } from "node:path"
 import type { TuiPlugin, TuiPluginModule, TuiPluginApi } from "@opencode-ai/plugin/tui"
+import { DEFAULT_ENABLED_MODELS, loadEnabledModels, persistEnabledModels } from "./models-config"
 
 const PROVIDER_ID = "telnyx"
 const API_BASE = "https://api.telnyx.com/v2/ai"
 const OPENAI_BASE = `${API_BASE}/openai`
 const MODELS_URL = `${API_BASE}/models`
-const MODELS_CONFIG_VERSION = 1
 const TEXT_TASKS = new Set(["text-generation", "text generation"])
-const DEFAULT_ENABLED_MODELS = [
-  "moonshotai/Kimi-K2.6",
-  "zai-org/GLM-5.1-FP8",
-  "MiniMaxAI/MiniMax-M2.7",
-] as const
 
 type JsonObject = Record<string, unknown>
-type ModelsConfigFile = {
-  version: number
-  enabledModels: string[]
-}
 
 function isObject(value: unknown): value is JsonObject {
   return typeof value === "object" && value !== null
@@ -30,16 +20,6 @@ function isObject(value: unknown): value is JsonObject {
 function authFilePath(): string {
   const dataHome = process.env.XDG_DATA_HOME ?? join(homedir(), ".local", "share")
   return join(dataHome, "opencode", "auth.json")
-}
-
-function configDirPath(): string {
-  const configHome = process.env.XDG_CONFIG_HOME ?? join(homedir(), ".config")
-  return join(configHome, "opencode")
-}
-
-function modelsConfigPath(): string {
-  const override = process.env.OPENCODE_TELNYX_MODELS_PATH?.trim()
-  return override && override.length > 0 ? override : join(configDirPath(), "telnyx-models.json")
 }
 
 function storedApiKey(): string | undefined {
@@ -56,33 +36,6 @@ function storedApiKey(): string | undefined {
 
 function apiKey(): string | undefined {
   return process.env.TELNYX_API_KEY ?? storedApiKey()
-}
-
-function loadEnabledModels(): string[] {
-  try {
-    const raw = JSON.parse(readFileSync(modelsConfigPath(), "utf8")) as unknown
-    if (!isObject(raw)) return [...DEFAULT_ENABLED_MODELS]
-    const version = raw.version
-    const enabledModels = Array.isArray(raw.enabledModels)
-      ? raw.enabledModels.filter((value): value is string => typeof value === "string" && value.length > 0)
-      : []
-    if (version !== MODELS_CONFIG_VERSION || enabledModels.length === 0) return [...DEFAULT_ENABLED_MODELS]
-    return [...new Set(enabledModels)]
-  } catch {
-    return [...DEFAULT_ENABLED_MODELS]
-  }
-}
-
-function persistEnabledModels(enabledModels: readonly string[]): void {
-  const payload: ModelsConfigFile = {
-    version: MODELS_CONFIG_VERSION,
-    enabledModels: [...new Set(enabledModels)],
-  }
-  const path = modelsConfigPath()
-  mkdirSync(dirname(path), { recursive: true })
-  const tempPath = `${path}.tmp`
-  writeFileSync(tempPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8")
-  renameSync(tempPath, path)
 }
 
 function isTelnyxHostedModel(model: JsonObject): boolean {

@@ -94,7 +94,7 @@ function requireTelnyxApiKey(): string {
   loadDotEnvIfNeeded()
   const key = process.env.TELNYX_API_KEY?.trim()
   if (!key) {
-    throw new Error("Missing TELNYX_API_KEY. Set it in the environment or repo-root .env before running make test.")
+    throw new Error("Missing TELNYX_API_KEY. Set it in the environment or repo-root .env before running npm test.")
   }
   return key
 }
