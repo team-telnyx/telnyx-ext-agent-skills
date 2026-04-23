@@ -1,33 +1,26 @@
 {
-  "name": "opencode-telnyx-auth",
-  "description": "Telnyx auth and provider plugin for OpenCode",
+  "name": "@telnyx/opencode-plugin",
   "version": "0.1.0",
+  "description": "Telnyx auth and provider plugin for OpenCode",
   "license": "MIT",
-  "private": true,
-  "packageManager": "bun@1",
-  "homepage": "https://github.com/team-telnyx/opencode-telnyx-auth#readme",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    "./server": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./tui":    { "types": "./dist/tui.d.ts",   "import": "./dist/tui.js" }
+  },
+  "files": ["dist", "README.md"],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/team-telnyx/opencode-telnyx-auth.git"
+    "url": "https://github.com/team-telnyx/ai.git",
+    "directory": "plugins/opencode"
   },
-  "bugs": {
-    "url": "https://github.com/team-telnyx/opencode-telnyx-auth/issues"
-  },
-  "type": "module",
-  "exports": {
-    "./server": {
-      "import": "./src/index.ts"
-    },
-    "./tui": {
-      "import": "./src/tui.tsx"
-    }
-  },
-  "main": "./dist/index.js",
-  "files": ["dist", "README.md"],
+  "bugs": { "url": "https://github.com/team-telnyx/ai/issues" },
+  "publishConfig": { "access": "public" },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node",
+    "build": "tsup src/index.ts src/tui.tsx --format esm --dts --out-dir dist",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "bun run test/run.ts"
+    "test": "node --test test/run.ts"
   },
   "dependencies": {
     "@opencode-ai/plugin": "^1.2.27"
@@ -38,21 +31,16 @@
     "solid-js": ">=1.9.0"
   },
   "peerDependenciesMeta": {
-    "@opentui/core": {
-      "optional": true
-    },
-    "@opentui/solid": {
-      "optional": true
-    },
-    "solid-js": {
-      "optional": true
-    }
+    "@opentui/core": { "optional": true },
+    "@opentui/solid": { "optional": true },
+    "solid-js": { "optional": true }
   },
   "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.9.3",
+    "@types/node": "^22.0.0",
     "@opentui/core": "^0.1.101",
     "@opentui/solid": "^0.1.101",
-    "@types/node": "^22.0.0",
-    "solid-js": "^1.9.0",
-    "typescript": "^5.9.3"
+    "solid-js": "^1.9.0"
   }
 }

@@ -1,0 +1,24 @@
+name: publish-opencode
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+        working-directory: plugins/opencode
+      - run: npm run build
+        working-directory: plugins/opencode
+      - run: npm publish --provenance --access public
+        working-directory: plugins/opencode

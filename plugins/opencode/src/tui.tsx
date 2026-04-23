@@ -1,4 +1,5 @@
 /** @jsxImportSource @opentui/solid */
+/** @jsxRuntime automatic */
 import { readFileSync, renameSync, writeFileSync, mkdirSync } from "node:fs"
 import { homedir } from "node:os"
 import { dirname, join } from "node:path"
