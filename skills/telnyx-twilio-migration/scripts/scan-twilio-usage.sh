@@ -607,6 +607,7 @@ CONFIG_FILES=(
   "pubspec.yaml:pub"
 )
 
+# shellcheck disable=SC2034  # reserved for future C#/.NET dependency scanning
 CSPROJ_PATTERN="*.csproj:nuget"
 
 # Scan known config filenames
@@ -673,7 +674,15 @@ done < <(run_grep -E "$TWIML_VERBS" --include="*.xml")
 
 log "Scanning webhook handlers..."
 
-WH_TERMS=("RequestValidator" "validateRequest" "X-Twilio-Signature")
+WH_TERMS=(
+  "RequestValidator"             # Python/Node/Ruby/PHP SDK validator class
+  "validateRequest"              # method call on RequestValidator
+  "X-Twilio-Signature"           # header name (any casing)
+  "twilio.webhook"               # Express middleware (Node)
+  "Twilio.webhook"               # same, capitalised import
+  "Twilio::Security"             # Ruby namespace housing RequestValidator
+  "validate_twilio_request"      # common Rails before_action / Flask decorator name
+)
 
 for term in "${WH_TERMS[@]}"; do
   while IFS= read -r line; do
@@ -917,22 +926,21 @@ for i in "${!API_URLS[@]}"; do
 done
 
 # --- summary ---
-total_files=0
-[[ ${FILE_PATHS[@]+x} ]] && total_files=${#FILE_PATHS[@]}
-total_products=0
-[[ ${PRODUCT_SET[@]+x} ]] && total_products=${#PRODUCT_SET[@]}
-total_languages=0
-[[ ${LANG_SET[@]+x} ]] && total_languages=${#LANG_SET[@]}
+# Use (( ${#ARR[@]} > 0 )) for "array has elements" — safe under `set -u` for
+# declared arrays and avoids shellcheck SC2199 (array concatenation in [[ ]]).
+total_files=${#FILE_PATHS[@]}
+total_products=${#PRODUCT_SET[@]}
+total_languages=${#LANG_SET[@]}
 has_webhook="false"
-[[ ${WH_PATHS[@]+x} ]] && [[ ${#WH_PATHS[@]} -gt 0 ]] && has_webhook="true"
+(( ${#WH_PATHS[@]} > 0 )) && has_webhook="true"
 has_twiml="false"
-[[ ${TWIML_FILES[@]+x} ]] && [[ ${#TWIML_FILES[@]} -gt 0 ]] && has_twiml="true"
+(( ${#TWIML_FILES[@]} > 0 )) && has_twiml="true"
 has_env="false"
-[[ ${ENV_NAMES[@]+x} ]] && [[ ${#ENV_NAMES[@]} -gt 0 ]] && has_env="true"
+(( ${#ENV_NAMES[@]} > 0 )) && has_env="true"
 has_deploy="false"
-[[ ${DEPLOY_PATHS[@]+x} ]] && [[ ${#DEPLOY_PATHS[@]} -gt 0 ]] && has_deploy="true"
+(( ${#DEPLOY_PATHS[@]} > 0 )) && has_deploy="true"
 has_mocks="false"
-[[ ${MOCK_PATHS[@]+x} ]] && [[ ${#MOCK_PATHS[@]} -gt 0 ]] && has_mocks="true"
+(( ${#MOCK_PATHS[@]} > 0 )) && has_mocks="true"
 
 # --- deploy_files array ---
 deploy_json=""
