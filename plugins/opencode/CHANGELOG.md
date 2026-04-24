@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-04-24
+
+### Added
+
+- Added `oc-plugin` field declaring both server and TUI targets for `opencode plugin install` compatibility
+
+### Fixed
+
+- Fixed README install instructions to use `opencode plugin install` (the standard method that auto-configures both `opencode.json` and `tui.json`)
+
 ## [0.1.1] - 2026-04-24
 
 ### Fixed

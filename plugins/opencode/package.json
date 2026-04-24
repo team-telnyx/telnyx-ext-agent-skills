@@ -1,6 +1,6 @@
 {
   "name": "@telnyx/opencode",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Telnyx auth and provider plugin for OpenCode",
   "license": "MIT",
   "type": "module",
@@ -16,6 +16,7 @@
     "directory": "plugins/opencode"
   },
   "bugs": { "url": "https://github.com/team-telnyx/ai/issues" },
+  "oc-plugin": ["server", "tui"],
   "publishConfig": { "access": "public" },
   "scripts": {
     "build": "npm run build:clean && npm run build:server && npm run build:tui && npm run build:types",
