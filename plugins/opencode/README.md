@@ -5,19 +5,16 @@
 ## Install
 
 ```bash
-npm install @telnyx/opencode
+opencode plugin install @telnyx/opencode
 ```
 
-Add the package to `~/.config/opencode/opencode.json`:
+This auto-detects both the server and TUI targets and adds the plugin to `opencode.json` (server) and `tui.json` (TUI) automatically.
 
-```jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@telnyx/opencode"]
-}
+For global install (all projects):
+
+```bash
+opencode plugin install -g @telnyx/opencode
 ```
-
-OpenCode loads the package's server and TUI plugin entrypoints from the same npm package, so a separate `tui.json` entry is not required.
 
 ## What it does
 
@@ -178,4 +175,13 @@ Some smaller models cannot fit OpenCode's full tool list and system prompt into 
 
 ### `/telnyx` does not appear
 
-Make sure the package is listed in `opencode.json`, then restart OpenCode so the TUI entrypoint is reloaded.
+The TUI plugin requires a `tui.json` entry. Run `opencode plugin install @telnyx/opencode` which configures both `opencode.json` and `tui.json` automatically. If you added the plugin manually to `opencode.json`, you also need `tui.json`:
+
+```json
+{
+  "$schema": "https://opencode.ai/tui.json",
+  "plugin": ["@telnyx/opencode"]
+}
+```
+
+Then restart OpenCode.
