@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-24
+
+### Fixed
+
+- Simplified `./tui` export to plain string format, matching the convention used by all other opencode TUI plugins
+
+## [0.1.0] - 2026-04-23
+
 ### Added
 
 - initial Telnyx auth and provider plugin for OpenCode

@@ -1,13 +1,13 @@
 {
   "name": "@telnyx/opencode",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Telnyx auth and provider plugin for OpenCode",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
     "./server": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./tui":    { "types": "./dist/tui.d.ts",   "import": "./src/tui.tsx" }
+    "./tui":    "./src/tui.tsx"
   },
   "files": ["dist", "src", "README.md"],
   "repository": {
