@@ -28,7 +28,8 @@
     "test": "node --test test/run.ts"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "^1.2.27"
+    "@opencode-ai/plugin": "^1.2.27",
+    "zod": "^3.25.0"
   },
   "peerDependencies": {
     "@opentui/core": ">=0.1.101",

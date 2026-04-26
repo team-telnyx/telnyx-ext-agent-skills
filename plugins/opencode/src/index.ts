@@ -1,133 +1,15 @@
-import { readFileSync } from "node:fs"
-import { homedir } from "node:os"
-import { join } from "node:path"
 import type { Plugin } from "@opencode-ai/plugin"
 import { DEFAULT_ENABLED_MODELS, loadEnabledModels, persistEnabledModels } from "./models-config"
-
-const PROVIDER_ID = "telnyx"
-const API_BASE = "https://api.telnyx.com/v2/ai"
-const OPENAI_BASE = `${API_BASE}/openai`
-const MODELS_URL = `${API_BASE}/models`
-const TEXT_TASKS = new Set(["text-generation", "text generation"])
-
-type JsonObject = Record<string, unknown>
+import {
+  PROVIDER_ID,
+  OPENAI_BASE,
+  apiKey,
+  fetchModels,
+  fetchAllHostedModelIDs,
+  isObject,
+} from "./shared"
 
 type ModelSelectionPreset = "recommended" | "all" | "existing"
-
-function isObject(value: unknown): value is JsonObject {
-  return typeof value === "object" && value !== null
-}
-
-function authFilePath(): string {
-  const dataHome = process.env.XDG_DATA_HOME ?? join(homedir(), ".local", "share")
-  return join(dataHome, "opencode", "auth.json")
-}
-
-function storedApiKey(): string | undefined {
-  try {
-    const auth = JSON.parse(readFileSync(authFilePath(), "utf8")) as unknown
-    if (!isObject(auth)) return undefined
-    const telnyx = auth[PROVIDER_ID]
-    if (!isObject(telnyx) || telnyx.type !== "api") return undefined
-    return typeof telnyx.key === "string" && telnyx.key.length > 0 ? telnyx.key : undefined
-  } catch {
-    return undefined
-  }
-}
-
-function apiKey(): string | undefined {
-  return process.env.TELNYX_API_KEY ?? storedApiKey()
-}
-
-function isTelnyxHostedModel(model: JsonObject): boolean {
-  return typeof model.owned_by === "string" && model.owned_by.toLowerCase() === "telnyx"
-}
-
-function modelConfig(model: JsonObject): [string, JsonObject] | undefined {
-  const id = typeof model.id === "string" ? model.id : undefined
-  const task = typeof model.task === "string" ? model.task : undefined
-  const context = typeof model.context_length === "number" ? model.context_length : undefined
-  if (!id || !task || context === undefined) return undefined
-  if (!TEXT_TASKS.has(task)) return undefined
-  if (!isTelnyxHostedModel(model)) return undefined
-
-  const shortId = id.includes("/") ? id.split("/").pop() ?? id : id
-  const vision = model.is_vision_supported === true
-
-  return [
-    id,
-    {
-      name: shortId,
-      limit: { context },
-      ...(vision
-        ? {
-            attachment: true,
-            modalities: {
-              input: ["text", "image"],
-              output: ["text"],
-            },
-          }
-        : {}),
-    },
-  ]
-}
-
-async function fetchModels(key: string | undefined, enabledModelIDs: readonly string[]): Promise<Record<string, JsonObject>> {
-  if (!key) return {}
-
-  try {
-    const response = await fetch(MODELS_URL, {
-      headers: { Authorization: `Bearer ${key}` },
-      signal: AbortSignal.timeout(10_000),
-    })
-    if (!response.ok) return {}
-
-    const payload = (await response.json()) as unknown
-    const data = isObject(payload) && Array.isArray(payload.data) ? payload.data : []
-    const availableModels = new Map<string, JsonObject>()
-
-    for (const item of data) {
-      if (!isObject(item)) continue
-      const parsed = modelConfig(item)
-      if (!parsed) continue
-      availableModels.set(parsed[0], parsed[1])
-    }
-
-    return Object.fromEntries(enabledModelIDs.flatMap((modelID) => {
-      const config = availableModels.get(modelID)
-      return config ? [[modelID, config] as const] : []
-    }))
-  } catch {
-    return {}
-  }
-}
-
-async function fetchAllHostedModelIDs(key: string | undefined): Promise<string[]> {
-  if (!key) return []
-
-  try {
-    const response = await fetch(MODELS_URL, {
-      headers: { Authorization: `Bearer ${key}` },
-      signal: AbortSignal.timeout(10_000),
-    })
-    if (!response.ok) return []
-
-    const payload = (await response.json()) as unknown
-    const data = isObject(payload) && Array.isArray(payload.data) ? payload.data : []
-    const modelIDs: string[] = []
-
-    for (const item of data) {
-      if (!isObject(item)) continue
-      const parsed = modelConfig(item)
-      if (!parsed) continue
-      modelIDs.push(parsed[0])
-    }
-
-    return modelIDs
-  } catch {
-    return []
-  }
-}
 
 async function resolveEnabledModelsForPreset(key: string, preset: ModelSelectionPreset): Promise<string[]> {
   if (preset === "recommended") return [...DEFAULT_ENABLED_MODELS]
@@ -197,9 +79,10 @@ const TelnyxAuthPlugin: Plugin = async () => {
       }],
       loader: async (auth) => {
         const stored = await auth()
-        return isObject(stored) && stored.type === "api" && typeof stored.key === "string"
-          ? { apiKey: stored.key }
-          : {}
+        if (isObject(stored) && stored.type === "api" && typeof stored.key === "string") {
+          return { apiKey: stored.key }
+        }
+        return {}
       },
     },
 
