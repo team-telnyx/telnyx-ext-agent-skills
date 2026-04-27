@@ -6,9 +6,10 @@ import {
   normalizeModel,
   modelConfigEntry,
   buildProviderConfig,
+  providerModels,
   replaceDependencies,
 } from "../src/shared.js"
-import type { Dependencies, JsonObject, NormalizedModel } from "../src/shared.js"
+import type { JsonObject, NormalizedModel } from "../src/shared.js"
 
 // ---------------------------------------------------------------------------
 // isObject
@@ -89,18 +90,33 @@ describe("normalizeModel", () => {
   })
 
   it("returns undefined when id is missing", () => {
-    const { id, ...noId } = validModel
-    assert.equal(normalizeModel(noId as JsonObject), undefined)
+    const noId: JsonObject = {
+      task: "text-generation",
+      context_length: 8192,
+      owned_by: "telnyx",
+      is_vision_supported: false,
+    }
+    assert.equal(normalizeModel(noId), undefined)
   })
 
   it("returns undefined when task is missing", () => {
-    const { task, ...noTask } = validModel
-    assert.equal(normalizeModel(noTask as JsonObject), undefined)
+    const noTask: JsonObject = {
+      id: "org/model-name",
+      context_length: 8192,
+      owned_by: "telnyx",
+      is_vision_supported: false,
+    }
+    assert.equal(normalizeModel(noTask), undefined)
   })
 
   it("returns undefined when context_length is missing", () => {
-    const { context_length, ...noCtx } = validModel
-    assert.equal(normalizeModel(noCtx as JsonObject), undefined)
+    const noContext: JsonObject = {
+      id: "org/model-name",
+      task: "text-generation",
+      owned_by: "telnyx",
+      is_vision_supported: false,
+    }
+    assert.equal(normalizeModel(noContext), undefined)
   })
 
   it("returns undefined for a non-Telnyx hosted model", () => {
@@ -160,14 +176,18 @@ describe("buildProviderConfig", () => {
     const config = buildProviderConfig("sk-test", {})
     assert.equal(config.npm, "@ai-sdk/openai-compatible")
     assert.equal(config.name, "Telnyx")
-    const options = config.options as Record<string, unknown>
+    assert.equal(isObject(config.options), true)
+    if (!isObject(config.options)) return
+    const options = config.options
     assert.equal(options.apiKey, "sk-test")
     assert.equal(options.baseURL, "https://api.telnyx.com/v2/ai/openai")
   })
 
   it("omits apiKey when key is undefined", () => {
     const config = buildProviderConfig(undefined, {})
-    const options = config.options as Record<string, unknown>
+    assert.equal(isObject(config.options), true)
+    if (!isObject(config.options)) return
+    const options = config.options
     assert.equal("apiKey" in options, false)
     assert.equal(options.baseURL, "https://api.telnyx.com/v2/ai/openai")
   })
@@ -176,6 +196,48 @@ describe("buildProviderConfig", () => {
     const models = { "org/model": { name: "model" } }
     const config = buildProviderConfig("k", models)
     assert.deepStrictEqual(config.models, models)
+  })
+
+  it("includes blacklist when provided", () => {
+    const config = buildProviderConfig("k", {}, ["org/disabled", "org/also-disabled"])
+    assert.deepStrictEqual(config.blacklist, ["org/disabled", "org/also-disabled"])
+  })
+
+  it("includes an empty blacklist when provided", () => {
+    const config = buildProviderConfig("k", {}, [])
+    assert.deepStrictEqual(config.blacklist, [])
+  })
+
+  it("omits blacklist when it is not provided", () => {
+    const config = buildProviderConfig("k", {})
+    assert.equal("blacklist" in config, false)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// providerModels
+// ---------------------------------------------------------------------------
+
+describe("providerModels", () => {
+  it("returns every model so disabled entries can be handled by blacklist", () => {
+    const models: NormalizedModel[] = [
+      { id: "org/enabled", name: "enabled", context: 4096, vision: false },
+      { id: "org/disabled", name: "disabled", context: 8192, vision: true },
+    ]
+
+    const config = providerModels(models)
+
+    assert.deepStrictEqual(Object.keys(config).sort(), ["org/disabled", "org/enabled"])
+    assert.deepStrictEqual(config["org/enabled"], {
+      name: "enabled",
+      limit: { context: 4096 },
+    })
+    assert.deepStrictEqual(config["org/disabled"], {
+      name: "disabled",
+      limit: { context: 8192 },
+      attachment: true,
+      modalities: { input: ["text", "image"], output: ["text"] },
+    })
   })
 })
 

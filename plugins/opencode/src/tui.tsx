@@ -1,13 +1,13 @@
 /** @jsxImportSource @opentui/solid */
 import type { TuiPlugin, TuiPluginModule, TuiPluginApi } from "@opencode-ai/plugin/tui"
-import { loadEnabledModels, persistEnabledModels } from "./models-config"
+import { loadEnabledModels, persistEnabledModels } from "./models-config.js"
 import {
   PROVIDER_ID,
   apiKey,
   buildProviderConfig,
   fetchHostedModels,
   providerModels,
-} from "./shared"
+} from "./shared.js"
 
 function buildDialogOptions(
   models: ReadonlyArray<{ id: string; name: string; context: number; vision: boolean }>,
@@ -53,12 +53,15 @@ async function openManager(api: TuiPluginApi): Promise<void> {
           if (next.has(option.value)) next.delete(option.value)
           else next.add(option.value)
           const persisted = [...next].sort((left, right) => left.localeCompare(right))
-          const modelsMap = providerModels(models, next)
+          const modelsMap = providerModels(models)
+          const disabledModels = models
+            .map((model) => model.id)
+            .filter((modelID) => !next.has(modelID))
           try {
             await api.client.config.update({
               config: {
                 provider: {
-                  [PROVIDER_ID]: buildProviderConfig(key, modelsMap),
+                  [PROVIDER_ID]: buildProviderConfig(key, modelsMap, disabledModels),
                 },
               },
             })

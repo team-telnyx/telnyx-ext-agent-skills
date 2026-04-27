@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises"
 import { homedir } from "node:os"
 import { join } from "node:path"
-import { TelnyxCredentialSchema } from "./models-config"
+import { TelnyxCredentialSchema } from "./models-config.js"
 
 export const PROVIDER_ID = "telnyx"
 export const API_BASE = "https://api.telnyx.com/v2/ai"
@@ -29,7 +29,7 @@ const defaultDeps: Dependencies = {
       signal: AbortSignal.timeout(10_000),
     })
     if (!response.ok) return []
-    const payload = (await response.json()) as unknown
+    const payload: unknown = await response.json()
     const data = isObject(payload) && Array.isArray(payload.data) ? payload.data : []
     return data.filter((item): item is JsonObject => isObject(item))
   },
@@ -67,7 +67,7 @@ export function authFilePath(): string {
 
 export async function storedApiKey(): Promise<string | undefined> {
   try {
-    const auth = JSON.parse(await deps.readFile(authFilePath())) as unknown
+    const auth: unknown = JSON.parse(await deps.readFile(authFilePath()))
     if (!isObject(auth)) return undefined
     const telnyx = auth[PROVIDER_ID]
     const parsed = TelnyxCredentialSchema.safeParse(telnyx)
@@ -84,7 +84,7 @@ export async function storedApiKey(): Promise<string | undefined> {
 }
 
 export async function apiKey(): Promise<string | undefined> {
-  return process.env.TELNYX_API_KEY ?? await storedApiKey()
+  return process.env.TELNYX_API_KEY ?? (await storedApiKey())
 }
 
 // ---------------------------------------------------------------------------
@@ -208,6 +208,7 @@ export async function fetchHostedModels(
 export function buildProviderConfig(
   key: string | undefined,
   models: Record<string, JsonObject>,
+  blacklist?: readonly string[],
 ): Record<string, unknown> {
   return {
     npm: "@ai-sdk/openai-compatible",
@@ -217,21 +218,17 @@ export function buildProviderConfig(
       ...(key ? { apiKey: key } : {}),
     },
     models,
+    ...(blacklist === undefined ? {} : { blacklist: [...blacklist] }),
   }
 }
 
 /**
- * Build the provider-models map from a list of normalized models and an
- * enabled set (used by the TUI model manager).
+ * Build the full provider-models map used by the TUI model manager.
+ * Disabled models are removed via provider blacklist so hot-reload deep merges
+ * cannot preserve stale model entries.
  */
 export function providerModels(
   models: readonly NormalizedModel[],
-  enabled: Set<string>,
 ): Record<string, JsonObject> {
-  return Object.fromEntries(
-    models.flatMap((model) => {
-      if (!enabled.has(model.id)) return []
-      return [modelConfigEntry(model)]
-    }),
-  )
+  return Object.fromEntries(models.map((model) => modelConfigEntry(model)))
 }
