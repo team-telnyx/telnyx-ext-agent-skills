@@ -59,7 +59,7 @@ falls back to the shared hosted endpoint at https://api.telnyx.com/v2/mcp.`);
 
   const reset = process.argv.includes("--reset");
   const apiKey = getApiKey();
-  const { url, source } = await resolveEndpoint({ apiKey, reset });
+  const { url, remoteAuthToken, source } = await resolveEndpoint({ apiKey, reset });
 
   switch (source) {
     case "provisioned":
@@ -79,7 +79,7 @@ falls back to the shared hosted endpoint at https://api.telnyx.com/v2/mcp.`);
     // "cache" and "override" stay silent.
   }
 
-  await createProxy({ apiKey, remoteUrl: url });
+  await createProxy({ remoteUrl: url, remoteAuthToken });
 }
 
 main().catch((error) => {

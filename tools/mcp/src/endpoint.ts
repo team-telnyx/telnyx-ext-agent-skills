@@ -17,6 +17,13 @@ interface CacheEntry {
   url: string;
   funcId: string;
   secretId: string;
+  /**
+   * Bearer token the shim must send when proxying MCP requests to {@link url}.
+   * Generated server-side by the deploy API and returned exactly once — there
+   * is no API to recover the value if cache is lost (Telnyx secrets list
+   * returns names only). On cache loss, --reset re-provisions a fresh secret.
+   */
+  sharedSecret: string;
   provisionedAt: string;
 }
 
@@ -26,7 +33,10 @@ interface ResolveOptions {
 }
 
 export interface ResolveResult {
+  /** URL to proxy MCP traffic to. */
   url: string;
+  /** Bearer token to send with MCP requests to {@link url}. */
+  remoteAuthToken: string;
   source:
     | "override"
     | "cache"
@@ -123,15 +133,18 @@ async function provision(apiKey: string): Promise<CacheEntry | null> {
     });
     if (!deployRes.ok) return null;
     const body = (await deployRes.json()) as {
-      data?: { url?: string; func_id?: string };
+      data?: { url?: string; func_id?: string; shared_secret?: string };
     };
-    if (!body.data?.url || !body.data.func_id) return null;
+    if (!body.data?.url || !body.data.func_id || !body.data.shared_secret) {
+      return null;
+    }
 
     return {
       apiKeyFingerprint: fp,
       url: body.data.url,
       funcId: body.data.func_id,
       secretId,
+      sharedSecret: body.data.shared_secret,
       provisionedAt: new Date().toISOString(),
     };
   } catch {
@@ -142,7 +155,7 @@ async function provision(apiKey: string): Promise<CacheEntry | null> {
 }
 
 /**
- * Resolve the MCP endpoint URL for this API key.
+ * Resolve the MCP endpoint URL and the bearer token to use against it.
  *
  * Order of preference:
  *   1. TELNYX_MCP_URL env var (explicit override)
@@ -150,14 +163,24 @@ async function provision(apiKey: string): Promise<CacheEntry | null> {
  *   3. Fresh provision via deploy API (requires TELNYX_MCP_ACCEPT_FULL_SCOPE)
  *   4. Shared hosted URL (fallback)
  *
+ * Per-tenant URLs require an inbound SHARED_SECRET as bearer (separate from
+ * the user's API key, which the deployed func uses for upstream Telnyx calls).
+ * The shared URL accepts the API key directly. This resolver returns the
+ * appropriate bearer for the chosen URL so callers don't have to track which.
+ *
  * Provisioning is gated on TELNYX_MCP_ACCEPT_FULL_SCOPE because the injected
- * secret is the user's raw Telnyx API key — compromise of the Firecracker VM
- * (e.g., via prompt-injected agent code in Code Mode) leaks a full-scope key.
- * Users opt in explicitly; otherwise the shim stays on the shared URL.
+ * upstream secret is the user's raw Telnyx API key — compromise of the
+ * Firecracker VM (e.g., via prompt-injected agent code in Code Mode) leaks a
+ * full-scope key. Users opt in explicitly; otherwise the shim stays on the
+ * shared URL.
  */
 export async function resolveEndpoint(options: ResolveOptions): Promise<ResolveResult> {
   const override = process.env.TELNYX_MCP_URL;
-  if (override) return { url: override, source: "override" };
+  if (override) {
+    // Override skips provisioning — caller must trust the URL accepts the
+    // raw API key as bearer (matches the shared-URL contract).
+    return { url: override, remoteAuthToken: options.apiKey, source: "override" };
+  }
 
   if (options.reset || process.env.TELNYX_MCP_RESET) {
     await clearCache();
@@ -166,18 +189,34 @@ export async function resolveEndpoint(options: ResolveOptions): Promise<ResolveR
   const fp = fingerprint(options.apiKey);
   const cached = await readCache();
   if (cached && cached.apiKeyFingerprint === fp) {
-    return { url: cached.url, source: "cache" };
+    return {
+      url: cached.url,
+      remoteAuthToken: cached.sharedSecret,
+      source: "cache",
+    };
   }
 
   if (!hasConsent()) {
-    return { url: SHARED_MCP_URL, source: "fallback-no-consent" };
+    return {
+      url: SHARED_MCP_URL,
+      remoteAuthToken: options.apiKey,
+      source: "fallback-no-consent",
+    };
   }
 
   const provisioned = await provision(options.apiKey);
   if (provisioned) {
     await writeCache(provisioned);
-    return { url: provisioned.url, source: "provisioned" };
+    return {
+      url: provisioned.url,
+      remoteAuthToken: provisioned.sharedSecret,
+      source: "provisioned",
+    };
   }
 
-  return { url: SHARED_MCP_URL, source: "fallback-error" };
+  return {
+    url: SHARED_MCP_URL,
+    remoteAuthToken: options.apiKey,
+    source: "fallback-error",
+  };
 }

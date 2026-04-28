@@ -40,6 +40,10 @@ npx -y @telnyx/mcp
 
 Only opt in if you understand and accept this trade. A future release will swap the raw API key for a scoped, short-lived credential — see the deployment strategy doc for context.
 
+### Inbound auth: `SHARED_SECRET`
+
+The deployed func enforces bearer-token auth on inbound MCP requests using a `SHARED_SECRET` distinct from your Telnyx API key. The deploy API generates one server-side and returns it once; the shim caches the value at `~/.telnyx/mcp-endpoint.json` (mode 0600) and uses it as the bearer for every MCP message it proxies. If the cache is lost, the value cannot be recovered (Telnyx secrets list returns names only) — run `--reset` to provision a fresh secret.
+
 ## Flags and environment
 
 | Flag / env | Description |

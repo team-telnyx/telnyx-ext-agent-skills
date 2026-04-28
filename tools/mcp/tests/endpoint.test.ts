@@ -10,6 +10,7 @@ const API_KEY = "KEY_test_1234";
 const PER_TENANT_URL = "https://default-mcp-acme.telnyxcompute.com/mcp";
 const FUNC_ID = "func_01HXYZ";
 const SECRET_ID = "sec_01HABC";
+const SHARED_SECRET = "ss_abc123def456";
 
 const SECRETS_API = "https://api.telnyx.com/v2/compute/secrets";
 const DEPLOY_API = "https://api.telnyx.com/v2/compute/mcp/deploy";
@@ -79,7 +80,12 @@ function secretsCreateOk(): Response {
 function deployOk(): Response {
   return new Response(
     JSON.stringify({
-      data: { url: PER_TENANT_URL, func_id: FUNC_ID, status: "ready" },
+      data: {
+        url: PER_TENANT_URL,
+        func_id: FUNC_ID,
+        shared_secret: SHARED_SECRET,
+        status: "ready",
+      },
     }),
     { status: 200 },
   );
@@ -112,25 +118,27 @@ afterEach(async () => {
 
 describe("resolveEndpoint", () => {
   describe("override", () => {
-    it("TELNYX_MCP_URL wins over everything else", async () => {
+    it("TELNYX_MCP_URL wins over everything else; uses API key as bearer", async () => {
       process.env.TELNYX_MCP_URL = "https://custom.example/mcp";
       globalThis.fetch = (async () => {
         throw new Error("fetch should not be called when override is set");
       }) as typeof fetch;
-      const { url, source } = await resolveEndpoint({ apiKey: API_KEY });
+      const { url, remoteAuthToken, source } = await resolveEndpoint({ apiKey: API_KEY });
       assert.equal(url, "https://custom.example/mcp");
+      assert.equal(remoteAuthToken, API_KEY);
       assert.equal(source, "override");
     });
   });
 
   describe("consent gate", () => {
-    it("without TELNYX_MCP_ACCEPT_FULL_SCOPE, skips provisioning", async () => {
+    it("without TELNYX_MCP_ACCEPT_FULL_SCOPE, falls back with API key as bearer", async () => {
       delete process.env.TELNYX_MCP_ACCEPT_FULL_SCOPE;
       globalThis.fetch = (async () => {
         throw new Error("fetch should not be called without consent");
       }) as typeof fetch;
-      const { url, source } = await resolveEndpoint({ apiKey: API_KEY });
+      const { url, remoteAuthToken, source } = await resolveEndpoint({ apiKey: API_KEY });
       assert.equal(url, SHARED_MCP_URL);
+      assert.equal(remoteAuthToken, API_KEY);
       assert.equal(source, "fallback-no-consent");
     });
 
@@ -148,14 +156,15 @@ describe("resolveEndpoint", () => {
   });
 
   describe("provisioning — new secret", () => {
-    it("creates secret when none exists, then deploys with secret id", async () => {
+    it("creates secret, deploys with secret id, returns shared_secret as bearer", async () => {
       const calls = installFetchRouter({
         secretsList: async () => secretsListEmpty(),
         secretsCreate: async () => secretsCreateOk(),
         deploy: async () => deployOk(),
       });
-      const { url, source } = await resolveEndpoint({ apiKey: API_KEY });
+      const { url, remoteAuthToken, source } = await resolveEndpoint({ apiKey: API_KEY });
       assert.equal(url, PER_TENANT_URL);
+      assert.equal(remoteAuthToken, SHARED_SECRET);
       assert.equal(source, "provisioned");
 
       assert.equal(calls.length, 3);
@@ -172,6 +181,26 @@ describe("resolveEndpoint", () => {
       assert.equal(cached.url, PER_TENANT_URL);
       assert.equal(cached.funcId, FUNC_ID);
       assert.equal(cached.secretId, SECRET_ID);
+      assert.equal(cached.sharedSecret, SHARED_SECRET);
+    });
+
+    it("deploy response missing shared_secret is treated as failure", async () => {
+      installFetchRouter({
+        secretsList: async () => secretsListEmpty(),
+        secretsCreate: async () => secretsCreateOk(),
+        deploy: async () =>
+          new Response(
+            JSON.stringify({
+              data: { url: PER_TENANT_URL, func_id: FUNC_ID, status: "ready" },
+            }),
+            { status: 200 },
+          ),
+      });
+      const { url, remoteAuthToken, source } = await resolveEndpoint({ apiKey: API_KEY });
+      assert.equal(source, "fallback-error");
+      assert.equal(url, SHARED_MCP_URL);
+      assert.equal(remoteAuthToken, API_KEY);
+      await assert.rejects(fs.access(cacheFile()));
     });
   });
 
@@ -249,7 +278,7 @@ describe("resolveEndpoint", () => {
   });
 
   describe("cache hits", () => {
-    it("returns cached URL without any fetch calls", async () => {
+    it("returns cached URL and shared_secret without any fetch calls", async () => {
       installFetchRouter({
         secretsList: async () => secretsListEmpty(),
         secretsCreate: async () => secretsCreateOk(),
@@ -264,6 +293,7 @@ describe("resolveEndpoint", () => {
       const second = await resolveEndpoint({ apiKey: API_KEY });
       assert.equal(second.source, "cache");
       assert.equal(second.url, PER_TENANT_URL);
+      assert.equal(second.remoteAuthToken, SHARED_SECRET);
     });
 
     it("different API key invalidates cache and re-provisions", async () => {
@@ -304,7 +334,7 @@ describe("resolveEndpoint", () => {
   });
 
   describe("request headers", () => {
-    it("sends Bearer auth and JSON content-type to both endpoints", async () => {
+    it("uses API key as bearer for secrets + deploy control-plane calls", async () => {
       const calls = installFetchRouter({
         secretsList: async () => secretsListEmpty(),
         secretsCreate: async () => secretsCreateOk(),

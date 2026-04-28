@@ -3,8 +3,13 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import type { JSONRPCMessage } from "@modelcontextprotocol/sdk/types.js";
 
 export interface ProxyOptions {
-  apiKey: string;
   remoteUrl: string;
+  /**
+   * Bearer token to send with requests to {@link remoteUrl}. For the shared
+   * hosted URL this is the user's Telnyx API key; for a per-tenant Edge
+   * Compute func it is the SHARED_SECRET returned by the deploy API.
+   */
+  remoteAuthToken: string;
 }
 
 /**
@@ -12,12 +17,12 @@ export interface ProxyOptions {
  * and a remote Telnyx MCP server over Streamable HTTP.
  */
 export async function createProxy(options: ProxyOptions): Promise<void> {
-  const { apiKey, remoteUrl } = options;
+  const { remoteUrl, remoteAuthToken } = options;
 
   const stdioTransport = new StdioServerTransport();
 
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${apiKey}`,
+    Authorization: `Bearer ${remoteAuthToken}`,
     "User-Agent": `telnyx-mcp-proxy/0.2.0`,
   };
 
