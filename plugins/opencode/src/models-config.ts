@@ -75,6 +75,15 @@ export async function loadEnabledModels(): Promise<string[]> {
     const raw: unknown = JSON.parse(await readFile(modelsConfigPath(), "utf8"))
     const parsed = ModelsConfigFileSchema.safeParse(raw)
     if (!parsed.success) {
+      // Config is structurally invalid — try to salvage valid string entries
+      // from whatever was stored rather than nuking user selections entirely.
+      const rawRecord = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {}
+      const rawArray = Array.isArray(rawRecord.enabledModels) ? rawRecord.enabledModels as unknown[] : []
+      const salvaged = rawArray.filter((e): e is string => typeof e === "string" && e.length > 0)
+      if (salvaged.length > 0) {
+        console.warn("[telnyx] invalid models config file, salvaged valid entries:", salvaged)
+        return [...new Set(salvaged)]
+      }
       console.error("[telnyx] invalid models config file, falling back to defaults:", parsed.error)
       return [...DEFAULT_ENABLED_MODELS]
     }

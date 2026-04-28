@@ -78,6 +78,10 @@ export async function storedApiKey(): Promise<string | undefined> {
     }
     return parsed.data.key
   } catch (error) {
+    // ENOENT means the auth file doesn't exist yet — normal on first run, not an error.
+    if (typeof error === "object" && error !== null && (error as NodeJS.ErrnoException).code === "ENOENT") {
+      return undefined
+    }
     console.error("[telnyx] failed to read auth file:", error)
     return undefined
   }
