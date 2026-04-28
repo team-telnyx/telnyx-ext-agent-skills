@@ -117,13 +117,13 @@ describe("models-config", () => {
       assert.deepEqual(models, [...DEFAULT_ENABLED_MODELS])
     })
 
-    it("falls back to defaults when enabledModels contains empty strings", async () => {
+    it("filters out invalid entries instead of falling back entirely", async () => {
       await setup()
       const badModels = { version: MODELS_CONFIG_VERSION, enabledModels: ["valid", ""] }
       await writeFile(configPath, JSON.stringify(badModels), "utf8")
 
       const models = await loadEnabledModels()
-      assert.deepEqual(models, [...DEFAULT_ENABLED_MODELS])
+      assert.deepEqual(models, ["valid"])
     })
   })
 

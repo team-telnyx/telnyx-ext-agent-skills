@@ -73,27 +73,27 @@ export async function loadEnabledModels(): Promise<string[]> {
   try {
     await persistDefaultModelsConfigIfMissing()
     const raw: unknown = JSON.parse(await readFile(modelsConfigPath(), "utf8"))
+    // Try strict parse first; if it fails, salvage valid entries individually.
     const parsed = ModelsConfigFileSchema.safeParse(raw)
-    if (!parsed.success) {
-      // Config is structurally invalid — try to salvage valid string entries
-      // from whatever was stored rather than nuking user selections entirely.
-      const rawRecord = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {}
-      const rawArray = Array.isArray(rawRecord.enabledModels) ? rawRecord.enabledModels as unknown[] : []
-      const salvaged = rawArray.filter((e): e is string => typeof e === "string" && e.length > 0)
-      if (salvaged.length > 0) {
-        console.warn("[telnyx] invalid models config file, salvaged valid entries:", salvaged)
-        return [...new Set(salvaged)]
+    if (parsed.success) {
+      if (parsed.data.version !== MODELS_CONFIG_VERSION) {
+        console.error(`[telnyx] models config version ${parsed.data.version} != expected ${MODELS_CONFIG_VERSION}, falling back to defaults`)
+        return [...DEFAULT_ENABLED_MODELS]
       }
-      console.error("[telnyx] invalid models config file, falling back to defaults:", parsed.error)
-      return [...DEFAULT_ENABLED_MODELS]
+      return [...new Set(parsed.data.enabledModels)]
     }
 
-    if (parsed.data.version !== MODELS_CONFIG_VERSION) {
-      console.error(`[telnyx] models config version ${parsed.data.version} != expected ${MODELS_CONFIG_VERSION}, falling back to defaults`)
-      return [...DEFAULT_ENABLED_MODELS]
+    // Schema failed — salvage valid string entries rather than nuking user selections.
+    const rawRecord = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {}
+    const rawArray = Array.isArray(rawRecord.enabledModels) ? rawRecord.enabledModels as unknown[] : []
+    const salvaged = rawArray.filter((e): e is string => typeof e === "string" && e.length > 0)
+    if (salvaged.length > 0) {
+      console.warn("[telnyx] invalid models config file, salvaged valid entries:", salvaged)
+      return [...new Set(salvaged)]
     }
 
-    return [...new Set(parsed.data.enabledModels)]
+    console.error("[telnyx] invalid models config file, falling back to defaults:", parsed.error)
+    return [...DEFAULT_ENABLED_MODELS]
   } catch (error) {
     console.error("[telnyx] failed to load models config, falling back to defaults:", error)
     return [...DEFAULT_ENABLED_MODELS]

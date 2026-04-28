@@ -263,7 +263,7 @@ describe("storedApiKey", () => {
   it("returns undefined when auth file is missing", async () => {
     const { storedApiKey } = await import("../src/shared.js")
     const prev = replaceDependencies({
-      readFile: async () => { throw new Error("ENOENT") },
+      readFile: async () => { const e = new Error("ENOENT: no such file or directory"); (e as NodeJS.ErrnoException).code = "ENOENT"; throw e },
       fetchModels: async () => [],
     })
     try {
