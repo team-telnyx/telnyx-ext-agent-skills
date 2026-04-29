@@ -3,11 +3,15 @@
  */
 
 import { outputJson, printError, printSuccess, printWarning } from "../utils/output.ts";
-import { hasEdgeCli } from "../edge-cli.ts";
+import { getEdgeAuthStatus, hasEdgeCli, supportsApiKeyAuth } from "../edge-cli.ts";
 
 interface SetupEdgeWebhookResult {
   ready: boolean;
+  authenticated: boolean;
+  auth_mode: "api_key" | "oauth" | "none" | "unknown";
+  api_key_auth_supported: boolean;
   example: string;
+  auth_command: string;
   deploy_command: string;
   prerequisites: string[];
   notes: string[];
@@ -20,15 +24,24 @@ export async function setupEdgeWebhookCommand(flags: Record<string, string | boo
   const name = (flags.name as string) || "my-webhook-receiver";
 
   const hasEdge = hasEdgeCli();
+  const apiKeyAuthSupported = hasEdge ? supportsApiKeyAuth() : false;
+  const authStatus = hasEdge ? safeAuthStatus() : { authenticated: false, mode: "none" as const };
+  const authCommand = apiKeyAuthSupported
+    ? "telnyx-edge auth api-key set <your-api-key>"
+    : "telnyx-edge auth login";
   const deployCommand = `telnyx-edge new-func --from-dir=${WEBHOOK_EXAMPLE} --name=${name} && cd ${name} && telnyx-edge ship`;
 
   const result: SetupEdgeWebhookResult = {
-    ready: hasEdge,
+    ready: hasEdge && authStatus.authenticated,
+    authenticated: authStatus.authenticated,
+    auth_mode: authStatus.mode,
+    api_key_auth_supported: apiKeyAuthSupported,
     example: WEBHOOK_EXAMPLE,
+    auth_command: authCommand,
     deploy_command: deployCommand,
     prerequisites: [
       "Install telnyx-edge",
-      "Run telnyx-edge auth login",
+      `Authenticate with ${authCommand}`,
       "Start from the webhook receiver example",
     ],
     notes: [
@@ -43,17 +56,21 @@ export async function setupEdgeWebhookCommand(flags: Record<string, string | boo
     return;
   }
 
-  if (hasEdge) {
+  if (result.ready) {
     printSuccess("Edge webhook handoff is ready", {
       Example: WEBHOOK_EXAMPLE,
+      Auth: authStatus.mode,
       Ready: "✓",
     });
   } else {
-    printError("telnyx-edge is not installed.");
-    printWarning("This command is a handoff helper — it depends on the dedicated Edge Compute CLI.");
+    printError(hasEdge ? "telnyx-edge is not authenticated." : "telnyx-edge is not installed.");
+    printWarning(hasEdge
+      ? `Authenticate first with: ${authCommand}`
+      : "This command is a handoff helper — it depends on the dedicated Edge Compute CLI.");
   }
 
   console.log(`  Example template: ${WEBHOOK_EXAMPLE}`);
+  console.log(`  Auth step: ${authCommand}`);
   console.log(`  Suggested flow: ${deployCommand}`);
   console.log("\n  Notes:");
   for (const note of result.notes) {
@@ -62,3 +79,11 @@ export async function setupEdgeWebhookCommand(flags: Record<string, string | boo
   console.log();
 }
 
+function safeAuthStatus(): { authenticated: boolean; mode: "api_key" | "oauth" | "none" | "unknown" } {
+  try {
+    const status = getEdgeAuthStatus();
+    return { authenticated: status.authenticated, mode: status.mode };
+  } catch {
+    return { authenticated: false, mode: "unknown" };
+  }
+}

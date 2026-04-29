@@ -93,7 +93,7 @@ Output: `{ assistant_id, phone_number, test_command }`
 ### Edge Compute handoff commands
 
 These are **thin executable bridges**, not native Edge lifecycle support.
-They make Edge Compute usable from `telnyx-agent` while keeping real deploy/auth/secrets/bindings ownership in `telnyx-edge`.
+They make Edge Compute usable from `telnyx-agent` while keeping real deploy/auth/secrets/bindings ownership in `telnyx-edge`. They now prefer API-key auth for agent use when the installed Edge CLI supports it.
 
 ```bash
 telnyx-agent edge-doctor --json
@@ -103,6 +103,8 @@ telnyx-agent setup-edge-webhook --name my-webhook --json
 
 What they do:
 - validate that `telnyx-edge` is available
+- check whether Edge auth is already configured
+- prefer `telnyx-edge auth api-key set <your-api-key>` for agents when supported
 - point you at a real Edge example
 - give you the concrete next deploy command
 - preserve an honest handoff instead of pretending `telnyx-agent` owns Edge lifecycle

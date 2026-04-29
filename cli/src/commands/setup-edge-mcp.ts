@@ -1,17 +1,17 @@
 /**
  * telnyx-agent setup-edge-mcp — Thin executable handoff for MCP-on-Edge.
- *
- * This command does not deploy anything itself. It verifies that the dedicated
- * `telnyx-edge` CLI is present and returns the concrete example / commands to
- * start from.
  */
 
 import { outputJson, printError, printSuccess, printWarning } from "../utils/output.ts";
-import { hasEdgeCli } from "../edge-cli.ts";
+import { getEdgeAuthStatus, hasEdgeCli, supportsApiKeyAuth } from "../edge-cli.ts";
 
 interface SetupEdgeMcpResult {
   ready: boolean;
+  authenticated: boolean;
+  auth_mode: "api_key" | "oauth" | "none" | "unknown";
+  api_key_auth_supported: boolean;
   example: string;
+  auth_command: string;
   deploy_command: string;
   prerequisites: string[];
   notes: string[];
@@ -24,15 +24,24 @@ export async function setupEdgeMcpCommand(flags: Record<string, string | boolean
   const name = (flags.name as string) || "my-mcp-server";
 
   const hasEdge = hasEdgeCli();
+  const apiKeyAuthSupported = hasEdge ? supportsApiKeyAuth() : false;
+  const authStatus = hasEdge ? safeAuthStatus() : { authenticated: false, mode: "none" as const };
+  const authCommand = apiKeyAuthSupported
+    ? "telnyx-edge auth api-key set <your-api-key>"
+    : "telnyx-edge auth login";
   const deployCommand = `telnyx-edge new-func --from-dir=${MCP_EXAMPLE} --name=${name} && cd ${name} && telnyx-edge ship`;
 
   const result: SetupEdgeMcpResult = {
-    ready: hasEdge,
+    ready: hasEdge && authStatus.authenticated,
+    authenticated: authStatus.authenticated,
+    auth_mode: authStatus.mode,
+    api_key_auth_supported: apiKeyAuthSupported,
     example: MCP_EXAMPLE,
+    auth_command: authCommand,
     deploy_command: deployCommand,
     prerequisites: [
       "Install telnyx-edge",
-      "Run telnyx-edge auth login",
+      `Authenticate with ${authCommand}`,
       "Use a real Edge Compute example as the starting point",
     ],
     notes: [
@@ -47,17 +56,21 @@ export async function setupEdgeMcpCommand(flags: Record<string, string | boolean
     return;
   }
 
-  if (hasEdge) {
+  if (result.ready) {
     printSuccess("Edge MCP handoff is ready", {
       Example: MCP_EXAMPLE,
+      Auth: authStatus.mode,
       Ready: "✓",
     });
   } else {
-    printError("telnyx-edge is not installed.");
-    printWarning("This command is a handoff helper — it depends on the dedicated Edge Compute CLI.");
+    printError(hasEdge ? "telnyx-edge is not authenticated." : "telnyx-edge is not installed.");
+    printWarning(hasEdge
+      ? `Authenticate first with: ${authCommand}`
+      : "This command is a handoff helper — it depends on the dedicated Edge Compute CLI.");
   }
 
   console.log(`  Example template: ${MCP_EXAMPLE}`);
+  console.log(`  Auth step: ${authCommand}`);
   console.log(`  Suggested flow: ${deployCommand}`);
   console.log("\n  Notes:");
   for (const note of result.notes) {
@@ -66,3 +79,11 @@ export async function setupEdgeMcpCommand(flags: Record<string, string | boolean
   console.log();
 }
 
+function safeAuthStatus(): { authenticated: boolean; mode: "api_key" | "oauth" | "none" | "unknown" } {
+  try {
+    const status = getEdgeAuthStatus();
+    return { authenticated: status.authenticated, mode: status.mode };
+  } catch {
+    return { authenticated: false, mode: "unknown" };
+  }
+}

@@ -1,18 +1,21 @@
 /**
  * telnyx-agent edge-doctor — Validate local Edge Compute prerequisites.
  *
- * This is a thin handoff command: it does not deploy or manage Edge Compute
- * directly. It checks that the dedicated `telnyx-edge` CLI is available and
- * gives the user a concrete next step.
+ * Thin handoff only: this does not deploy or manage Edge Compute directly.
+ * It checks that the dedicated `telnyx-edge` CLI is available and whether
+ * it is authenticated, preferring API-key auth for agent use.
  */
 
 import { outputJson, printError, printSuccess, printWarning } from "../utils/output.ts";
-import { getEdgeHelp, hasEdgeCli } from "../edge-cli.ts";
+import { getEdgeAuthStatus, getEdgeHelp, hasEdgeCli, supportsApiKeyAuth } from "../edge-cli.ts";
 
 interface EdgeDoctorResult {
   ready: boolean;
   telnyx_edge_installed: boolean;
   telnyx_edge_version: string | null;
+  authenticated: boolean;
+  auth_mode: "api_key" | "oauth" | "none" | "unknown";
+  api_key_auth_supported: boolean;
   checks: Array<{ name: string; ok: boolean; detail: string }>;
   next_steps: string[];
 }
@@ -23,44 +26,84 @@ export async function edgeDoctorCommand(flags: Record<string, string | boolean>)
   const checks: EdgeDoctorResult["checks"] = [];
   let installed = false;
   let version: string | null = null;
+  let authenticated = false;
+  let authMode: EdgeDoctorResult["auth_mode"] = "none";
+  let apiKeyAuthSupported = false;
 
   try {
     const out = getEdgeHelp();
     installed = hasEdgeCli();
     version = extractVersion(out) ?? "installed";
-    checks.push({
-      name: "telnyx-edge installed",
-      ok: true,
-      detail: version,
-    });
+    checks.push({ name: "telnyx-edge installed", ok: true, detail: version });
   } catch (err: any) {
     const detail = err?.code === "ENOENT"
       ? "telnyx-edge not found on PATH"
       : (err?.stderr?.toString?.() || err?.message || "failed to execute telnyx-edge");
-    checks.push({
-      name: "telnyx-edge installed",
-      ok: false,
-      detail,
-    });
+    checks.push({ name: "telnyx-edge installed", ok: false, detail });
   }
 
-  const nextSteps = installed
-    ? [
-        "Run: telnyx-edge auth login",
-        "Start from a real example: telnyx-edge new-func --from-dir=examples/ts/mcp-server --name=my-mcp-server",
-        "Deploy with: telnyx-edge ship",
-        "Then connect your deployed HTTP or MCP boundary back into your AI workflow.",
-      ]
-    : [
-        "Install the dedicated Edge Compute CLI from team-telnyx/edge-compute releases.",
-        "Then run: telnyx-edge auth login",
-        "Then start from a real example such as examples/ts/mcp-server or examples/js/webhook-receiver.",
-      ];
+  if (installed) {
+    apiKeyAuthSupported = supportsApiKeyAuth();
+    checks.push({
+      name: "API-key auth supported",
+      ok: apiKeyAuthSupported,
+      detail: apiKeyAuthSupported ? "auth api-key set is available" : "no auth api-key set support detected",
+    });
+
+    try {
+      const status = getEdgeAuthStatus();
+      authenticated = status.authenticated;
+      authMode = status.mode;
+      checks.push({
+        name: "Authenticated",
+        ok: authenticated,
+        detail: authenticated ? `mode: ${authMode}` : "not authenticated",
+      });
+    } catch (err: any) {
+      checks.push({
+        name: "Authenticated",
+        ok: false,
+        detail: err?.stderr?.toString?.() || err?.message || "failed to read auth status",
+      });
+    }
+  }
+
+  const ready = installed && authenticated;
+
+  let nextSteps: string[];
+  if (!installed) {
+    nextSteps = [
+      "Install the dedicated Edge Compute CLI from team-telnyx/edge-compute releases.",
+      "Then authenticate: telnyx-edge auth api-key set <your-api-key> (preferred) or telnyx-edge auth login",
+      "Then start from a real example such as examples/ts/mcp-server or examples/js/webhook-receiver.",
+    ];
+  } else if (!authenticated) {
+    nextSteps = apiKeyAuthSupported
+      ? [
+          "Authenticate non-interactively: telnyx-edge auth api-key set <your-api-key>",
+          "Verify with: telnyx-edge auth status",
+          "Then start from a real example and deploy with telnyx-edge ship.",
+        ]
+      : [
+          "Authenticate with: telnyx-edge auth login",
+          "Verify with: telnyx-edge auth status",
+          "Then start from a real example and deploy with telnyx-edge ship.",
+        ];
+  } else {
+    nextSteps = [
+      "Start from a real example: telnyx-edge new-func --from-dir=examples/ts/mcp-server --name=my-mcp-server",
+      "Deploy with: telnyx-edge ship",
+      "Then connect the exposed HTTP or MCP boundary back into your AI workflow.",
+    ];
+  }
 
   const result: EdgeDoctorResult = {
-    ready: installed,
+    ready,
     telnyx_edge_installed: installed,
     telnyx_edge_version: version,
+    authenticated,
+    auth_mode: authMode,
+    api_key_auth_supported: apiKeyAuthSupported,
     checks,
     next_steps: nextSteps,
   };
@@ -70,14 +113,21 @@ export async function edgeDoctorCommand(flags: Record<string, string | boolean>)
     return;
   }
 
-  if (installed) {
+  if (ready) {
     printSuccess("Edge Compute handoff is ready", {
       "telnyx-edge": version ?? "installed",
+      Auth: authMode,
       Ready: "✓",
     });
   } else {
     printError("Edge Compute handoff is not ready yet.");
-    printWarning("Install telnyx-edge first — team-telnyx/ai does not own Edge lifecycle directly.");
+    if (!installed) {
+      printWarning("Install telnyx-edge first — team-telnyx/ai does not own Edge lifecycle directly.");
+    } else if (!authenticated) {
+      printWarning(apiKeyAuthSupported
+        ? "telnyx-edge is installed but not authenticated. Prefer API-key auth for agents."
+        : "telnyx-edge is installed but not authenticated.");
+    }
   }
 
   console.log("  Checks:");

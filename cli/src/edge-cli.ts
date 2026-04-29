@@ -4,14 +4,18 @@ export function resolveEdgeBinary(): string {
   return process.env.TELNYX_EDGE_PATH || "telnyx-edge";
 }
 
+function runEdge(args: string[]): string {
+  return execFileSync(resolveEdgeBinary(), args, {
+    encoding: "utf8",
+    timeout: 15000,
+    env: { ...process.env },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+}
+
 export function hasEdgeCli(): boolean {
   try {
-    execFileSync(resolveEdgeBinary(), ["--help"], {
-      encoding: "utf8",
-      timeout: 15000,
-      env: { ...process.env },
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+    runEdge(["--help"]);
     return true;
   } catch {
     return false;
@@ -19,10 +23,37 @@ export function hasEdgeCli(): boolean {
 }
 
 export function getEdgeHelp(): string {
-  return execFileSync(resolveEdgeBinary(), ["--help"], {
-    encoding: "utf8",
-    timeout: 15000,
-    env: { ...process.env },
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+  return runEdge(["--help"]);
+}
+
+export type EdgeAuthStatus = {
+  authenticated: boolean;
+  mode: "api_key" | "oauth" | "none" | "unknown";
+  raw: string;
+};
+
+export function getEdgeAuthStatus(): EdgeAuthStatus {
+  const raw = runEdge(["auth", "status"]);
+  const text = raw.toLowerCase();
+  const authenticated = !text.includes("not authenticated") && !text.includes("status: ❌");
+
+  let mode: EdgeAuthStatus["mode"] = "unknown";
+  if (text.includes("not authenticated") || text.includes("status: ❌")) {
+    mode = "none";
+  } else if (text.includes("api key")) {
+    mode = "api_key";
+  } else if (text.includes("oauth") || text.includes("browser") || text.includes("logged in")) {
+    mode = "oauth";
+  }
+
+  return { authenticated, mode, raw };
+}
+
+export function supportsApiKeyAuth(): boolean {
+  try {
+    const out = runEdge(["auth", "api-key", "set", "--help"]);
+    return /Set API key for authentication/i.test(out);
+  } catch {
+    return false;
+  }
 }

@@ -41,7 +41,7 @@ const CAPABILITIES: Record<string, Capability[]> = {
     { name: "WireGuard VPN", description: "Create private networks and WireGuard tunnels", actions: ["create_network", "create_wireguard_interface", "create_wireguard_peer"] },
   ],
   "⚡ Edge Compute": [
-    { name: "Edge Functions", description: "Discover how to pair Telnyx AI workflows with Telnyx Edge Compute. Function lifecycle is owned by the separate telnyx-edge CLI.", actions: ["see_guides_edge_compute"] },
+    { name: "Edge Functions", description: "Pair Telnyx AI workflows with Telnyx Edge Compute. telnyx-agent now provides an executable handoff and prefers API-key auth for agent use when supported by telnyx-edge.", actions: ["see_guides_edge_compute"] },
     { name: "Deployment Handoff", description: "Use team-telnyx/ai for orchestration patterns and telnyx-edge for deploy, secrets, bindings, and lifecycle management.", actions: ["telnyx_edge_ship", "telnyx_edge_secrets", "telnyx_edge_bindings"] },
     { name: "Edge CLI Bridge", description: "Thin executable handoff from telnyx-agent into telnyx-edge for real MCP and webhook starting points.", actions: ["edge_doctor", "setup_edge_mcp", "setup_edge_webhook"] },
   ],
