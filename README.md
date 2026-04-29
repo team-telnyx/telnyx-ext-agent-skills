@@ -178,6 +178,8 @@ See [MCP](/tools/mcp) for more details.
 
 Curl-first operational guides for common Telnyx workflows — SMS messaging, voice call control, AI assistants, phone numbers, porting, verification, webhooks, 10DLC registration, WireGuard networking, x402 payments, and Edge Compute handoff patterns.
 
+For Edge Compute specifically, the goal is to make the handoff testable fast: start from a real `telnyx-edge` example, deploy it, and let `team-telnyx/ai` orchestrate against that live endpoint.
+
 See [Guides](/guides) for the full list.
 
 ## Edge Compute

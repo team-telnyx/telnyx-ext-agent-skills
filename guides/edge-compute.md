@@ -170,6 +170,42 @@ Use Edge Compute for deterministic transforms such as:
 
 These are the sweet spot: small execution units attached to larger agent workflows.
 
+## Fastest path to a real test
+
+If you want to test the end product quickly, do **one** of these first:
+
+### Option A — MCP server on Edge
+Best when you want an AI-native demo.
+
+```sh
+telnyx-edge new-func --from-dir=examples/ts/mcp-server --name=my-mcp-server
+cd my-mcp-server
+telnyx-edge secrets add TELNYX_API_KEY <your-api-key>
+telnyx-edge ship
+```
+
+Then point your MCP client or agent runtime at the deployed endpoint.
+
+### Option B — Webhook receiver on Edge
+Best when you want a simple integration seam.
+
+```sh
+telnyx-edge new-func --from-dir=examples/js/webhook-receiver --name=my-webhook
+cd my-webhook
+telnyx-edge ship
+```
+
+Then have your AI workflow call or route into that edge endpoint.
+
+### Option C — Post-processing function
+Best when you want a narrow but real AI-adjacent utility.
+
+Example use cases:
+- redact PII before storage
+- enrich messages before downstream routing
+- score or classify inbound events
+- clean transcripts before analysis
+
 ## What this repo should and should not claim
 
 This repo **can**:
@@ -182,6 +218,19 @@ This repo **should not** claim that it:
 - manages rollbacks or lifecycle state
 - replaces `telnyx-edge`
 - provides complete native Edge Compute support
+
+## Test recipe
+
+Here is the most practical end-to-end test loop:
+
+1. install and authenticate `telnyx-edge`
+2. start from a working example in `team-telnyx/edge-compute`
+3. deploy it with `telnyx-edge ship`
+4. expose a stable HTTP or MCP boundary
+5. call that deployed endpoint from an AI workflow
+6. iterate on the boundary, not on duplicated deployment logic
+
+That gives you a real integration test without pretending `team-telnyx/ai` owns lifecycle management.
 
 ## Best next step
 
