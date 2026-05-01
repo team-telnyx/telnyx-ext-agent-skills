@@ -3,4 +3,4 @@
 from telnyx_agent_toolkit.configuration import TelnyxAgentToolkit, TelnyxConfig
 
 __all__ = ["TelnyxAgentToolkit", "TelnyxConfig"]
-__version__ = "0.1.0"
+__version__ = "0.2.0"

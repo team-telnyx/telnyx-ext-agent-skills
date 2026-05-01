@@ -65,7 +65,7 @@ export class FrictionReporter {
         api_path: event.api_path,
         error_detail: event.error_message,
         sdk: "typescript",
-        sdk_version: "0.1.0",
+        sdk_version: "0.2.0",
       },
     };
 

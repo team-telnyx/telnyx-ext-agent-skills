@@ -4,7 +4,7 @@
 
 set -eux
 
-cd "$(dirname "$0")/../tools/python"
+cd "$(dirname "$0")/../../tools/python"
 
 # Clean previous builds
 rm -rf dist

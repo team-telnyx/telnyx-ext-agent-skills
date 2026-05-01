@@ -40,6 +40,11 @@ else
   echo "Last published version: $LAST_VERSION"
 fi
 
+if [[ "$LAST_VERSION" == "$VERSION" ]]; then
+  echo "$PACKAGE_NAME@$VERSION is already published on npm; skipping publish."
+  exit 0
+fi
+
 # Determine tag (pre-release gets alpha/beta tag, stable gets latest)
 TAG="latest"
 if [[ "$VERSION" =~ -([a-zA-Z]+) ]]; then
