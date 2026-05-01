@@ -24,7 +24,8 @@ print(len(TOOL_DEFINITIONS))
 TS_COUNT=$(node -e "
 const fs = require('fs');
 const c = fs.readFileSync('tools/typescript/src/shared/constants.ts','utf8');
-const m = c.match(/^  [a-z_]+:\s*\{$/gm) || [];
+const definitions = c.slice(c.indexOf('export const TOOL_DEFINITIONS'));
+const m = definitions.match(/^  [a-z0-9_]+:\s*\{$/gm) || [];
 console.log(m.length);
 " 2>/dev/null || echo "?")
 
