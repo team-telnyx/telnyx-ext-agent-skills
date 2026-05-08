@@ -203,3 +203,8 @@ See [Edge Compute guide](/guides/edge-compute.md).
 ## License
 
 [MIT](LICENSE)
+
+## AFK bot demo change
+- Issue: AIF-190
+- Title: AFK live GitHub smoke: README-only draft PR
+- This line was produced by the deterministic local sandbox runner.
